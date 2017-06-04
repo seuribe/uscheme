@@ -141,6 +141,17 @@ namespace UScheme {
             return ret;
         });
 
+        private static readonly Procedure Foldl = new Procedure((fparams, env) => {
+            EnsureArity(fparams, 3);
+            var op = UScheme.Eval(fparams[0], env) as Procedure;
+            var value = UScheme.Eval(fparams[1], env);
+            var list = UScheme.Eval(fparams[2], env) as UList;
+            foreach (var e in list) {
+                value = op.Eval(new UList() { value, UScheme.Eval(e, env) }, env);
+            }
+            return value;
+        });
+
         private static readonly Procedure Print = new Procedure((UList list, Env env) => {
             Exp ev = UScheme.Eval(list[0], env);
             Console.Out.WriteLine(ev.ToString());
@@ -172,6 +183,7 @@ namespace UScheme {
             env.Put("string-append", StdLib.StringAppend);
             env.Put("length", StdLib.Length);
             env.Put("map", StdLib.Map);
+            env.Put("foldl", StdLib.Foldl);
             env.Put("list", StdLib.List);
             env.Put("apply", StdLib.Apply);
             env.Put("append", StdLib.Append);
