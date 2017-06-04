@@ -1,0 +1,14 @@
+﻿(define initial-pos (list 1 2 1 2))
+(define solution-pos (list 1 1 2 2))
+
+(define (invert list first last)
+	)
+
+(define (move current mv)
+	(define first (if ()
+	)
+
+(define (solve current target)
+	(if (same-state current target) '()
+		
+	)
