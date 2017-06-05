@@ -10,10 +10,7 @@ namespace UScheme
     {
         static void Main(string[] args)
         {
-//            UScheme.Loop(Console.In, Console.Out);
-            Env env = UScheme.Load("../../uscheme/test.usc");
-            Console.Out.WriteLine(env.Eval("results"));
-//            Console.Out.WriteLine(env.Eval("(cons (= 1 0) 2)"));
+            Env env = UScheme.Load("../../uscheme/r4rstest.scm");
             Console.In.ReadLine();
         }
     }
