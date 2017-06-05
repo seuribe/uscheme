@@ -8,6 +8,10 @@ namespace UScheme
 {
     abstract class Number : Exp
     {
+        public abstract double DoubleValue { get; }
+        public abstract float FloatValue { get; }
+        public abstract int IntValue { get; }
+
         public abstract bool Equals(Number n);
         public abstract bool LessThan(Number n);
         public abstract bool LessOrEqualThan(Number n);
@@ -96,6 +100,10 @@ namespace UScheme
 
     class IntegerNumber : Number
     {
+        public override double DoubleValue { get { return (double)value; } }
+        public override float FloatValue { get { return (float)value; } }
+        public override int IntValue { get { return (int)value; } }
+
         public readonly int value;
         public IntegerNumber(int value)
         {
@@ -171,6 +179,10 @@ namespace UScheme
 
     class RealNumber : Number
     {
+        public override double DoubleValue { get { return (double)value; } }
+        public override float FloatValue { get { return (float)value; } }
+        public override int IntValue { get { return (int)value; } }
+
         public readonly float value;
         public RealNumber(float value)
         {

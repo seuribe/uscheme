@@ -196,7 +196,9 @@ namespace UScheme {
 
         public delegate Exp EvalProc(UList args, Env env);
 
-        private EvalProc evalProc;
+        protected EvalProc evalProc;
+
+        public Procedure() { }
 
         public Procedure(List<string> args, Exp body, Env env)
         {

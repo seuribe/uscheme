@@ -167,9 +167,29 @@ namespace UScheme {
             return new UString(sb.ToString());
         });
 
-        // TODO: for-each, cons, pair?, apply, eval, zip, append, foldl, foldr, compose, (math functions: abs, log, sin, cos, acos, asin, tan, atan)
 
+        class UnaryNumberProc : Procedure {
+            public UnaryNumberProc(Func<double, double> func) {
+                evalProc = (UList fparams, Env env) => {
+                    EnsureArity(fparams, 1);
+                    var expr = fparams[0];
+                    var number = UScheme.Eval(expr, env) as Number;
+                    return new RealNumber((float)func(number.DoubleValue));
+                };
+            }
+        }
+
+        // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static Env AddProcedures(Env env) {
+            env.Put("abs", new UnaryNumberProc(Math.Abs));
+            env.Put("log", new UnaryNumberProc(Math.Log));
+            env.Put("sin", new UnaryNumberProc(Math.Sin));
+            env.Put("cos", new UnaryNumberProc(Math.Cos));
+            env.Put("acos", new UnaryNumberProc(Math.Acos));
+            env.Put("asin", new UnaryNumberProc(Math.Asin));
+            env.Put("tan", new UnaryNumberProc(Math.Tan));
+            env.Put("atan", new UnaryNumberProc(Math.Atan));
+
             env.Put("number?", StdLib.IsNumber);
             env.Put("integer?", StdLib.IsInteger);
             env.Put("real?", StdLib.IsReal);

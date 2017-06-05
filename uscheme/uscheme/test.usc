@@ -22,3 +22,5 @@
 (test = '(1 1))
 (test = '(2 2))
 (print (foldl + 0 '(1 2 3 4)))
+(print "cos 45: ")
+(print (cos 45))
