@@ -404,25 +404,36 @@ namespace UScheme {
             return new UString(sb.ToString());
         }
 
-        static Exp ReadForm(System.IO.TextReader input) {
+        static Exp ReadForm(TextReader input) {
 
-            int first = input.Peek();
-            switch (first) {
-                case '(':
-                    return ReadList(input);
-                case '\'':
-                    input.Read();
-                    UList l = new UList();
-                    l.Add(Symbol.QUOTE);
-                    l.Add(ReadForm(input));
-                    return l;
-                default:
-                    return ReadAtom(input);
+            while (true) {
+                int first = input.Peek();
+                switch (first) {
+                    case ';':
+                        DiscardRestOfLine(input);
+                        break;
+                    case '(':
+                        return ReadList(input);
+                    case '\'':
+                        input.Read();
+                        UList l = new UList();
+                        l.Add(Symbol.QUOTE);
+                        l.Add(ReadForm(input));
+                        return l;
+                    default:
+                        return ReadAtom(input);
+                }
             }
 /*
             Console.Out.WriteLine("Read " + input);
             return ReadTokens(Tokenize(input));
 */
+        }
+
+        static void DiscardRestOfLine(TextReader input) {
+            while (input.Peek() != '\n') {
+                input.Read();
+            }
         }
 
         static Exp Car(UList list)
