@@ -108,23 +108,16 @@ namespace UScheme {
 
         public UList(IEnumerable<Exp> l) : base(l) { }
 
-        public UList Tail()
-        {
+        public UList Tail() {
             return new UList(this.Skip(1));
         }
 
         public override string ToString() {
-            
             return "(" + string.Join(" ", ToStrings()) + ")";
         }
 
-        public List<string> ToStrings()
-        {
-            List<string> ret = new List<string>();
-            foreach (Exp e in this) {
-                ret.Add(e.ToString());
-            }
-            return ret;
+        public List<string> ToStrings() {
+            return this.Select(e => e.ToString()).ToList();
         }
 
         public bool UEquals(Exp other) {
@@ -435,24 +428,12 @@ namespace UScheme {
                 input.Read();
             }
         }
-
-        static Exp Car(UList list)
-        {
-            return list[0];
-        }
-
-        static Exp Cdr(UList list)
-        {
-            return list.Tail();
-        }
-
-        public static string Eval(string input)
-        {
+        
+        public static string Eval(string input) {
             return Eval(input, Env.InitialEnv());
         }
 
         public static string Eval(string input, Env env) {
-
             MemoryStream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
             writer.Write(input);
@@ -465,108 +446,107 @@ namespace UScheme {
         public static Exp Eval(Exp exp, Env env) {
             Console.Out.WriteLine("Eval " + exp.ToString());
 
-            if (!(exp is UList)) {
-                if (exp is Symbol) {    // env-defined variables
-                    return env.Get(exp.ToString());
-                }
-                return exp; // atoms like integer, float, etc.
-            }
-            // from here on, it's a list
-            UList list = exp as UList;
+            if (exp is Symbol)    // env-defined variables
+                return env.Get(exp.ToString());
 
+            if (exp is UList)
+                return EvalList(exp as UList, env);
+
+            return exp; // atoms like integer, float, etc.
+        }
+
+        static Exp DefineFunc(UList head, Exp body, Env env) {
+            var name = head[0].ToString();
+            var paramNames = head.Tail().ToStrings();
+            return env.Put(name, new Procedure(paramNames, body, env));
+        }
+
+        static Exp EvalSequential(UList expressions, Env env) {
+            Exp ret = null;
+            foreach (var e in expressions)
+                ret = Eval(e, env);
+
+            return ret;
+        }
+
+        static Exp EvalList(UList list, Env env) {
             Exp first = list[0];
 
             if (first == Symbol.DEFINE) {
                 if (list[1] is UList) {
-                    UList defSig = list[1] as UList;
-                    string name = defSig[0].ToString();
-                    List<string> args = defSig.Tail().ToStrings();
-                    Exp body = list[2];
-                    return env.Put(name, new Procedure(args, body, env));
+                    return DefineFunc(list[1] as UList, list[2], env);
                 } else {
                     string var = list[1].ToString();
                     Exp value = Eval(list[2], env);
                     return env.Put(var, value);
                 }
             }
-            if (first == Symbol.IF) {
-                Exp test = Eval(list[1], env);
-                return Eval(Boolean.IsTrue(test) ? list[2] : list[3], env);
-            }
+
+            if (first == Symbol.IF)
+                return Eval(Boolean.IsTrue(Eval(list[1], env)) ? list[2] : list[3], env);
+
             if (first == Symbol.SET) {
                 string var = list[1].ToString();
                 Exp val = Eval(list[2], env);
                 Console.Out.WriteLine("set! '" + var + "' <- " + val.ToString());
                 return env.Find(var).Set(var, val);
             }
+
             if (first == Symbol.LAMBDA) {
                 List<string> args = (list[1] as UList).ToStrings();
                 Exp body = list[2];
                 return new Procedure(args, body, env);
             }
-            if (first == Symbol.QUOTE) {
-                return list[1];
-            }
-            if (first == Symbol.AND) {
-                return AND(list.Tail(), env);
-            }
-            if (first == Symbol.OR) {
-                return OR(list.Tail(), env);
-            }
-            if (first == Symbol.BEGIN) {
-                Exp ret = null;
-                for (int i = 1; i < list.Count; i++) {
-                    ret = Eval(list[i], env);
-                }
-                return ret;
-            }
-            if (first == Symbol.LET) {
-                UList defs = list[1] as UList;
-                Exp body = list[2];
-                Env letEnv = new Env(env);
 
-                foreach (Exp def in defs) {
-                    UList defList = def as UList;
-                    letEnv.Put(defList[0].ToString(), Eval(defList[1], env));
-                }
-                return Eval(body, letEnv);
-            }
+            if (first == Symbol.QUOTE)
+                return list[1];
+            
+            if (first == Symbol.AND)
+                return AND(list.Tail(), env);
+            
+            if (first == Symbol.OR)
+                return OR(list.Tail(), env);
+            
+            if (first == Symbol.BEGIN)
+                return EvalSequential(list.Tail(), env);
+
+            if (first == Symbol.LET)
+                return Eval(list[2], SubEnv(list[1] as UList, env));
 
             // procedure call
-            Procedure proc = Eval(first, env) as Procedure;
+            var proc = Eval(first, env) as Procedure;
             return proc.Eval(list.Tail(), env);
         }
 
-        private static Exp AND(UList l, Env env) {
-            Exp val = Boolean.TRUE;
-            foreach (Exp exp in l) {
-                if (Boolean.IsFalse(val = Eval(exp, env))) {
-                    break;
-                }
-            }
-            return val;
+        static Env SubEnv(UList definitions, Env env) {
+            var subEnv = new Env(env);
+            foreach (UList def in definitions)
+                subEnv.Put(def[0].ToString(), Eval(def[1], env));
+
+            return subEnv;
         }
-        private static Exp OR(UList l, Env env) {
-            Exp val = Boolean.FALSE;
-            foreach (Exp exp in l) {
-                if (Boolean.IsTrue(val = Eval(exp, env))) {
-                    break;
-                }
-            }
-            return val;
+
+        private static Exp AND(UList expressions, Env env) {
+            return
+                Boolean.Get(expressions.All(exp => Boolean.IsTrue(Eval(exp, env))));
+        }
+
+        private static Exp OR(UList expressions, Env env) {
+            return
+                Boolean.Get(expressions.Any(exp => Boolean.IsTrue(Eval(exp, env))));
         }
 
         public static Env Load(string filename) {
-            Env env = Env.InitialEnv();
-            StreamReader sr = new StreamReader(filename);
+            var env = Env.InitialEnv();
+            var sr = new StreamReader(filename);
             while (ConsumeSpaces(sr) != -1) {
-                Exp exp = ReadForm(sr);
+                var exp = ReadForm(sr);
                 Eval(exp, env);
             }
             return env;
         }
 
-        public static void Loop(System.IO.TextReader textIn, System.IO.TextWriter textOut) {
+        public static void Loop(TextReader textIn, TextWriter textOut) {
             Env env = Env.InitialEnv();
             textOut.Write("eval> ");
             while (true) {

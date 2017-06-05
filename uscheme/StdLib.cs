@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace UScheme {
 /*
@@ -174,28 +172,28 @@ namespace UScheme {
             env.Put("tan", new UnaryNumberProc(Math.Tan));
             env.Put("atan", new UnaryNumberProc(Math.Atan));
 
-            env.Put("number?", StdLib.IsNumber);
-            env.Put("integer?", StdLib.IsInteger);
-            env.Put("real?", StdLib.IsReal);
-            env.Put("boolean?", StdLib.IsBoolean);
-            env.Put("procedure?", StdLib.IsProcedure);
-            env.Put("symbol?", StdLib.IsSymbol);
-            env.Put("list?", StdLib.IsList);
-            env.Put("equal?", StdLib.Equal);
+            env.Put("number?", IsNumber);
+            env.Put("integer?", IsInteger);
+            env.Put("real?", IsReal);
+            env.Put("boolean?", IsBoolean);
+            env.Put("procedure?", IsProcedure);
+            env.Put("symbol?", IsSymbol);
+            env.Put("list?", IsList);
+            env.Put("equal?", Equal);
 
-            env.Put("print", StdLib.Print);
+            env.Put("print", Print);
 
-            env.Put("not", StdLib.Not);
-            env.Put("string-append", StdLib.StringAppend);
-            env.Put("length", StdLib.Length);
-            env.Put("map", StdLib.Map);
-            env.Put("foldl", StdLib.Foldl);
-            env.Put("list", StdLib.List);
-            env.Put("apply", StdLib.Apply);
-            env.Put("append", StdLib.Append);
-            env.Put("cons", StdLib.Cons);
-            env.Put("car", StdLib.Car);
-            env.Put("cdr", StdLib.Cdr);
+            env.Put("not", Not);
+            env.Put("string-append", StringAppend);
+            env.Put("length", Length);
+            env.Put("map", Map);
+            env.Put("foldl", Foldl);
+            env.Put("list", List);
+            env.Put("apply", Apply);
+            env.Put("append", Append);
+            env.Put("cons", Cons);
+            env.Put("car", Car);
+            env.Put("cdr", Cdr);
             return env;
         }
     }
