@@ -218,6 +218,10 @@ namespace UScheme {
             return evalProc(values, env);
         }
 
+        public Exp Eval(Exp value, Env env) {
+            return evalProc(new UList { value }, env);
+        }
+
         private Exp DefaultEval(UList values, Env outerEnv)
         {
             Console.Out.WriteLine("Eval proc with " + args.Count + " params using " + values.Count + " values");

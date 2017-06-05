@@ -24,3 +24,5 @@
 (print (foldl + 0 '(1 2 3 4)))
 (print "cos 45: ")
 (print (cos 45))
+(print (map log 1 2 3 4 5))
+(print (map cos (+ 10 35)))

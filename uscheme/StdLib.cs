@@ -54,9 +54,7 @@ namespace UScheme {
         });
 
         private static readonly Procedure List = new Procedure((UList list, Env env) => {
-            UList ret = new UList();
-            list.ForEach(e => ret.Add(UScheme.Eval(e, env)));
-            return ret;
+            return new UList(list.Select(e => UScheme.Eval(e, env)));
         });
 
         private static readonly Procedure Car = new Procedure((UList list, Env env) => {
@@ -121,24 +119,10 @@ namespace UScheme {
             return proc.Eval(listArgs, env);
         });
 
-        private static readonly Procedure Map = new Procedure((UList list, Env env) => {
-            Procedure proc = UScheme.Eval(list[0], env) as Procedure;
-            list = list.Tail();
-            // first, eval all parameters
-            for (int i = 0 ; i < list.Count ; i++) {
-                list[i] = UScheme.Eval(list[i], env);
-            }
-            //
-            UList ret = new UList();
-            int len = (list[0] as UList).Count;
-            for (int i = 0 ; i < len ; i++) {
-                UList args = new UList();
-                foreach (UList l in list) {
-                    args.Add(l[i]);
-                }
-                ret.Add(proc.Eval(args, env));
-            }
-            return ret;
+        private static readonly Procedure Map = new Procedure((fparams, env) => {
+            var proc = UScheme.Eval(fparams[0], env) as Procedure;
+            var args = fparams.Tail();
+            return new UList(args.Select(arg => proc.Eval(UScheme.Eval(arg, env), env)));
         });
 
         private static readonly Procedure Foldl = new Procedure((fparams, env) => {
@@ -198,7 +182,9 @@ namespace UScheme {
             env.Put("symbol?", StdLib.IsSymbol);
             env.Put("list?", StdLib.IsList);
             env.Put("equal?", StdLib.Equal);
+
             env.Put("print", StdLib.Print);
+
             env.Put("not", StdLib.Not);
             env.Put("string-append", StdLib.StringAppend);
             env.Put("length", StdLib.Length);
