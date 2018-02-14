@@ -20,16 +20,7 @@ namespace UScheme {
             Symbol.AND,
             Symbol.OR,
         };
-/*
-        private static List<string> Tokenize(string str) {
-            Console.Out.WriteLine("Tokenize " + str);
-            string[] tokens = str.Replace("(", " ( ").Replace(")", " ) ").Replace("'", "' ").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < tokens.Length; i++) {
-                tokens[i] = tokens[i].Trim();
-            }
-            return new List<string>(tokens);
-        }
-*/
+
         private static Exp Atom(string token) {
             Console.Out.WriteLine("Atom from " + token);
             int intValue;
@@ -53,40 +44,7 @@ namespace UScheme {
 
             return new Symbol(token);
         }
-/*
-        private static Exp ReadList(List<string> tokens) {
-            ExpList l = new ExpList();
-            while (!tokens[0].Equals(")")) {
-                l.Add(ReadTokens(tokens));
-            }
-            tokens.RemoveAt(0);
-            return l;
-        }
- */ 
-/*
-        private static Exp ReadTokens(List<string> tokens) {
-            if (tokens.Count == 0) {
-                throw new ParseException("Empty list");
-            }
-            string token = tokens.First();
-            tokens.RemoveAt(0);
 
-            if (token == "'") {
-                ExpList l = new ExpList();
-                l.Add(Symbol.QUOTE);
-                l.Add(ReadTokens(tokens));
-                return l;
-            }
-
-            if (token.Equals("(")) {
-                return ReadList(tokens);
-            } else if (token.Equals(")")) {
-                throw new ParseException("Unexpected ')'");
-            } else {
-                return Atom(token);
-            }
-        }
-        */
         static UList ReadList(System.IO.TextReader input) {
             UList ret = new UList();
             int open = input.Read();
@@ -137,7 +95,7 @@ namespace UScheme {
             return Atom(token);
         }
 
-        static Exp ReadString(System.IO.TextReader input) {
+        static Exp ReadString(TextReader input) {
             input.Read(); // consume the opening '"'
             StringBuilder sb = new StringBuilder();
             int ch = input.Read();
@@ -187,10 +145,6 @@ namespace UScheme {
                         return ReadAtom(input);
                 }
             }
-/*
-            Console.Out.WriteLine("Read " + input);
-            return ReadTokens(Tokenize(input));
-*/
         }
 
         static void DiscardRestOfLine(TextReader input) {
