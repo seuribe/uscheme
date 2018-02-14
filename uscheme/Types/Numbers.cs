@@ -53,6 +53,10 @@ namespace UScheme
             return StdLib.FoldlBase(BinaryMult, parameters, env);
         });
 
+        public static readonly Procedure DIV = new Procedure((UList parameters, Env env) => {
+            return StdLib.FoldlBase(BinaryDiv, parameters, env);
+        });
+
         public static readonly Procedure ADD = new Procedure((UList parameters, Env env) => {
             return StdLib.FoldlBase(BinaryAdd, parameters, env);
         });
@@ -115,17 +119,8 @@ namespace UScheme
         public override IntegerNumber ToInteger() => this;
         public override RealNumber ToReal() => new RealNumber((float)value);
 
-        public override Number Add(Number b) {
-            return (b is RealNumber) ?
-                new RealNumber((float)value).Add(b as RealNumber) :
-                new IntegerNumber(value + (b as IntegerNumber).value);
-        }
-
-        public override Number Mult(Number b) {
-            return (b is RealNumber) ?
-                new RealNumber((float)value).Mult(b as RealNumber) :
-                new IntegerNumber(value * (b as IntegerNumber).value);
-        }
+        public override Number Add(Number b) => (b is RealNumber) ? b.Add(this) : new IntegerNumber(value + b.IntValue);
+        public override Number Mult(Number b) => (b is RealNumber) ? b.Mult(this) : new IntegerNumber(value * b.IntValue);
 
         public override Number Div(Number b) {
             if (b is IntegerNumber) {

@@ -178,6 +178,7 @@ namespace UScheme {
             env.Put("+", Number.ADD);
             env.Put("-", Number.SUB);
             env.Put("*", Number.MULT);
+            env.Put("/", Number.DIV);
             env.Put("=", Number.EQUALS);
             env.Put("<", Number.LESSTHAN);
             env.Put("<=", Number.LESSOREQUALTHAN);
