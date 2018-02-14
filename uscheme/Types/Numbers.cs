@@ -101,48 +101,30 @@ namespace UScheme
         public override int IntValue { get { return (int)value; } }
 
         public readonly int value;
+
         public IntegerNumber(int value) {
             this.value = value;
         }
 
-        public override string ToString() {
-            return value.ToString();
-        }
+        public override bool Equals(Number n) => value == n.ToInteger().value;
+        public override bool LessThan(Number n) => value < n.ToInteger().value;
+        public override bool LessOrEqualThan(Number n) => value <= n.ToInteger().value;
 
-        public override bool Equals(Number n) {
-            return value == n.ToInteger().value;
-        }
+        public override string ToString() => value.ToString();
 
-        public override bool LessThan(Number n) {
-            return value < n.ToInteger().value;
-        }
-
-        public override bool LessOrEqualThan(Number n) {
-            return value <= n.ToInteger().value;
-        }
-
-        public override IntegerNumber ToInteger() {
-            return this;
-        }
-
-        public override RealNumber ToReal() {
-            return new RealNumber((float)value);
-        }
+        public override IntegerNumber ToInteger() => this;
+        public override RealNumber ToReal() => new RealNumber((float)value);
 
         public override Number Add(Number b) {
-            if (b is RealNumber) {
-                return new RealNumber((float)value).Add(b as RealNumber);
-            } else {
-                return new IntegerNumber(value + (b as IntegerNumber).value);
-            }
+            return (b is RealNumber) ?
+                new RealNumber((float)value).Add(b as RealNumber) :
+                new IntegerNumber(value + (b as IntegerNumber).value);
         }
 
         public override Number Mult(Number b) {
-            if (b is RealNumber) {
-                return new RealNumber((float)value).Mult(b as RealNumber);
-            } else {
-                return new IntegerNumber(value * (b as IntegerNumber).value);
-            }
+            return (b is RealNumber) ?
+                new RealNumber((float)value).Mult(b as RealNumber) :
+                new IntegerNumber(value * (b as IntegerNumber).value);
         }
 
         public override Number Div(Number b) {
@@ -157,16 +139,12 @@ namespace UScheme
         }
 
         public override Number Sub(Number b) {
-            if (b is RealNumber) {
-                return new RealNumber((float)value).Sub(b as RealNumber);
-            } else {
-                return new IntegerNumber(value - (b as IntegerNumber).value);
-            }
+            return (b is RealNumber) ?
+                new RealNumber((float)value).Sub(b as RealNumber) :
+                new IntegerNumber(value - (b as IntegerNumber).value);
         }
 
-        public override Number Neg() {
-            return new IntegerNumber(-value);
-        }
+        public override Number Neg() => new IntegerNumber(-value);
 
         public override bool UEquals(Exp other) {
             return this == other ||
@@ -180,56 +158,26 @@ namespace UScheme
         public override int IntValue { get { return (int)value; } }
 
         public readonly float value;
-        public RealNumber(float value)
-        {
+
+        public RealNumber(float value) {
             this.value = value;
         }
-        public override string ToString()
-        {
-            return value.ToString();
-        }
-        public override bool Equals(Number n)
-        {
-            return value == n.ToReal().value;
-        }
-        public override bool LessThan(Number n)
-        {
-            return value < n.ToReal().value;
-        }
-        public override bool LessOrEqualThan(Number n)
-        {
-            return value <= n.ToReal().value;
-        }
-        public override IntegerNumber ToInteger()
-        {
-            return new IntegerNumber((int)value);
-        }
-        public override RealNumber ToReal()
-        {
-            return this;
-        }
-        public override Number Add(Number b)
-        {
-            return new RealNumber(value + b.ToReal().value);
-        }
-        public override Number Sub(Number b)
-        {
-            return new RealNumber(value - b.ToReal().value);
-        }
-        public override Number Mult(Number b) {
-            return new RealNumber(value * b.ToReal().value);
-        }
-        public override Number Div(Number b) {
-            return new RealNumber(value / b.ToReal().value);
-        }
-        public override Number Neg() {
-            return new RealNumber(-value);
-        }
+
+        public override string ToString() => value.ToString();
+        public override bool Equals(Number n) => value == n.ToReal().value;
+        public override bool LessThan(Number n) => value < n.ToReal().value;
+        public override bool LessOrEqualThan(Number n) => value <= n.FloatValue;
+        public override IntegerNumber ToInteger() => new IntegerNumber((int)value);
+        public override RealNumber ToReal() => this;
+        public override Number Add(Number b) => new RealNumber(value + b.ToReal().value);
+        public override Number Sub(Number b) => new RealNumber(value - b.ToReal().value);
+        public override Number Mult(Number b) => new RealNumber(value * b.ToReal().value);
+        public override Number Div(Number b) => new RealNumber(value / b.ToReal().value);
+        public override Number Neg() => new RealNumber(-value);
 
         public override bool UEquals(Exp other) {
             return this == other ||
                 ((other is RealNumber) && (value == (other as RealNumber).value));
         }
-
     }
 }
