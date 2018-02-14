@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace UScheme {
-    class Procedure : Exp {
+    public class Procedure : Exp {
         private List<string> args;
         private Exp body;
         private Env env;

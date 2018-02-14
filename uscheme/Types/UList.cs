@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace UScheme {
-    class UList : List<Exp>, Exp {
+    public class UList : List<Exp>, Exp {
 
         public UList() { }
 

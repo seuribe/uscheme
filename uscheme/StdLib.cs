@@ -3,15 +3,14 @@ using System.Linq;
 using System.Text;
 
 namespace UScheme {
+    partial class StdLib {
 
-    class StdLib {
-
-        private static void EnsureArity(UList list, int size) {
+        public static void EnsureArity(UList list, int size) {
             if (list.Count != size) {
                 throw new Exception("procedure accepts only " + size + " arguments, " + list.Count + " provided");
             }
         }
-        private static void EnsureArityMin(UList list, int size) {
+        public static void EnsureArityMin(UList list, int size) {
             if (list.Count < size) {
                 throw new Exception("procedure accepts only " + size + " arguments, " + list.Count + " provided");
             }
@@ -118,6 +117,16 @@ namespace UScheme {
             return new UList(args.Select(arg => proc.Eval(UScheme.Eval(arg, env), env)));
         });
 
+        public static Exp FoldlBase(Procedure op, UList fparams, Env env) {
+            EnsureArityMin(fparams, 2);
+            var value = UScheme.Eval(fparams[0], env);
+
+            for (int i = 1 ; i < fparams.Count ; i++)
+                value = op.Eval(new UList() { value, UScheme.Eval(fparams[i], env) }, env);
+
+            return value;
+        }
+
         private static readonly Procedure Foldl = new Procedure((fparams, env) => {
             EnsureArity(fparams, 3);
             var op = UScheme.Eval(fparams[0], env) as Procedure;
@@ -144,7 +153,6 @@ namespace UScheme {
             return new UString(sb.ToString());
         });
 
-
         class UnaryNumberProc : Procedure {
             public UnaryNumberProc(Func<double, double> func) {
                 evalProc = (UList fparams, Env env) => {
@@ -166,6 +174,15 @@ namespace UScheme {
             env.Put("asin", new UnaryNumberProc(Math.Asin));
             env.Put("tan", new UnaryNumberProc(Math.Tan));
             env.Put("atan", new UnaryNumberProc(Math.Atan));
+
+            env.Put("+", Number.ADD);
+            env.Put("-", Number.SUB);
+            env.Put("*", Number.MULT);
+            env.Put("=", Number.EQUALS);
+            env.Put("<", Number.LESSTHAN);
+            env.Put("<=", Number.LESSOREQUALTHAN);
+            env.Put(">", Number.GREATERTHAN);
+            env.Put(">=", Number.GREATEROREQUALTHAN);
 
             env.Put("number?", IsNumber);
             env.Put("integer?", IsInteger);

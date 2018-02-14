@@ -12,14 +12,6 @@ namespace UScheme {
         public static Env InitialEnv()
         {
             Env env = new Env();
-            env.Put("+", Number.ADD);
-            env.Put("-", Number.SUB);
-            env.Put("=", Number.EQUALS);
-            env.Put("<", Number.LESSTHAN);
-            env.Put("<=", Number.LESSOREQUALTHAN);
-            env.Put(">", Number.GREATERTHAN);
-            env.Put(">=", Number.GREATEROREQUALTHAN);
-
             StdLib.AddProcedures(env);
 
             return env;
