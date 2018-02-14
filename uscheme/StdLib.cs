@@ -3,12 +3,7 @@ using System.Linq;
 using System.Text;
 
 namespace UScheme {
-/*
-    class Pair : Exp {
-        public Exp car;
-        public Exp cdr;
-    }
-*/
+
     class StdLib {
 
         private static void EnsureArity(UList list, int size) {

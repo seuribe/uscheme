@@ -41,12 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logical.cs" />
-    <Compile Include="Numbers.cs" />
+    <Compile Include="Env.cs" />
+    <Compile Include="Types\Exp.cs" />
+    <Compile Include="Types\Boolean.cs" />
+    <Compile Include="Types\Numbers.cs" />
+    <Compile Include="Types\Pair.cs" />
+    <Compile Include="ParseException.cs" />
+    <Compile Include="Types\Procedure.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StdLib.cs" />
+    <Compile Include="Types\Symbol.cs" />
+    <Compile Include="Types\UList.cs" />
     <Compile Include="UScheme.cs" />
+    <Compile Include="Types\UString.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
