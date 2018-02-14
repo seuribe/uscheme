@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,7 @@ namespace UScheme {
                 return new IntegerNumber(intValue);
             }
             float floatValue;
-            if (float.TryParse(token, out floatValue)) {
+            if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out floatValue)) {
                 return new RealNumber(floatValue);
             }
             foreach (Symbol sym in KEYWORDS) {
