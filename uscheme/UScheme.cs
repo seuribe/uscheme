@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace UScheme {
 
-    // TODO: define-syntax, strings, Vector3f
+    // TODO: define-syntax, strings
     public class UScheme {
         private static readonly Symbol[] KEYWORDS = new Symbol[] {
             Symbol.IF,
@@ -45,24 +45,24 @@ namespace UScheme {
             return new Symbol(token);
         }
 
-        static UList ReadList(System.IO.TextReader input) {
-            UList ret = new UList();
+        static UList ReadList(TextReader input) {
+            var ret = new UList();
             int open = input.Read();
-            if (open != '(') {
+            if (open != '(')
                 throw new ParseException("Expected '('");
-            }
+            
             int next = input.Peek();
             while (next != ')') {
                 ret.Add(ReadForm(input));
                 next = ConsumeSpaces(input);
             }
-            if (input.Read() != ')') {
+            if (input.Read() != ')')
                 throw new ParseException("Expected ')'");
-            }
+            
             return ret;
         }
 
-        static int ConsumeSpaces(System.IO.TextReader input) {
+        static int ConsumeSpaces(TextReader input) {
             int ch = input.Peek();
             while (ch != -1 && Char.IsWhiteSpace(Convert.ToChar(ch))) {
                 input.Read();
@@ -71,7 +71,7 @@ namespace UScheme {
             return ch;
         }
 
-        static string ReadAllUntil(System.IO.TextReader input, char[] endChars) {
+        static string ReadAllUntil(TextReader input, char[] endChars) {
             StringBuilder sb = new StringBuilder();
             int ch = input.Peek();
 
@@ -85,7 +85,7 @@ namespace UScheme {
 
         private static readonly char[] ATOM_END_CHARS = new char[] { ' ', '\t', '\n', '\r', ')' };
 
-        static Exp ReadAtom(System.IO.TextReader input) {
+        static Exp ReadAtom(TextReader input) {
             int next = input.Peek();
 
             if (next == '\"') {
@@ -262,10 +262,11 @@ namespace UScheme {
 
         public static Env Load(string filename) {
             var env = Env.InitialEnv();
-            var sr = new StreamReader(filename);
-            while (ConsumeSpaces(sr) != -1) {
-                var exp = ReadForm(sr);
-                Eval(exp, env);
+            using (var sr = new StreamReader(filename)) {
+                while (ConsumeSpaces(sr) != -1) {
+                    var exp = ReadForm(sr);
+                    Eval(exp, env);
+                }
             }
             return env;
         }
@@ -277,8 +278,8 @@ namespace UScheme {
                 try {
                     textOut.Write("eval> ");
                     var lineStream = new StringReader(textIn.ReadLine());
-                    Exp ret = Eval(ReadForm(lineStream), env);
-                    textOut.WriteLine(ret.ToString());
+                    var expression = Eval(ReadForm(lineStream), env);
+                    textOut.WriteLine(expression.ToString());
                 } catch (IOException) {
                     exit = true;
                 } catch (Exception e) {
