@@ -24,12 +24,11 @@ namespace UScheme {
 
         private static Exp Atom(string token) {
             Console.Out.WriteLine("Atom from " + token);
-            int intValue;
-            if (int.TryParse(token, out intValue)) {
+            if (int.TryParse(token, out int intValue)) {
                 return new IntegerNumber(intValue);
             }
-            float floatValue;
-            if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out floatValue)) {
+            if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue))
+            {
                 return new RealNumber(floatValue);
             }
             foreach (Symbol sym in KEYWORDS) {
