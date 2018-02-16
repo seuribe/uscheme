@@ -226,10 +226,10 @@ namespace UScheme {
                 return list[1];
             
             if (first == Symbol.AND)
-                return AND(list.Tail(), env);
+                return EvalAnd(list.Tail(), env);
             
             if (first == Symbol.OR)
-                return OR(list.Tail(), env);
+                return EvalOr(list.Tail(), env);
             
             if (first == Symbol.BEGIN)
                 return EvalSequential(list.Tail(), env);
@@ -250,14 +250,12 @@ namespace UScheme {
             return subEnv;
         }
 
-        private static Exp AND(UList expressions, Env env) {
-            return
-                Boolean.Get(expressions.All(exp => Boolean.IsTrue(Eval(exp, env))));
+        private static Exp EvalAnd(UList expressions, Env env) {
+            return Boolean.Get(expressions.All(exp => Boolean.IsTrue(Eval(exp, env))));
         }
 
-        private static Exp OR(UList expressions, Env env) {
-            return
-                Boolean.Get(expressions.Any(exp => Boolean.IsTrue(Eval(exp, env))));
+        private static Exp EvalOr(UList expressions, Env env) {
+            return Boolean.Get(expressions.Any(exp => Boolean.IsTrue(Eval(exp, env))));
         }
 
         public static Env Load(string filename) {
