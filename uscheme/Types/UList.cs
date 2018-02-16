@@ -18,7 +18,7 @@ namespace UScheme {
         }
 
         public override string ToString() {
-            return "(" + string.Join(" ", ToStrings()) + ")";
+            return "(" + string.Join(" ", ToStrings().ToArray()) + ")";
         }
 
         public List<string> ToStrings() {
