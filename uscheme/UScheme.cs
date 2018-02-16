@@ -194,36 +194,22 @@ namespace UScheme {
         }
 
         static Exp EvalList(UList list, Env env) {
-            Exp first = list[0];
+            Exp first = list.First;
 
-            if (first == Symbol.DEFINE) {
-                if (list[1] is UList) {
-                    return DefineFunc(list[1] as UList, list[2], env);
-                } else {
-                    string var = list[1].ToString();
-                    Exp value = Eval(list[2], env);
-                    return env.Put(var, value);
-                }
-            }
+            if (first == Symbol.DEFINE)
+                return EvalDefine(list.Tail(), env);
 
             if (first == Symbol.IF)
-                return Eval(Boolean.IsTrue(Eval(list[1], env)) ? list[2] : list[3], env);
+                return Eval(Boolean.IsTrue(Eval(list.Second, env)) ? list.Third : list.Fourth, env);
 
-            if (first == Symbol.SET) {
-                string var = list[1].ToString();
-                Exp val = Eval(list[2], env);
-                Console.Out.WriteLine("set! '" + var + "' <- " + val.ToString());
-                return env.Find(var).Set(var, val);
-            }
+            if (first == Symbol.SET)
+                return EvalSet(list.Tail(), env);
 
-            if (first == Symbol.LAMBDA) {
-                List<string> args = (list[1] as UList).ToStrings();
-                Exp body = list[2];
-                return new Procedure(args, body, env);
-            }
+            if (first == Symbol.LAMBDA)
+                return EvalLambda(list.Tail(), env);
 
             if (first == Symbol.QUOTE)
-                return list[1];
+                return list.Second;
             
             if (first == Symbol.AND)
                 return EvalAnd(list.Tail(), env);
@@ -235,19 +221,37 @@ namespace UScheme {
                 return EvalSequential(list.Tail(), env);
 
             if (first == Symbol.LET)
-                return Eval(list[2], SubEnv(list[1] as UList, env));
+                return EvalLet(list.Tail(), env);
 
-            // procedure call
             var proc = Eval(first, env) as Procedure;
             return proc.Eval(list.Tail(), env);
         }
 
-        static Env SubEnv(UList definitions, Env env) {
-            var subEnv = new Env(env);
-            foreach (UList def in definitions)
-                subEnv.Put(def[0].ToString(), Eval(def[1], env));
+        private static Exp EvalLambda(UList parameters, Env env) {
+            var argNames = (parameters.First as UList).ToStrings();
+            var body = parameters.Second;
+            return new Procedure(argNames, body, env);
+        }
 
-            return subEnv;
+        private static Exp EvalSet(UList parameters, Env env) {
+            var name = parameters.First.ToString();
+            var value = Eval(parameters.Second, env);
+            return env.Find(name).Set(name, value);
+        }
+
+        private static Exp EvalDefine(UList parameters, Env env) {
+            if (parameters.First is UList)
+                return DefineFunc(parameters.First as UList, parameters.Second, env);
+
+            string name = parameters.First.ToString();
+            Exp value = Eval(parameters.Second, env);
+            return env.Put(name, value);
+        }
+
+        private static Exp EvalLet(UList parameters, Env env) {
+            var letEnv = new Env(env);
+            letEnv.BindDefinitions(parameters.First as UList);
+            return Eval(parameters.Second, letEnv);
         }
 
         private static Exp EvalAnd(UList expressions, Env env) {
