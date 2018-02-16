@@ -8,6 +8,11 @@ namespace UScheme {
 
         public UList(IEnumerable<Exp> l) : base(l) { }
 
+        public Exp First { get { return this[0]; } }
+        public Exp Second { get { return this[1]; } }
+        public Exp Third { get { return this[2]; } }
+        public Exp Fourth { get { return this[3]; } }
+
         public UList Tail() {
             return new UList(this.Skip(1));
         }
