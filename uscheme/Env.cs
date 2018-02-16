@@ -57,6 +57,11 @@ namespace UScheme {
             throw new Exception("symbol '" + name + "' not found");
         }
 
+        public void BindDefinitions(UList definitions) {
+            foreach (UList def in definitions)
+                Put(def.First.ToString(), Eval(def.Second));
+        }
+
         public Exp Put(string name, Exp value)
         {
             values.Add(name, value);
