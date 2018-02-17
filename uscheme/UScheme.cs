@@ -134,26 +134,5 @@ namespace UScheme {
         private static Exp EvalOr(UList expressions, Env env) {
             return Boolean.Get(expressions.Any(exp => Boolean.IsTrue(Eval(exp, env))));
         }
-
-        public static void Repl(TextReader textIn, TextWriter textOut, Env environment) {
-            while (true) {
-                try {
-                    textOut.Write("uscheme > ");
-
-                    var line = textIn.ReadLine();
-                    if (line.Equals("!quit"))
-                        break;
-
-                    using (var lineStream = new StringReader(line)) {
-                        var expression = Eval(UReader.ReadForm(lineStream), environment);
-                        textOut.WriteLine(expression.ToString());
-                    }
-                } catch (IOException) {
-                    break;
-                } catch (Exception e) {
-                    textOut.WriteLine("Error: " + e.Message);
-                }
-            }
-        }
     }
 }
