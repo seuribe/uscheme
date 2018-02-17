@@ -20,7 +20,7 @@ namespace UScheme {
         }
 
         public static readonly Symbol IF = new Symbol("if");
-//        public static readonly Symbol COND = new Symbol("cond");
+        public static readonly Symbol COND = new Symbol("cond");
         public static readonly Symbol DEFINE = new Symbol("define");
         public static readonly Symbol LAMBDA = new Symbol("lambda");
         public static readonly Symbol SET = new Symbol("set!");

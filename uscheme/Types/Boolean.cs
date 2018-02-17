@@ -5,6 +5,9 @@ using System.Text;
 
 namespace UScheme {
     class Boolean : Exp {
+
+        public bool Value { get { return this == TRUE; } }
+
         public static Boolean Get(bool value) {
             return value ? TRUE : FALSE;
         }

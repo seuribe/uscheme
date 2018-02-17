@@ -11,6 +11,7 @@ namespace UScheme {
 
         public static readonly Symbol[] KEYWORDS = new Symbol[] {
             Symbol.IF,
+            Symbol.COND,
             Symbol.DEFINE,
             Symbol.SET,
             Symbol.LAMBDA,
@@ -62,6 +63,9 @@ namespace UScheme {
             if (first == Symbol.IF)
                 return Eval(Boolean.IsTrue(Eval(list.Second, env)) ? list.Third : list.Fourth, env);
 
+            if (first == Symbol.COND)
+                return EvalCond(list.Tail(), env);
+
             if (first == Symbol.SET)
                 return EvalSet(list.Tail(), env);
 
@@ -85,6 +89,15 @@ namespace UScheme {
 
             var proc = Eval(first, env) as Procedure;
             return proc.Eval(list.Tail(), env);
+        }
+
+        private static Exp EvalCond(UList parameters, Env env) {
+            for (int i = 0; i < parameters.Count/2; i++) {
+                var condition = parameters[i * 2];
+                if ((Eval(condition, env) as Boolean).Value)
+                    return Eval(parameters[i * 2 + 1], env);
+            }
+            return Boolean.FALSE;
         }
 
         private static Exp EvalLambda(UList parameters, Env env) {
