@@ -153,18 +153,8 @@ namespace UScheme {
             }
         }
         
-        public static string Eval(string input) {
-            return Eval(input, Env.InitialEnv());
-        }
-
         public static string Eval(string input, Env env) {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
-            writer.Write(input);
-            writer.Flush();
-            stream.Position = 0;
-
-            return Eval(ReadForm(new StreamReader(stream)), env).ToString();
+            return Eval(ReadForm(new StringReader(input)), env).ToString();
         }
 
         public static Exp Eval(Exp exp, Env env) {

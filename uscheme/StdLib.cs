@@ -74,7 +74,7 @@ namespace UScheme {
             EnsureArity(list, 2);
             UList ret = new UList();
             foreach (Exp e in list) {
-                ret.Add(env.Eval(e));
+                ret.Add(UScheme.Eval(e, env));
             }
             return ret;
         });
@@ -105,7 +105,7 @@ namespace UScheme {
             if (list.Count > 2) {
                 UList firstArgs = new UList();
                 foreach (Exp e in list.GetRange(1, list.Count - 2)) {
-                    firstArgs.Add(env.Eval(e));
+                    firstArgs.Add(UScheme.Eval(e, env));
                 }
                 firstArgs.AddRange(listArgs);
                 listArgs = firstArgs;

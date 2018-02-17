@@ -38,8 +38,8 @@ namespace UScheme
         static Procedure BinaryOperation<TResult>(Func<Number, Number, TResult> op) where TResult : Exp {
             return new Procedure((UList list, Env env) => {
                 StdLib.EnsureArity(list, 2);
-                var first = env.Eval(list[0]) as Number;
-                var second = env.Eval(list[1]) as Number;
+                var first = UScheme.Eval(list.First, env) as Number;
+                var second = UScheme.Eval(list.Second, env) as Number;
                 return op(first, second);
             });
         }

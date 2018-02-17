@@ -17,14 +17,6 @@ namespace UScheme {
             return env;
         }
 
-        public Exp Eval(Exp exp) {
-            return UScheme.Eval(exp, this);
-        }
-
-        public string Eval(string input) {
-            return UScheme.Eval(input, this);
-        }
-
         public Env(Env outer)
         {
             this.outer = outer;
@@ -59,7 +51,7 @@ namespace UScheme {
 
         public void BindDefinitions(UList definitions) {
             foreach (UList def in definitions)
-                Put(def.First.ToString(), Eval(def.Second));
+                Put(def.First.ToString(), UScheme.Eval(def.Second, this));
         }
 
         public Exp Put(string name, Exp value)
