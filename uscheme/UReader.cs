@@ -16,7 +16,7 @@ namespace UScheme {
                 return new RealNumber(floatValue);
             }
             foreach (Symbol sym in UScheme.KEYWORDS) {
-                if (sym.matches(token)) {
+                if (sym.Matches(token)) {
                     return sym;
                 }
             }

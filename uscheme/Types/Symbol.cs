@@ -11,7 +11,7 @@ namespace UScheme {
             return str;
         }
 
-        public bool matches(String token) {
+        public bool Matches(String token) {
             return str.Equals(token);
         }
 
