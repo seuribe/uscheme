@@ -266,17 +266,22 @@ namespace UScheme {
         }
 
         public static void Loop(TextReader textIn, TextWriter textOut, Env environment = null) {
-            var env = environment ?? Env.InitialEnv();
-            bool exit = false;
-            while (!exit) {
+            environment = environment ?? Env.InitialEnv();
+
+            while (true) {
                 try {
                     textOut.Write("eval> ");
-                    using (var lineStream = new StringReader(textIn.ReadLine())) {
-                        var expression = Eval(ReadForm(lineStream), env);
+
+                    var line = textIn.ReadLine();
+                    if (line.Equals("!quit"))
+                        break;
+
+                    using (var lineStream = new StringReader(line)) {
+                        var expression = Eval(ReadForm(lineStream), environment);
                         textOut.WriteLine(expression.ToString());
                     }
                 } catch (IOException) {
-                    exit = true;
+                    break;
                 } catch (Exception e) {
                     textOut.WriteLine("Error: " + e.Message);
                 }
