@@ -49,10 +49,6 @@ namespace UScheme {
             return new UList(list.Select(e => UScheme.Eval(e, env)));
         });
 
-        private static readonly Procedure Car = new Procedure((UList list, Env env) => {
-            EnsureArityMin(list, 1);
-            return list[0];
-        });
         private static readonly Procedure Equal = new Procedure((UList list, Env env) => {
             EnsureArity(list, 2);
             Exp a = UScheme.Eval(list[0], env);
@@ -64,9 +60,15 @@ namespace UScheme {
             Exp v = UScheme.Eval(list[0], env);
             return (v == Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
         });
+        private static readonly Procedure Car = new Procedure((UList list, Env env) => {
+            EnsureArity(list, 1);
+            var pair = UScheme.Eval(list.First, env) as UList;
+            return pair.First;
+        });
         private static readonly Procedure Cdr = new Procedure((UList list, Env env) => {
-            EnsureArityMin(list, 2);
-            return list.Tail();
+            EnsureArity(list, 1);
+            var pair = UScheme.Eval(list.First, env) as UList;
+            return pair.Second;
         });
         private static readonly Procedure Cons = new Procedure((UList list, Env env) => {
             EnsureArity(list, 2);
