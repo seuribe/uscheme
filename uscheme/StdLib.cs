@@ -138,6 +138,13 @@ namespace UScheme {
             return new UString(sb.ToString());
         });
 
+        private static readonly Procedure Nth = new Procedure((UList parameters, Env env) => {
+            EnsureArity(parameters, 2);
+            var index = UScheme.Eval(parameters.First, env) as IntegerNumber;
+            var list = UScheme.Eval(parameters.Second, env) as UList;
+            return list[index.IntValue];
+        });
+
         // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static Env AddProcedures(Env env) {
             env.Bind("abs", new UnaryNumberProc(Math.Abs));
@@ -173,6 +180,7 @@ namespace UScheme {
             env.Bind("not", Not);
             env.Bind("string-append", StringAppend);
             env.Bind("length", Length);
+            env.Bind("nth", Nth);
             env.Bind("map", Map);
             env.Bind("foldl", Foldl);
             env.Bind("list", List);
