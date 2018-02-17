@@ -54,6 +54,7 @@
     <Compile Include="StdLib.cs" />
     <Compile Include="Types\Symbol.cs" />
     <Compile Include="Types\UList.cs" />
+    <Compile Include="UnaryNumberProc.cs" />
     <Compile Include="UReader.cs" />
     <Compile Include="UScheme.cs" />
     <Compile Include="Types\UString.cs" />

@@ -7,7 +7,7 @@ namespace UScheme {
         private Exp body;
         private Env env;
 
-        protected EvalProc evalProc;
+        public EvalProc EvalProc { get; protected set; }
 
         public Procedure() { }
 
@@ -16,23 +16,23 @@ namespace UScheme {
             this.argumentNames = argumentNames;
             this.body = body;
             this.env = env;
-            this.evalProc = EvalBody;
+            this.EvalProc = EvalBody;
         }
 
         public Procedure(EvalProc evalProc) {
-            this.evalProc = evalProc;
+            this.EvalProc = evalProc;
         }
 
         public Exp Eval(UList values, Env env) {
-            return evalProc(values, env);
+            return EvalProc(values, env);
         }
 
         public Exp Eval(Exp first, Env env) {
-            return evalProc(new UList { first }, env);
+            return EvalProc(new UList { first }, env);
         }
 
         public Exp Eval(Exp first, Exp second, Env env) {
-            return evalProc(new UList { first, second }, env);
+            return EvalProc(new UList { first, second }, env);
         }
 
         private Exp EvalBody(UList values, Env outerEnv) {

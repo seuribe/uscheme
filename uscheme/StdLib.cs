@@ -155,17 +155,6 @@ namespace UScheme {
             return new UString(sb.ToString());
         });
 
-        class UnaryNumberProc : Procedure {
-            public UnaryNumberProc(Func<double, double> func) {
-                evalProc = (UList fparams, Env env) => {
-                    EnsureArity(fparams, 1);
-                    var expr = fparams[0];
-                    var number = UScheme.Eval(expr, env) as Number;
-                    return new RealNumber((float)func(number.DoubleValue));
-                };
-            }
-        }
-
         // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static Env AddProcedures(Env env) {
             env.Bind("abs", new UnaryNumberProc(Math.Abs));

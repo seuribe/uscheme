@@ -55,41 +55,35 @@ namespace UScheme {
             return ret;
         }
 
+        static Dictionary<Exp, EvalProc> predefinedProcedures
+            = new Dictionary<Exp, EvalProc> {
+                { Symbol.DEFINE, EvalDefine },
+                { Symbol.COND, EvalCond},
+                { Symbol.SET, EvalSet },
+                { Symbol.LAMBDA, EvalLambda },
+                { Symbol.AND, EvalAnd },
+                { Symbol.OR, EvalOr },
+                { Symbol.BEGIN, EvalSequential},
+                { Symbol.LET, EvalLet},
+                { Symbol.IF, EvalIf },
+                { Symbol.QUOTE, EvalQuote },
+            };
+
         static Exp EvalList(UList list, Env env) {
             Exp first = list.First;
 
-            if (first == Symbol.DEFINE)
-                return EvalDefine(list.Tail(), env);
+            if (!predefinedProcedures.TryGetValue(first, out EvalProc evalProc))
+                evalProc = (Eval(first, env) as Procedure).EvalProc;
 
-            if (first == Symbol.IF)
-                return Eval(Boolean.IsTrue(Eval(list.Second, env)) ? list.Third : list.Fourth, env);
+            return evalProc(list.Tail(), env);
+        }
 
-            if (first == Symbol.COND)
-                return EvalCond(list.Tail(), env);
+        private static Exp EvalQuote(UList parameters, Env env) {
+            return parameters.First;
+        }
 
-            if (first == Symbol.SET)
-                return EvalSet(list.Tail(), env);
-
-            if (first == Symbol.LAMBDA)
-                return EvalLambda(list.Tail(), env);
-
-            if (first == Symbol.QUOTE)
-                return list.Second;
-            
-            if (first == Symbol.AND)
-                return EvalAnd(list.Tail(), env);
-            
-            if (first == Symbol.OR)
-                return EvalOr(list.Tail(), env);
-            
-            if (first == Symbol.BEGIN)
-                return EvalSequential(list.Tail(), env);
-
-            if (first == Symbol.LET)
-                return EvalLet(list.Tail(), env);
-
-            var proc = Eval(first, env) as Procedure;
-            return proc.Eval(list.Tail(), env);
+        private static Exp EvalIf(UList parameters, Env env) {
+            return Eval(Boolean.IsTrue(Eval(parameters.First, env)) ? parameters.Second : parameters.Third, env);
         }
 
         private static Exp EvalCond(UList parameters, Env env) {
