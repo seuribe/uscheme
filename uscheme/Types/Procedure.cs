@@ -7,8 +7,6 @@ namespace UScheme {
         private Exp body;
         private Env env;
 
-        public delegate Exp EvalProc(UList argumentValues, Env env);
-
         protected EvalProc evalProc;
 
         public Procedure() { }

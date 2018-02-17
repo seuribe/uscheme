@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace UScheme {
+
+    public delegate Exp EvalProc(UList argumentValues, Env env);
 
     // TODO: define-syntax, strings
     public class UScheme {
