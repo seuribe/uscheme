@@ -154,7 +154,9 @@ namespace UScheme {
         }
         
         public static string Eval(string input, Env env) {
-            return Eval(ReadForm(new StringReader(input)), env).ToString();
+            using (var reader = new StringReader(input)) {
+                return Eval(ReadForm(reader), env).ToString();
+            }
         }
 
         public static Exp Eval(Exp exp, Env env) {
@@ -269,9 +271,10 @@ namespace UScheme {
             while (!exit) {
                 try {
                     textOut.Write("eval> ");
-                    var lineStream = new StringReader(textIn.ReadLine());
-                    var expression = Eval(ReadForm(lineStream), env);
-                    textOut.WriteLine(expression.ToString());
+                    using (var lineStream = new StringReader(textIn.ReadLine())) {
+                        var expression = Eval(ReadForm(lineStream), env);
+                        textOut.WriteLine(expression.ToString());
+                    }
                 } catch (IOException) {
                     exit = true;
                 } catch (Exception e) {
