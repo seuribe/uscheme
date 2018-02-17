@@ -32,7 +32,7 @@ namespace UScheme {
                 UReader.Load(cmdOptions.LoadFilename, environment);
 
             if (cmdOptions.StartRepl || cmdOptions.LoadFilename == null)
-                UScheme.Loop(Console.In, Console.Out, environment);
+                UScheme.Repl(Console.In, Console.Out, environment);
             else
                 Console.In.ReadLine();
         }

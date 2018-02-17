@@ -122,12 +122,10 @@ namespace UScheme {
             return Boolean.Get(expressions.Any(exp => Boolean.IsTrue(Eval(exp, env))));
         }
 
-        public static void Loop(TextReader textIn, TextWriter textOut, Env environment = null) {
-            environment = environment ?? Env.InitialEnv();
-
+        public static void Repl(TextReader textIn, TextWriter textOut, Env environment) {
             while (true) {
                 try {
-                    textOut.Write("eval> ");
+                    textOut.Write("uscheme > ");
 
                     var line = textIn.ReadLine();
                     if (line.Equals("!quit"))
