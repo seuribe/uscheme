@@ -26,7 +26,11 @@ namespace UScheme {
     class Program {
         static void Main(string[] args) {
             var cmdOptions = new CommandLineOptions(args);
-            Env environment = (cmdOptions.LoadFilename != null) ? UScheme.Load(cmdOptions.LoadFilename) : Env.InitialEnv();
+            var environment = Env.InitialEnv();
+
+            if (cmdOptions.LoadFilename != null)
+                UReader.Load(cmdOptions.LoadFilename, environment);
+
             if (cmdOptions.StartRepl || cmdOptions.LoadFilename == null)
                 UScheme.Loop(Console.In, Console.Out, environment);
             else

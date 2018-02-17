@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace UScheme {
-    class Symbol : Exp {
+    public class Symbol : Exp {
         protected readonly string str;
         public Symbol(string str) {
             this.str = str;
