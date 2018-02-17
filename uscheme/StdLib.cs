@@ -16,34 +16,20 @@ namespace UScheme {
             }
         }
 
-        private static readonly Procedure IsNumber = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get(list[0] is Number);
-        });
-        private static readonly Procedure IsInteger = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get(list[0] is IntegerNumber);
-        });
-        private static readonly Procedure IsReal = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get(list[0] is RealNumber || list[0] is IntegerNumber);
-        });
-        private static readonly Procedure IsProcedure = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get(list[0] is Procedure);
-        });
-        private static readonly Procedure IsSymbol = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get(list[0] is Symbol);
-        });
-        private static readonly Procedure IsBoolean = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get(list[0] is Boolean);
-        });
-        private static readonly Procedure IsList = new Procedure((UList list, Env env) => {
-            EnsureArity(list, 1);
-            return Boolean.Get((UScheme.Eval(list[0], env) as UList).Count >= 2);
-        });
+        private static Procedure BuildIsProcedure<T>() where T : Exp {
+            return new Procedure((UList parameters, Env env) => {
+                EnsureArity(parameters, 1);
+                return Boolean.Get(UScheme.Eval(parameters.First, env) is T);
+            });
+        }
+
+        private static readonly Procedure IsNumber = BuildIsProcedure<Number>();
+        private static readonly Procedure IsInteger = BuildIsProcedure<IntegerNumber>();
+        private static readonly Procedure IsReal = BuildIsProcedure<Number>(); // all numbers are real with current implementation
+        private static readonly Procedure IsProcedure = BuildIsProcedure<Procedure>();
+        private static readonly Procedure IsSymbol = BuildIsProcedure<Symbol>();
+        private static readonly Procedure IsBoolean = BuildIsProcedure<Boolean>();
+        private static readonly Procedure IsList = BuildIsProcedure<UList>();
 
         private static readonly Procedure List = new Procedure((UList list, Env env) => {
             return new UList(list.Select(e => UScheme.Eval(e, env)));
