@@ -18,31 +18,36 @@ namespace UScheme {
             this.argumentNames = argumentNames;
             this.body = body;
             this.env = env;
-            this.evalProc = DefaultEval;
+            this.evalProc = EvalBody;
         }
 
-        public Procedure(EvalProc evalProc)
-        {
+        public Procedure(EvalProc evalProc) {
             this.evalProc = evalProc;
         }
 
-        public Exp Eval(UList values, Env env)
-        {
+        public Exp Eval(UList values, Env env) {
             return evalProc(values, env);
         }
 
-        public Exp Eval(Exp value, Env env) {
-            return evalProc(new UList { value }, env);
+        public Exp Eval(Exp first, Env env) {
+            return evalProc(new UList { first }, env);
         }
 
-        private Exp DefaultEval(UList values, Env outerEnv)
-        {
-            Console.Out.WriteLine("Eval proc with " + argumentNames.Count + " params using " + values.Count + " values");
-            Env evalEnv = new Env(outerEnv);
-            for (int i = 0; i < argumentNames.Count; i++) {
-                evalEnv.Bind(argumentNames[i], UScheme.Eval(values[i], outerEnv));
-            }
-            return UScheme.Eval(body, evalEnv);
+        public Exp Eval(Exp first, Exp second, Env env) {
+            return evalProc(new UList { first, second }, env);
+        }
+
+        private Exp EvalBody(UList values, Env outerEnv) {
+            var callEnvironment = CreateCallEnvironment(values, outerEnv);
+            return UScheme.Eval(body, callEnvironment);
+        }
+
+        Env CreateCallEnvironment(UList callValues, Env outerEnv) {
+            var evalEnv = new Env(outerEnv);
+            for (int i = 0; i < argumentNames.Count; i++)
+                evalEnv.Bind(argumentNames[i], UScheme.Eval(callValues[i], outerEnv));
+
+            return evalEnv;
         }
 
         public bool UEquals(Exp other) {
