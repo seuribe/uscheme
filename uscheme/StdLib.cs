@@ -168,47 +168,47 @@ namespace UScheme {
 
         // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static Env AddProcedures(Env env) {
-            env.Put("abs", new UnaryNumberProc(Math.Abs));
-            env.Put("log", new UnaryNumberProc(Math.Log));
-            env.Put("sin", new UnaryNumberProc(Math.Sin));
-            env.Put("cos", new UnaryNumberProc(Math.Cos));
-            env.Put("acos", new UnaryNumberProc(Math.Acos));
-            env.Put("asin", new UnaryNumberProc(Math.Asin));
-            env.Put("tan", new UnaryNumberProc(Math.Tan));
-            env.Put("atan", new UnaryNumberProc(Math.Atan));
+            env.Bind("abs", new UnaryNumberProc(Math.Abs));
+            env.Bind("log", new UnaryNumberProc(Math.Log));
+            env.Bind("sin", new UnaryNumberProc(Math.Sin));
+            env.Bind("cos", new UnaryNumberProc(Math.Cos));
+            env.Bind("acos", new UnaryNumberProc(Math.Acos));
+            env.Bind("asin", new UnaryNumberProc(Math.Asin));
+            env.Bind("tan", new UnaryNumberProc(Math.Tan));
+            env.Bind("atan", new UnaryNumberProc(Math.Atan));
 
-            env.Put("+", Number.ADD);
-            env.Put("-", Number.SUB);
-            env.Put("*", Number.MULT);
-            env.Put("/", Number.DIV);
-            env.Put("=", Number.EQUALS);
-            env.Put("<", Number.LESSTHAN);
-            env.Put("<=", Number.LESSOREQUALTHAN);
-            env.Put(">", Number.GREATERTHAN);
-            env.Put(">=", Number.GREATEROREQUALTHAN);
+            env.Bind("+", Number.ADD);
+            env.Bind("-", Number.SUB);
+            env.Bind("*", Number.MULT);
+            env.Bind("/", Number.DIV);
+            env.Bind("=", Number.EQUALS);
+            env.Bind("<", Number.LESSTHAN);
+            env.Bind("<=", Number.LESSOREQUALTHAN);
+            env.Bind(">", Number.GREATERTHAN);
+            env.Bind(">=", Number.GREATEROREQUALTHAN);
 
-            env.Put("number?", IsNumber);
-            env.Put("integer?", IsInteger);
-            env.Put("real?", IsReal);
-            env.Put("boolean?", IsBoolean);
-            env.Put("procedure?", IsProcedure);
-            env.Put("symbol?", IsSymbol);
-            env.Put("list?", IsList);
-            env.Put("equal?", Equal);
+            env.Bind("number?", IsNumber);
+            env.Bind("integer?", IsInteger);
+            env.Bind("real?", IsReal);
+            env.Bind("boolean?", IsBoolean);
+            env.Bind("procedure?", IsProcedure);
+            env.Bind("symbol?", IsSymbol);
+            env.Bind("list?", IsList);
+            env.Bind("equal?", Equal);
 
-            env.Put("print", Print);
+            env.Bind("print", Print);
 
-            env.Put("not", Not);
-            env.Put("string-append", StringAppend);
-            env.Put("length", Length);
-            env.Put("map", Map);
-            env.Put("foldl", Foldl);
-            env.Put("list", List);
-            env.Put("apply", Apply);
-            env.Put("append", Append);
-            env.Put("cons", Cons);
-            env.Put("car", Car);
-            env.Put("cdr", Cdr);
+            env.Bind("not", Not);
+            env.Bind("string-append", StringAppend);
+            env.Bind("length", Length);
+            env.Bind("map", Map);
+            env.Bind("foldl", Foldl);
+            env.Bind("list", List);
+            env.Bind("apply", Apply);
+            env.Bind("append", Append);
+            env.Bind("cons", Cons);
+            env.Bind("car", Car);
+            env.Bind("cdr", Cdr);
             return env;
         }
     }

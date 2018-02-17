@@ -7,6 +7,7 @@ namespace UScheme {
         private Dictionary<string, Exp> values = new Dictionary<string, Exp>();
 
         private Env outer = null;
+        Procedure proc = null;
         public Env() { }
 
         public static Env InitialEnv()
@@ -51,17 +52,10 @@ namespace UScheme {
 
         public void BindDefinitions(UList definitions) {
             foreach (UList def in definitions)
-                Put(def.First.ToString(), UScheme.Eval(def.Second, this));
+                Bind(def.First.ToString(), UScheme.Eval(def.Second, this));
         }
 
-        public Exp Put(string name, Exp value)
-        {
-            values.Add(name, value);
-            return value;
-        }
-
-        public Exp Set(string name, Exp value)
-        {
+        public Exp Bind(string name, Exp value) {
             values[name] = value;
             return value;
         }

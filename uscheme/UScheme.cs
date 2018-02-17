@@ -42,7 +42,7 @@ namespace UScheme {
         static Exp DefineFunc(UList head, Exp body, Env env) {
             var name = head[0].ToString();
             var paramNames = head.Tail().ToStrings();
-            return env.Put(name, new Procedure(paramNames, body, env));
+            return env.Bind(name, new Procedure(paramNames, body, env));
         }
 
         static Exp EvalSequential(UList expressions, Env env) {
@@ -96,7 +96,7 @@ namespace UScheme {
         private static Exp EvalSet(UList parameters, Env env) {
             var name = parameters.First.ToString();
             var value = Eval(parameters.Second, env);
-            return env.Find(name).Set(name, value);
+            return env.Find(name).Bind(name, value);
         }
 
         private static Exp EvalDefine(UList parameters, Env env) {
@@ -105,7 +105,7 @@ namespace UScheme {
 
             string name = parameters.First.ToString();
             Exp value = Eval(parameters.Second, env);
-            return env.Put(name, value);
+            return env.Bind(name, value);
         }
 
         private static Exp EvalLet(UList parameters, Env env) {

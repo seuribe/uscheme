@@ -40,7 +40,7 @@ namespace UScheme {
             Console.Out.WriteLine("Eval proc with " + argumentNames.Count + " params using " + values.Count + " values");
             Env evalEnv = new Env(outerEnv);
             for (int i = 0; i < argumentNames.Count; i++) {
-                evalEnv.Put(argumentNames[i], UScheme.Eval(values[i], outerEnv));
+                evalEnv.Bind(argumentNames[i], UScheme.Eval(values[i], outerEnv));
             }
             return UScheme.Eval(body, evalEnv);
         }
