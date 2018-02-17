@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace UScheme {
     public class Procedure : Exp {
-        private List<string> args;
+        private List<string> argumentNames;
         private Exp body;
         private Env env;
 
-        public delegate Exp EvalProc(UList args, Env env);
+        public delegate Exp EvalProc(UList argumentValues, Env env);
 
         protected EvalProc evalProc;
 
         public Procedure() { }
 
-        public Procedure(List<string> args, Exp body, Env env)
+        public Procedure(List<string> argumentNames, Exp body, Env env) 
         {
-            this.args = args;
+            this.argumentNames = argumentNames;
             this.body = body;
             this.env = env;
             this.evalProc = DefaultEval;
@@ -37,22 +37,19 @@ namespace UScheme {
 
         private Exp DefaultEval(UList values, Env outerEnv)
         {
-            Console.Out.WriteLine("Eval proc with " + args.Count + " params using " + values.Count + " values");
+            Console.Out.WriteLine("Eval proc with " + argumentNames.Count + " params using " + values.Count + " values");
             Env evalEnv = new Env(outerEnv);
-            for (int i = 0; i < args.Count; i++)
-            {
-                evalEnv.Put(args[i], UScheme.Eval(values[i], outerEnv));
+            for (int i = 0; i < argumentNames.Count; i++) {
+                evalEnv.Put(argumentNames[i], UScheme.Eval(values[i], outerEnv));
             }
             return UScheme.Eval(body, evalEnv);
         }
 
         public bool UEquals(Exp other) {
-            if (other == this) {
-                return true;
-            }
-            return other is Procedure &&
-                body.UEquals((other as Procedure).body) &&
-                args.Equals((other as Procedure).args);
+            return (other == this) ||
+                    (other is Procedure &&
+                     body.UEquals((other as Procedure).body) &&
+                     argumentNames.Equals((other as Procedure).argumentNames));
         }
 
     }
