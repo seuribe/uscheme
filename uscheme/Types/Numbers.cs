@@ -123,21 +123,11 @@ namespace UScheme
 
         public override Number Add(Number b) => (b is RealNumber) ? b.Add(this) : new IntegerNumber(value + b.IntValue);
         public override Number Mult(Number b) => (b is RealNumber) ? b.Mult(this) : new IntegerNumber(value * b.IntValue);
-
-        public override Number Div(Number b) {
-            if (b is IntegerNumber) {
-                IntegerNumber other = b as IntegerNumber;
-                int res = (value / other.value);
-                if (res * other.value == value) {
-                    return new IntegerNumber(res);
-                }
-            }
-            return new RealNumber((float)value).Div(b.ToReal());
-        }
+        public override Number Div(Number b) => new RealNumber(FloatValue / b.FloatValue);
 
         public override Number Sub(Number b) {
             return (b is RealNumber) ?
-                new RealNumber((float)value).Sub(b as RealNumber) :
+                (Number)new RealNumber(FloatValue - b.FloatValue) :
                 new IntegerNumber(value - (b as IntegerNumber).value);
         }
 
@@ -147,7 +137,6 @@ namespace UScheme
             return this == other ||
                 ((other is IntegerNumber) && (value == (other as IntegerNumber).value));
         }
-
     }
 
     class RealNumber : Number {
