@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace UScheme {
     class Boolean : Exp {
 
         public bool Value { get { return this == TRUE; } }
+
+        public static readonly string TrueString = "#t";
+        public static readonly string FalseString = "#f";
 
         public static Boolean Get(bool value) {
             return value ? TRUE : FALSE;
@@ -33,7 +32,7 @@ namespace UScheme {
             return this == other;
         }
 
-        public static Boolean TRUE = new Boolean("#t");
-        public static Boolean FALSE = new Boolean("#f");
+        public static Boolean TRUE = new Boolean(TrueString);
+        public static Boolean FALSE = new Boolean(FalseString);
     }
 }
