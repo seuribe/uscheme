@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BinaryNumberProc.cs" />
     <Compile Include="Env.cs" />
+    <Compile Include="Tracer.cs" />
     <Compile Include="Types\Exp.cs" />
     <Compile Include="Types\Boolean.cs" />
     <Compile Include="Types\Numbers.cs" />
