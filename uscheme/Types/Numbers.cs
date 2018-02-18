@@ -33,7 +33,7 @@ namespace UScheme
         public static bool NumberLessThan(Number a, Number b) => a.LessThan(b);
         public static bool NumberLessOrEqualThan(Number a, Number b) => a.LessOrEqualThan(b);
 
-        protected static bool IsInteger(float number) => number % 1 == 0;
+        public abstract bool IsInteger();
 
         static Procedure BinaryOperation<TResult>(Func<Number, Number, TResult> op) where TResult : Exp {
             return new Procedure((UList list, Env env) => {
@@ -102,13 +102,15 @@ namespace UScheme
     class IntegerNumber : Number {
         public override double DoubleValue { get { return (double)value; } }
         public override float FloatValue { get { return (float)value; } }
-        public override int IntValue { get { return (int)value; } }
+        public override int IntValue { get { return value; } }
 
         public readonly int value;
 
         public IntegerNumber(int value) {
             this.value = value;
         }
+
+        public override bool IsInteger() => true;
 
         public override bool Equals(Number n) => value == n.ToInteger().value;
         public override bool LessThan(Number n) => value < n.ToInteger().value;
@@ -145,11 +147,12 @@ namespace UScheme
             return this == other ||
                 ((other is IntegerNumber) && (value == (other as IntegerNumber).value));
         }
+
     }
 
     class RealNumber : Number {
         public override double DoubleValue { get { return (double)value; } }
-        public override float FloatValue { get { return (float)value; } }
+        public override float FloatValue { get { return value; } }
         public override int IntValue { get { return (int)value; } }
 
         public readonly float value;
@@ -157,6 +160,8 @@ namespace UScheme
         public RealNumber(float value) {
             this.value = value;
         }
+
+        public override bool IsInteger() => (value % 1 == 0);
 
         public override string ToString() => value.ToString();
         public override bool Equals(Number n) => value == n.ToReal().value;

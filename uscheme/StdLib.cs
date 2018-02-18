@@ -16,15 +16,17 @@ namespace UScheme {
             }
         }
 
-        private static Procedure BuildIsProcedure<T>() where T : Exp {
+        private static Procedure BuildIsProcedure<T>(Func<T, bool> evalFunction = null) where T : Exp {
             return new Procedure((UList parameters, Env env) => {
                 EnsureArity(parameters, 1);
-                return Boolean.Get(UScheme.Eval(parameters.First, env) is T);
+                evalFunction = evalFunction ?? (e => true);
+                var value = UScheme.Eval(parameters.First, env);
+                return Boolean.Get(value is T && evalFunction((T)value));
             });
         }
 
         private static readonly Procedure IsNumber = BuildIsProcedure<Number>();
-        private static readonly Procedure IsInteger = BuildIsProcedure<IntegerNumber>();
+        private static readonly Procedure IsInteger = BuildIsProcedure<Number>( n => n.IsInteger());
         private static readonly Procedure IsReal = BuildIsProcedure<Number>(); // all numbers are real with current implementation
         private static readonly Procedure IsProcedure = BuildIsProcedure<Procedure>();
         private static readonly Procedure IsSymbol = BuildIsProcedure<Symbol>();
