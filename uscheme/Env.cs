@@ -40,6 +40,7 @@ namespace UScheme {
         }
 
         public Exp Bind(string name, Exp value) {
+            Tracer.Bind(name, value);
             values[name] = value;
             return value;
         }

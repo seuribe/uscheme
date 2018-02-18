@@ -30,7 +30,7 @@ namespace UScheme {
         }
 
         public static Exp Eval(Exp exp, Env env) {
-            Console.Out.WriteLine("Eval " + exp.ToString());
+            Tracer.Eval(exp);
 
             if (exp is Symbol)    // env-defined variables
                 return env.Get(exp.ToString());
