@@ -11,6 +11,17 @@ namespace UScheme {
             return value ? TRUE : FALSE;
         }
 
+        public static bool TryParse(string str, out Boolean value) {
+            if (TrueString.Equals(str))
+                value = TRUE;
+            else if (FalseString.Equals(str))
+                value = FALSE;
+            else
+                value = null;
+
+            return (value != null);
+        }
+
         public static bool IsFalse(Exp exp) {
             return exp == FALSE;
         }
