@@ -71,8 +71,11 @@ namespace UScheme {
                     openParens--;
             }
 
-            return openParens == 0 &&
-                (chars[0] == '(') == (chars[chars.Length - 1] == ')');
+            var firstIsQuote = chars[0] == '\'';
+            var firstIsOpenParens = chars[0] == '(';
+            var lastIsCloseParens = chars[chars.Length - 1] == ')';
+
+            return openParens == 0 && (firstIsQuote || (firstIsOpenParens == lastIsCloseParens));
         }
     }
 }
