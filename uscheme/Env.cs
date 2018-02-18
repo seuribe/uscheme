@@ -27,7 +27,7 @@ namespace UScheme {
             if (outer != null)
                 return outer.Find(name);
 
-            throw new Exception("symbol '" + name + "' not found");
+            throw new EvalException("symbol '" + name + "' not found");
         }
 
         public Exp Get(string name) {

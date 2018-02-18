@@ -52,7 +52,7 @@ namespace UScheme {
                     var expression = UScheme.Eval(form, environment);
                     textOut.WriteLine(expression.ToString());
                 }
-            } catch (Exception e) {
+            } catch (UException e) {
                 textOut.WriteLine("Error: " + e.Message);
             } finally {
                 buffer.Clear();
