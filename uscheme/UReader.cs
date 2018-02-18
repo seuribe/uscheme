@@ -20,11 +20,9 @@ namespace UScheme {
                     return sym;
                 }
             }
-            if ("#t".Equals(token)) {
-                return Boolean.TRUE;
-            } else if ("#f".Equals(token)) {
-                return Boolean.FALSE;
-            }
+
+            if (Boolean.TryParse(token, out Boolean value))
+                return value;
 
             return new Symbol(token);
         }
