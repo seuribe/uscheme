@@ -41,12 +41,6 @@ namespace UScheme {
             return exp; // atoms like integer, float, etc.
         }
 
-        static Exp DefineFunc(UList head, Exp body, Env env) {
-            var name = head[0].ToString();
-            var paramNames = head.Tail().ToStrings();
-            return env.Bind(name, new Procedure(paramNames, body, env));
-        }
-
         static Exp EvalSequential(UList expressions, Env env) {
             Exp ret = null;
             foreach (var e in expressions)
@@ -72,10 +66,16 @@ namespace UScheme {
         static Exp EvalList(UList list, Env env) {
             Exp first = list.First;
 
-            if (!predefinedProcedures.TryGetValue(first, out EvalProc evalProc))
-                evalProc = (Eval(first, env) as Procedure).EvalProc;
+            if (predefinedProcedures.TryGetValue(first, out EvalProc evalProc))
+                return evalProc(list.Tail(), env);
 
-            return evalProc(list.Tail(), env);
+            var evaluatedParameters = EvalEach(list, env);
+            var procedure = evaluatedParameters.First as Procedure;
+            return procedure.Eval(evaluatedParameters.Tail());
+        }
+
+        private static UList EvalEach(UList parameters, Env env) {
+            return new UList(parameters.Select(e => UScheme.Eval(e, env)));
         }
 
         private static Exp EvalQuote(UList parameters, Env env) {
@@ -115,6 +115,13 @@ namespace UScheme {
             Exp value = Eval(parameters.Second, env);
             return env.Bind(name, value);
         }
+
+        private static Exp DefineFunc(UList defineParameters, Exp body, Env env) {
+            var name = defineParameters.First.ToString();
+            var procParameters = defineParameters.Tail().ToStrings();
+            return env.Bind(name, new Procedure(procParameters, body, env));
+        }
+
 
         private static Exp EvalLet(UList parameters, Env env) {
             var letEnv = new Env(env);

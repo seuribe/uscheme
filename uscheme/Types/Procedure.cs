@@ -23,27 +23,29 @@ namespace UScheme {
             this.EvalProc = evalProc;
         }
 
-        public Exp Eval(UList values, Env env) {
+        public Exp Eval(UList values) {
             return EvalProc(values, env);
         }
 
-        public Exp Eval(Exp first, Env env) {
+        public Exp Eval(Exp first) {
             return EvalProc(new UList { first }, env);
         }
 
-        public Exp Eval(Exp first, Exp second, Env env) {
+        public Exp Eval(Exp first, Exp second) {
             return EvalProc(new UList { first, second }, env);
         }
 
-        private Exp EvalBody(UList values, Env outerEnv) {
-            var callEnvironment = CreateCallEnvironment(values, outerEnv);
+        // externalEnv parameter is needed only for complying with EvalProc delegate
+        private Exp EvalBody(UList values, Env externalEnv) {
+            var callEnvironment = CreateCallEnvironment(values, env);
             return UScheme.Eval(body, callEnvironment);
         }
 
         Env CreateCallEnvironment(UList callValues, Env outerEnv) {
+            StdLib.EnsureArity(callValues, argumentNames.Count);
             var evalEnv = new Env(outerEnv);
             for (int i = 0; i < argumentNames.Count; i++)
-                evalEnv.Bind(argumentNames[i], UScheme.Eval(callValues[i], outerEnv));
+                evalEnv.Bind(argumentNames[i], callValues[i]);
 
             return evalEnv;
         }

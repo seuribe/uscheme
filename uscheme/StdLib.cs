@@ -7,12 +7,12 @@ namespace UScheme {
 
         public static void EnsureArity(UList list, int size) {
             if (list.Count != size) {
-                throw new Exception("procedure accepts only " + size + " arguments, " + list.Count + " provided");
+                throw new EvalException("procedure accepts only " + size + " arguments, " + list.Count + " provided");
             }
         }
         public static void EnsureArityMin(UList list, int size) {
             if (list.Count < size) {
-                throw new Exception("procedure accepts only " + size + " arguments, " + list.Count + " provided");
+                throw new EvalException("procedure accepts only " + size + " arguments, " + list.Count + " provided");
             }
         }
 
@@ -95,13 +95,13 @@ namespace UScheme {
                 firstArgs.AddRange(listParameter);
                 listParameter = firstArgs;
             }
-            return procedure.Eval(listParameter, env);
+            return procedure.Eval(listParameter);
         });
 
         private static readonly Procedure Map = new Procedure((fparams, env) => {
             var proc = UScheme.Eval(fparams[0], env) as Procedure;
             var args = fparams.Tail();
-            return new UList(args.Select(arg => proc.Eval(UScheme.Eval(arg, env), env)));
+            return new UList(args.Select(arg => proc.Eval(UScheme.Eval(arg, env))));
         });
 
         public static Exp FoldlBase(Procedure op, UList fparams, Env env) {
@@ -109,7 +109,7 @@ namespace UScheme {
             var value = UScheme.Eval(fparams[0], env);
 
             for (int i = 1 ; i < fparams.Count ; i++)
-                value = op.Eval(new UList() { value, UScheme.Eval(fparams[i], env) }, env);
+                value = op.Eval(new UList() { value, UScheme.Eval(fparams[i], env) });
 
             return value;
         }
@@ -120,7 +120,7 @@ namespace UScheme {
             var value = UScheme.Eval(fparams[1], env);
             var list = UScheme.Eval(fparams[2], env) as UList;
             foreach (var e in list) {
-                value = op.Eval(new UList() { value, UScheme.Eval(e, env) }, env);
+                value = op.Eval(new UList() { value, UScheme.Eval(e, env) });
             }
             return value;
         });
