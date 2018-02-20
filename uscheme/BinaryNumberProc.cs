@@ -3,10 +3,10 @@
 namespace UScheme {
     public class BinaryNumberProc : Procedure {
         public BinaryNumberProc(Func<double, double, double> func) {
-            EvalProc = (UList fparams, Env env) => {
-                StdLib.EnsureArity(fparams, 2);
-                var first = UScheme.Eval(fparams[0], env) as Number;
-                var second = UScheme.Eval(fparams[1], env) as Number;
+            EvalProc = (UList parameters, Env env) => {
+                StdLib.EnsureArity(parameters, 2);
+                var first = parameters.First as Number;
+                var second = parameters.Second as Number;
                 return new RealNumber((float)func(first.DoubleValue, second.DoubleValue));
             };
         }
