@@ -40,7 +40,7 @@ namespace UScheme {
 
                 buffer.Append(line);
 
-                if (BufferParensMatch())
+                if (CanEvaluateString())
                     ProcessBuffer();
             }
         }
@@ -59,23 +59,31 @@ namespace UScheme {
             }
         }
 
-        bool BufferParensMatch() {
-            var str = buffer.ToString();
-            var chars = str.ToCharArray();
+        bool CanEvaluateString() {
+            var chars = buffer.ToString().ToCharArray();
+
+            return HasBalancedParens(chars) &&
+                   (IsQuote(chars) || StartAndEndCoherentParens(chars));
+        }
+
+        bool StartAndEndCoherentParens(char[] chars) {
+            return UReader.IsParensOpen(chars[0]) == UReader.IsParensClose(chars[chars.Length - 1]);
+        }
+
+        bool IsQuote(char[] chars) {
+            return chars[0] == UReader.Quote;
+        }
+
+        bool HasBalancedParens(char[] chars) {
             int openParens = 0;
 
-            for (int i = 0 ; i < chars.Length && openParens >= 0 ; i++) {
-                if (chars[i] == '(')
+            for (int i = 0 ; i < chars.Length && openParens >= 0 ; i++)
+                if (UReader.IsParensOpen(chars[i]))
                     openParens++;
-                else if (chars[i] == ')')
+                else if (UReader.IsParensClose(chars[i]))
                     openParens--;
-            }
 
-            var firstIsQuote = chars[0] == '\'';
-            var firstIsOpenParens = chars[0] == '(';
-            var lastIsCloseParens = chars[chars.Length - 1] == ')';
-
-            return openParens == 0 && (firstIsQuote || (firstIsOpenParens == lastIsCloseParens));
+            return openParens == 0;
         }
     }
 }
