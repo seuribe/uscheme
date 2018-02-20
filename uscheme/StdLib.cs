@@ -20,8 +20,7 @@ namespace UScheme {
             return new Procedure((UList parameters, Env env) => {
                 EnsureArity(parameters, 1);
                 evalFunction = evalFunction ?? (e => true);
-                var value = UScheme.Eval(parameters.First, env);
-                return Boolean.Get(value is T && evalFunction((T)value));
+                return Boolean.Get(parameters.First is T && evalFunction((T)parameters.First));
             });
         }
 
@@ -34,38 +33,35 @@ namespace UScheme {
         private static readonly Procedure IsList = BuildIsProcedure<UList>();
 
         private static readonly Procedure List = new Procedure((UList list, Env env) => {
-            return new UList(list.Select(e => UScheme.Eval(e, env)));
+            return list;
         });
 
         private static readonly Procedure Equal = new Procedure((UList list, Env env) => {
             EnsureArity(list, 2);
-            Exp a = UScheme.Eval(list[0], env);
-            Exp b = UScheme.Eval(list[1], env);
-            return Boolean.Get(a.UEquals(b));
+            return Boolean.Get(list.First.UEquals(list.Second));
         });
         private static readonly Procedure Not = new Procedure((UList list, Env env) => {
             EnsureArity(list, 1);
-            Exp v = UScheme.Eval(list[0], env);
-            return (v == Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
+            return (list.First == Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
         });
         private static readonly Procedure Car = new Procedure((UList list, Env env) => {
             EnsureArity(list, 1);
-            var pair = UScheme.Eval(list.First, env) as UList;
+            var pair = list.First as UList;
             return pair.First;
         });
         private static readonly Procedure Cdr = new Procedure((UList list, Env env) => {
             EnsureArity(list, 1);
-            var pair = UScheme.Eval(list.First, env) as UList;
+            var pair = list.First as UList;
             return pair.Second;
         });
         private static readonly Procedure Cons = new Procedure((UList list, Env env) => {
             EnsureArity(list, 2);
-            return new UList { UScheme.Eval(list.First, env), UScheme.Eval(list.Second, env) };
+            return new UList { list.First, list.Second };
         });
 
         private static readonly Procedure Length = new Procedure((UList list, Env env) => {
             EnsureArity(list, 1);
-            return new IntegerNumber((UScheme.Eval(list.First, env) as UList).Count);
+            return new IntegerNumber((list.First as UList).Count);
         });
 
         private static readonly Procedure Append = new Procedure((UList parameters, Env env) => {
@@ -73,9 +69,9 @@ namespace UScheme {
 
             var newList = new UList();
             for (int i = 0 ; i < parameters.Count; i++) {
-                var sublist = UScheme.Eval(parameters[i], env) as UList;
+                var sublist = parameters[i] as UList;
                 if (sublist == null)
-                    throw new Exception("append parameter " + (i + 1) + " is not a list");
+                    throw new EvalException("append parameter " + (i + 1) + " is not a list");
 
                 newList.AddRange(sublist);
             }
@@ -84,13 +80,13 @@ namespace UScheme {
 
         private static readonly Procedure Apply = new Procedure((UList parameters, Env env) => {
             EnsureArityMin(parameters, 2);
-            var procedure = UScheme.Eval(parameters.First, env) as Procedure;
-            var listParameter = UScheme.Eval(parameters.Second, env) as UList;
+            var procedure = parameters.First as Procedure;
+            var listParameter = parameters.Second as UList;
 
             if (parameters.Count > 2) {
                 UList firstArgs = new UList();
                 foreach (Exp e in parameters.GetRange(1, parameters.Count - 2)) {
-                    firstArgs.Add(UScheme.Eval(e, env));
+                    firstArgs.Add(e);
                 }
                 firstArgs.AddRange(listParameter);
                 listParameter = firstArgs;
@@ -99,51 +95,51 @@ namespace UScheme {
         });
 
         private static readonly Procedure Map = new Procedure((fparams, env) => {
-            var proc = UScheme.Eval(fparams[0], env) as Procedure;
+            var proc = fparams.First as Procedure;
             var args = fparams.Tail();
-            return new UList(args.Select(arg => proc.Eval(UScheme.Eval(arg, env))));
+            return new UList(args.Select(arg => proc.Eval(arg)));
         });
 
         public static Exp FoldlBase(Procedure op, UList fparams, Env env) {
             EnsureArityMin(fparams, 2);
-            var value = UScheme.Eval(fparams[0], env);
+            var value = fparams.First;
 
             for (int i = 1 ; i < fparams.Count ; i++)
-                value = op.Eval(new UList() { value, UScheme.Eval(fparams[i], env) });
+                value = op.Eval(new UList() { value, fparams[i] });
 
             return value;
         }
 
         private static readonly Procedure Foldl = new Procedure((fparams, env) => {
             EnsureArity(fparams, 3);
-            var op = UScheme.Eval(fparams[0], env) as Procedure;
-            var value = UScheme.Eval(fparams[1], env);
-            var list = UScheme.Eval(fparams[2], env) as UList;
-            foreach (var e in list) {
-                value = op.Eval(new UList() { value, UScheme.Eval(e, env) });
-            }
+            var op = fparams.First as Procedure;
+            var value = fparams.Second;
+            var list = fparams.Third as UList;
+            foreach (var e in list)
+                value = op.Eval(new UList() { value, e });
+            
             return value;
         });
 
         private static readonly Procedure Print = new Procedure((UList list, Env env) => {
-            Exp ev = UScheme.Eval(list[0], env);
+            Exp ev = list.First;
+            // TODO: output should be configurable somewhere
             Console.Out.WriteLine(ev.ToString());
             return ev;
         });
 
         private static readonly Procedure StringAppend = new Procedure((UList list, Env env) => {
-            StringBuilder sb = new StringBuilder();
-            foreach (Exp e in list) {
-                Exp val = UScheme.Eval(e, env);
-                sb.Append((val as UString).str);
-            }
+            var sb = new StringBuilder();
+            foreach (Exp substring in list)
+                sb.Append((substring as UString).str);
+            
             return new UString(sb.ToString());
         });
 
         private static readonly Procedure Nth = new Procedure((UList parameters, Env env) => {
             EnsureArity(parameters, 2);
-            var index = UScheme.Eval(parameters.First, env) as IntegerNumber;
-            var list = UScheme.Eval(parameters.Second, env) as UList;
+            var index = parameters.First as IntegerNumber;
+            var list = parameters.Second as UList;
             return list[index.IntValue];
         });
 
@@ -175,7 +171,7 @@ namespace UScheme {
             env.Bind("procedure?", IsProcedure);
             env.Bind("symbol?", IsSymbol);
             env.Bind("list?", IsList);
-            env.Bind("equal?", Equal);
+            env.Bind("eq?", Equal);
 
             env.Bind("print", Print);
 
