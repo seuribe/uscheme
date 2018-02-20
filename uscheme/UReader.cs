@@ -7,19 +7,40 @@ using System.Text;
 namespace UScheme {
     public class UReader {
 
+        const int EndOfInput = -1;
+
+        public const char ParensOpen = '(';
+        public const char BracketOpen = '[';
+        public const char ParensClose = ')';
+        public const char BracketClose = ']';
+        public const char Space = ' ';
+        public const char SemiColon = ';';
+        public const char DoubleQuote = '"';
+        public const char Quote = '\'';
+        public const char Slash = '\\';
+        public const char Tab = '\t';
+        public const char Newline = '\n';
+        public const char CarriageReturn = '\r';
+
+        private static readonly char[] AtomEndChars = new char[] {
+            Space, Tab, Newline, CarriageReturn, ParensClose, BracketClose };
+
+        private static readonly char[] WhitespaceChars = new char[] {
+            Space, Tab, Newline, CarriageReturn
+        };
+
         private static Exp Atom(string token) {
-            Console.Out.WriteLine("Atom from " + token);
-            if (int.TryParse(token, out int intValue)) {
+            Tracer.Atom(token);
+
+            if (int.TryParse(token, out int intValue))
                 return new IntegerNumber(intValue);
-            }
-            if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue)) {
+            
+            if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue))
                 return new RealNumber(floatValue);
-            }
-            foreach (Symbol sym in UScheme.KEYWORDS) {
-                if (sym.Matches(token)) {
+            
+            foreach (Symbol sym in UScheme.KEYWORDS)
+                if (sym.Matches(token))
                     return sym;
-                }
-            }
 
             if (Boolean.TryParse(token, out Boolean value))
                 return value;
@@ -28,83 +49,85 @@ namespace UScheme {
         }
 
         static UList ReadList(TextReader input) {
-            var ret = new UList();
-            int open = input.Read();
-            if (open != '(')
-                throw new ParseException("Expected '('");
+            input.Read(); // consume '('
 
-            int next = input.Peek();
-            while (next != ')') {
+            var ret = new UList();
+            while (!IsParensClose(input.Peek())) {
                 ret.Add(ReadForm(input));
-                next = ConsumeSpaces(input);
+                ConsumeSpaces(input);
             }
-            if (input.Read() != ')')
-                throw new ParseException("Expected ')'");
+            if (!IsParensClose(input.Read()))
+                throw new ParseException("Expected closing ) or ]");
 
             return ret;
         }
 
+        public static bool IsParensClose(int ch) {
+            return ch == ParensClose || ch == BracketClose;
+        }
+
+        public static bool IsParensOpen(int ch) {
+            return ch == ParensOpen || ch == BracketOpen;
+        }
+
         static int ConsumeSpaces(TextReader input) {
-            int ch = input.Peek();
-            while (ch != -1 && Char.IsWhiteSpace(Convert.ToChar(ch))) {
+            int ch = -1;
+            while ((ch = input.Peek()) != -1 && WhitespaceChars.Contains(Convert.ToChar(ch)))
                 input.Read();
-                ch = input.Peek();
-            }
+
             return ch;
         }
 
         static string ReadAllUntil(TextReader input, char[] endChars) {
-            StringBuilder sb = new StringBuilder();
-            int ch = input.Peek();
+            var sb = new StringBuilder();
+            int ch = -1;
 
-            while (ch != -1 && !endChars.Contains(Convert.ToChar(ch))) {
+            while ((ch = input.Peek()) != -1 && !endChars.Contains(Convert.ToChar(ch))) {
                 sb.Append(Convert.ToChar(ch));
                 input.Read();
-                ch = input.Peek();
             }
+
             return sb.ToString();
         }
 
-        private static readonly char[] ATOM_END_CHARS = new char[] { ' ', '\t', '\n', '\r', ')' };
 
         static Exp ReadAtom(TextReader input) {
-            int next = input.Peek();
-
-            if (next == '\"') {
+            if (input.Peek() == DoubleQuote)
                 return ReadString(input);
-            }
-            string token = ReadAllUntil(input, ATOM_END_CHARS);
+            
+            var token = ReadAllUntil(input, AtomEndChars);
             return Atom(token);
         }
 
         static Exp ReadString(TextReader input) {
-            input.Read(); // consume the opening '"'
-            StringBuilder sb = new StringBuilder();
-            int ch = input.Read();
-            while (ch != '\"') {
-                if (ch == '\\') {
-                    switch (input.Read()) {
-                        case 'n':
-                            sb.Append('\n');
-                            break;
-                        case '"':
-                            sb.Append('"');
-                            break;
-                        case '\\':
-                            sb.Append('\\');
-                            break;
-                        case '\r':
-                            break;
-                        case '\t':
-                            sb.Append('\t');
-                            break;
-                    }
-                } else {
-                    sb.Append(Convert.ToChar(ch));
-                }
-                ch = input.Read();
+            input.Read(); // consume '"'
+
+            var sb = new StringBuilder();
+            int ch = -1;
+            while ((ch = input.Read()) != DoubleQuote) {
+                if (ch == Slash)
+                    ch = EscapeChar(input.Read());
+
+                sb.Append(Convert.ToChar(ch));
             }
             return new UString(sb.ToString());
+        }
+
+        static int EscapeChar(int ch) {
+            switch (ch) {
+                case 'n':
+                    return Newline;
+                case 'r':
+                    return CarriageReturn;
+                case 't':
+                    return Tab;
+                case DoubleQuote:
+                    return DoubleQuote;
+                case Slash:
+                    return Slash;
+                default:
+                    throw new ParseException("Invalid character combination \\" + ch);
+            }
         }
 
         public static Exp ReadForm(TextReader input) {
@@ -112,12 +135,14 @@ namespace UScheme {
             while (true) {
                 int first = input.Peek();
                 switch (first) {
-                    case ';':
+                    case SemiColon:
                         DiscardRestOfLine(input);
                         break;
-                    case '(':
+                    case BracketOpen:
+                        goto case ParensOpen;
+                    case ParensOpen:
                         return ReadList(input);
-                    case '\'':
+                    case Quote:
                         input.Read();
                         return new UList { Symbol.QUOTE, ReadForm(input) };
                     default:
@@ -127,14 +152,13 @@ namespace UScheme {
         }
 
         static void DiscardRestOfLine(TextReader input) {
-            while (input.Peek() != '\n') {
+            while (input.Peek() != Newline)
                 input.Read();
-            }
         }
 
         public static void Load(string filename, Env environment) {
             using (var sr = new StreamReader(filename)) {
-                while (ConsumeSpaces(sr) != -1) {
+                while (ConsumeSpaces(sr) != EndOfInput) {
                     var exp = ReadForm(sr);
                     UScheme.Eval(exp, environment);
                 }
