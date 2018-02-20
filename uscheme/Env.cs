@@ -12,7 +12,7 @@ namespace UScheme {
 
         public static Env InitialEnv() {
             Env env = new Env();
-            StdLib.AddProcedures(env);
+            StdLib.AddLibrary(env);
             return env;
         }
 

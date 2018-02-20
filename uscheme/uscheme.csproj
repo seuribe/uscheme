@@ -65,8 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="uscheme\flip.usc" />
-    <None Include="uscheme\test.usc" />
+    <None Include="lib\stdlib.usc" />
+    <None Include="lib\test.usc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

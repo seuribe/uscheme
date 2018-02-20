@@ -148,7 +148,7 @@ namespace UScheme {
         });
 
         // TODO: for-each, cons, pair?, eval, zip, foldr, compose
-        public static Env AddProcedures(Env env) {
+        public static void AddLibrary(Env env) {
             env.Bind("abs", new UnaryNumberProc(Math.Abs));
             env.Bind("log", new UnaryNumberProc(Math.Log));
             env.Bind("sin", new UnaryNumberProc(Math.Sin));
@@ -191,7 +191,8 @@ namespace UScheme {
             env.Bind("cons", Cons);
             env.Bind("car", Car);
             env.Bind("cdr", Cdr);
-            return env;
+
+            UReader.Load("lib/stdlib.usc", env);
         }
     }
 }

@@ -1,0 +1,38 @@
+﻿
+(define test-cases ())
+(define (add-case name test-function expected expression)
+	(set! test-cases (cons (list name test-function expected expression) test-cases)))
+
+(define (run-tests)
+	(map run-test test-cases))
+
+(define (run-test test-case)
+	(define name (first test-case))
+	(define test (second test-case))
+	(append "Test " name ": " (test-equals))
+
+(define (test-eq expected value)
+	(eq? expected value))
+
+
+(define add1 (lambda (x) (+ x 1)))
+(define sub1 (lambda (x) (- x 1)))
+(define name "Sebastian")
+(define results '())
+
+(define (test proc args)
+	(set! results (cons (apply proc args) results)))
+
+
+(define passed (not (member #f results)))
+(print (string-append "test results: " (if passed "passed" "failed")))
+
+
+(test = '(1 2))
+(test = '(1 1))
+(test = '(2 2))
+(print (foldl + 0 '(1 2 3 4)))
+(print "cos 45: ")
+(print (cos 45))
+(print (map log 1 2 3 4 5))
+(print (map cos (+ 10 35)))
