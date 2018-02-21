@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace UScheme
 {
-    abstract class Number : Exp
+    public abstract class Number : Exp
     {
         public abstract double DoubleValue { get; }
         public abstract float FloatValue { get; }
@@ -99,7 +99,7 @@ namespace UScheme
         });
     }
 
-    class IntegerNumber : Number {
+    public class IntegerNumber : Number {
         public override double DoubleValue { get { return (double)value; } }
         public override float FloatValue { get { return (float)value; } }
         public override int IntValue { get { return value; } }
@@ -139,7 +139,7 @@ namespace UScheme
         }
     }
 
-    class RealNumber : Number {
+    public class RealNumber : Number {
         public override double DoubleValue { get { return (double)value; } }
         public override float FloatValue { get { return value; } }
         public override int IntValue { get { return (int)value; } }

@@ -131,8 +131,9 @@ namespace UScheme {
         }
 
         public static Exp Parse(string input) {
-            var tokens = Tokenize(input);
-            return ReadFromTokens(tokens.GetEnumerator());
+            var tokens = Tokenize(input).GetEnumerator();
+            tokens.MoveNext();
+            return ReadFromTokens(tokens);
         }
 
         public static List<string> Tokenize(string input) {
@@ -152,6 +153,8 @@ namespace UScheme {
                         output.Append(' ').Append(ParensClose).Append(' ');
                     else if (ch == SemiColon)
                         DiscardRestOfLine(reader);
+                    else if (ch == Quote)
+                        output.Append(' ').Append(Quote).Append(' ');
                     else
                         output.Append(Convert.ToChar(ch));
                 }
@@ -159,20 +162,22 @@ namespace UScheme {
             }
         }
 
+        // Expects the enumerator to already be at the first element
         static Exp ReadFromTokens(IEnumerator<string> tokens) {
-            if (!tokens.MoveNext())
-                throw new ParseException("Uncomplete input");
-
             var token = tokens.Current;
+            tokens.MoveNext();
             if (token == "(") {
                 var list = new UList();
-                while (token != ")") {
+                while (tokens.Current != ")") {
                     list.Add(ReadFromTokens(tokens));
-                    token = tokens.Current;
                 }
-            } else if (token == ")")
+                tokens.MoveNext();
+                return list;
+            }
+            if (token == ")")
                 throw new ParseException("Misplaced ')'");
-
+            if (token == "'")
+                return new UList { Symbol.QUOTE, ReadFromTokens(tokens) };
 
             return Atom(token);
         }
