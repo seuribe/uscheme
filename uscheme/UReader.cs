@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace UScheme {
 
             return new Symbol(token);
         }
-
+        /*
         static UList ReadList(TextReader input) {
             input.Read(); // consume '('
 
@@ -61,7 +62,7 @@ namespace UScheme {
 
             return ret;
         }
-
+*/
         public static bool IsParensClose(int ch) {
             return ch == ParensClose || ch == BracketClose;
         }
@@ -69,7 +70,7 @@ namespace UScheme {
         public static bool IsParensOpen(int ch) {
             return ch == ParensOpen || ch == BracketOpen;
         }
-
+/*
         static int ConsumeSpaces(TextReader input) {
             int ch = -1;
             while ((ch = input.Peek()) != -1 && WhitespaceChars.Contains(Convert.ToChar(ch)))
@@ -90,7 +91,6 @@ namespace UScheme {
             return sb.ToString();
         }
 
-
         static Exp ReadAtom(TextReader input) {
             if (input.Peek() == DoubleQuote)
                 return ReadString(input);
@@ -98,7 +98,7 @@ namespace UScheme {
             var token = ReadAllUntil(input, AtomEndChars);
             return Atom(token);
         }
-
+*/
         static Exp ReadString(TextReader input) {
             input.Read(); // consume '"'
 
@@ -130,6 +130,53 @@ namespace UScheme {
             }
         }
 
+        public static Exp Parse(string input) {
+            var tokens = Tokenize(input);
+            return ReadFromTokens(tokens.GetEnumerator());
+        }
+
+        public static List<string> Tokenize(string input) {
+            var spacedInput = PreProcessInput(input);
+            return spacedInput.Split(WhitespaceChars).Where(str => !string.IsNullOrEmpty(str)).ToList();
+
+        }
+
+        public static string PreProcessInput(string input) {
+            using (var reader = new StringReader(input)) {
+                var output = new StringBuilder();
+                int ch = -1;
+                while ((ch = reader.Read()) != -1) {
+                    if (ch == BracketOpen || ch == ParensOpen)
+                        output.Append(' ').Append(ParensOpen).Append(' ');
+                    else if (ch == BracketClose || ch == ParensClose)
+                        output.Append(' ').Append(ParensClose).Append(' ');
+                    else if (ch == SemiColon)
+                        DiscardRestOfLine(reader);
+                    else
+                        output.Append(Convert.ToChar(ch));
+                }
+                return output.ToString();
+            }
+        }
+
+        static Exp ReadFromTokens(IEnumerator<string> tokens) {
+            if (!tokens.MoveNext())
+                throw new ParseException("Uncomplete input");
+
+            var token = tokens.Current;
+            if (token == "(") {
+                var list = new UList();
+                while (token != ")") {
+                    list.Add(ReadFromTokens(tokens));
+                    token = tokens.Current;
+                }
+            } else if (token == ")")
+                throw new ParseException("Misplaced ')'");
+
+
+            return Atom(token);
+        }
+        /*
         public static Exp ReadForm(TextReader input) {
 
             while (true) {
@@ -150,18 +197,23 @@ namespace UScheme {
                 }
             }
         }
-
+        */
         static void DiscardRestOfLine(TextReader input) {
-            while (input.Peek() != Newline)
+            while (input.Peek() != Newline && input.Peek() != -1)
                 input.Read();
         }
 
         public static void Load(string filename, Env environment) {
             using (var sr = new StreamReader(filename)) {
+                var input = sr.ReadToEnd();
+                var exp = Parse(input);
+                UScheme.Eval(exp, environment);
+/*
                 while (ConsumeSpaces(sr) != EndOfInput) {
                     var exp = ReadForm(sr);
                     UScheme.Eval(exp, environment);
                 }
+                */
             }
         }
     }

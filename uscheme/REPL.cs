@@ -47,11 +47,17 @@ namespace UScheme {
 
         void ProcessBuffer() {
             try {
+
+                var expression = UReader.Parse(buffer.ToString());
+                var result = UScheme.Eval(expression, environment);
+                textOut.WriteLine(result.ToString());
+/*
                 using (var lineStream = new StringReader(buffer.ToString())) {
                     var form = UReader.ReadForm(lineStream);
                     var expression = UScheme.Eval(form, environment);
                     textOut.WriteLine(expression.ToString());
                 }
+*/
             } catch (UException e) {
                 textOut.WriteLine("Error: " + e.Message);
             } finally {

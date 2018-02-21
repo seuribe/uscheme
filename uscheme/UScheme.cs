@@ -24,9 +24,12 @@ namespace UScheme {
         };
 
         public static string Eval(string input, Env env) {
+            return Eval(UReader.Parse(input), env).ToString();
+/*
             using (var reader = new StringReader(input)) {
                 return Eval(UReader.ReadForm(reader), env).ToString();
             }
+*/
         }
 
         public static Exp Eval(Exp exp, Env env) {
