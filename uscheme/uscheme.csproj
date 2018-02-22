@@ -47,13 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryNumberProc.cs" />
-    <Compile Include="CharConstants.cs" />
+    <Compile Include="Util\BinaryNumberProc.cs" />
+    <Compile Include="Util\CharConstants.cs" />
     <Compile Include="Env.cs" />
     <Compile Include="Exception\EvalException.cs" />
     <Compile Include="Exception\UException.cs" />
     <Compile Include="REPL.cs" />
-    <Compile Include="SimpleStringReader.cs" />
+    <Compile Include="Util\SimpleStringReader.cs" />
     <Compile Include="Tokenizer.cs" />
     <Compile Include="Tracer.cs" />
     <Compile Include="Types\Exp.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="StdLib.cs" />
     <Compile Include="Types\Symbol.cs" />
     <Compile Include="Types\UList.cs" />
-    <Compile Include="UnaryNumberProc.cs" />
+    <Compile Include="Util\UnaryNumberProc.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="UScheme.cs" />
     <Compile Include="Types\UString.cs" />

@@ -7,9 +7,9 @@ namespace UScheme {
         readonly TextReader textIn;
         readonly TextWriter textOut;
         readonly Env environment;
+        readonly StringBuilder buffer = new StringBuilder();
 
         bool exit = false;
-        StringBuilder buffer = new StringBuilder();
 
         public REPL(TextReader textIn, TextWriter textOut, Env environment) {
             this.textIn = textIn;
@@ -51,13 +51,6 @@ namespace UScheme {
                 var expression = Parser.Parse(buffer.ToString());
                 var result = UScheme.Eval(expression, environment);
                 textOut.WriteLine(result.ToString());
-/*
-                using (var lineStream = new StringReader(buffer.ToString())) {
-                    var form = UReader.ReadForm(lineStream);
-                    var expression = UScheme.Eval(form, environment);
-                    textOut.WriteLine(expression.ToString());
-                }
-*/
             } catch (UException e) {
                 textOut.WriteLine("Error: " + e.Message);
             } finally {

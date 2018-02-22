@@ -46,9 +46,7 @@ namespace UScheme {
             };
 
         static Exp EvalList(UList list, Env env) {
-            Exp first = list.First;
-
-            if (predefinedProcedures.TryGetValue(first, out EvalProc evalProc))
+            if (predefinedProcedures.TryGetValue(list.First, out EvalProc evalProc))
                 return evalProc(list.Tail(), env);
 
             var evaluatedParameters = EvalEach(list, env);
@@ -93,8 +91,8 @@ namespace UScheme {
             if (parameters.First is UList)
                 return DefineFunc(parameters.First as UList, parameters.Second, env);
 
-            string name = parameters.First.ToString();
-            Exp value = Eval(parameters.Second, env);
+            var name = parameters.First.ToString();
+            var value = Eval(parameters.Second, env);
             return env.Bind(name, value);
         }
 

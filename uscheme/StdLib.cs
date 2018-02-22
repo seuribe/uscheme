@@ -6,14 +6,13 @@ namespace UScheme {
     partial class StdLib {
 
         public static void EnsureArity(UList list, int size) {
-            if (list.Count != size) {
+            if (list.Count != size)
                 throw new EvalException("procedure accepts only " + size + " arguments, " + list.Count + " provided");
-            }
         }
+
         public static void EnsureArityMin(UList list, int size) {
-            if (list.Count < size) {
+            if (list.Count < size)
                 throw new EvalException("procedure accepts only " + size + " arguments, " + list.Count + " provided");
-            }
         }
 
         private static Procedure BuildIsProcedure<T>(Func<T, bool> evalFunction = null) where T : Exp {
@@ -126,7 +125,7 @@ namespace UScheme {
         });
 
         private static readonly Procedure Print = new Procedure((UList parameters, Env env) => {
-            Exp ev = parameters.First;
+            var ev = parameters.First;
             // TODO: output should be configurable somewhere
             Console.Out.WriteLine(ev.ToString());
             return ev;
