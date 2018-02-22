@@ -26,7 +26,7 @@ namespace UScheme {
             var environment = Env.InitialEnv();
 
             if (cmdOptions.LoadFilename != null)
-                UReader.Load(cmdOptions.LoadFilename, environment);
+                Parser.Load(cmdOptions.LoadFilename, environment);
 
             if (cmdOptions.StartRepl || cmdOptions.LoadFilename == null)
                 new REPL(Console.In, Console.Out, environment).Start();

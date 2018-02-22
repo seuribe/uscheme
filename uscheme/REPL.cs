@@ -48,7 +48,7 @@ namespace UScheme {
         void ProcessBuffer() {
             try {
 
-                var expression = UReader.Parse(buffer.ToString());
+                var expression = Parser.Parse(buffer.ToString());
                 var result = UScheme.Eval(expression, environment);
                 textOut.WriteLine(result.ToString());
 /*
@@ -73,20 +73,20 @@ namespace UScheme {
         }
 
         bool StartAndEndCoherentParens(char[] chars) {
-            return UReader.IsParensOpen(chars[0]) == UReader.IsParensClose(chars[chars.Length - 1]);
+            return Parser.IsParensOpen(chars[0]) == Parser.IsParensClose(chars[chars.Length - 1]);
         }
 
         bool IsQuote(char[] chars) {
-            return chars[0] == UReader.Quote;
+            return chars[0] == Parser.Quote;
         }
 
         bool HasBalancedParens(char[] chars) {
             int openParens = 0;
 
             for (int i = 0 ; i < chars.Length && openParens >= 0 ; i++)
-                if (UReader.IsParensOpen(chars[i]))
+                if (Parser.IsParensOpen(chars[i]))
                     openParens++;
-                else if (UReader.IsParensClose(chars[i]))
+                else if (Parser.IsParensClose(chars[i]))
                     openParens--;
 
             return openParens == 0;

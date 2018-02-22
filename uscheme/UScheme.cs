@@ -1,35 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace UScheme {
 
     public delegate Exp EvalProc(UList argumentValues, Env env);
 
-    // TODO: define-syntax, strings
     public class UScheme {
 
-        public static readonly Symbol[] KEYWORDS = new Symbol[] {
-            Symbol.IF,
-            Symbol.COND,
-            Symbol.DEFINE,
-            Symbol.SET,
-            Symbol.LAMBDA,
-            Symbol.QUOTE,
-            Symbol.BEGIN,
-            Symbol.LET,
-            Symbol.AND,
-            Symbol.OR,
-        };
-
         public static string Eval(string input, Env env) {
-            return Eval(UReader.Parse(input), env).ToString();
-/*
-            using (var reader = new StringReader(input)) {
-                return Eval(UReader.ReadForm(reader), env).ToString();
-            }
-*/
+            return Eval(Parser.Parse(input), env).ToString();
         }
 
         public static Exp Eval(Exp exp, Env env) {

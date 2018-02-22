@@ -192,7 +192,7 @@ namespace UScheme {
             env.Bind("car", Car);
             env.Bind("cdr", Cdr);
 
-            UReader.Load("lib/stdlib.usc", env);
+            Parser.Load("lib/stdlib.usc", env);
         }
     }
 }

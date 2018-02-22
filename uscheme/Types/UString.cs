@@ -1,4 +1,5 @@
-﻿namespace UScheme {
+﻿
+namespace UScheme {
     class UString : Exp {
         public readonly string str;
         public UString(string str) {
@@ -10,6 +11,5 @@
         public bool UEquals(Exp other) {
             return (other is UString) && str.Equals((other as UString).str);
         }
-
     }
 }
