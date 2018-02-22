@@ -34,12 +34,19 @@ namespace UScheme.Tests {
             Assert.IsTrue(expression.UEquals(new UList { Symbol.QUOTE, Symbol.From("a") }));
         }
 
-        [TestCase("\"a\"", "\"a\"")]
-        [TestCase("\"a cow\"", "\"a cow\"")]
-        public void ParseStrings(string input, string expectedAtomString) {
-            var expression = Parser.Parse(input);
-            Assert.AreEqual(expectedAtomString, expression.ToString());
+        [TestCase("a")]
+        [TestCase("a cow")]
+        [TestCase("a\tcow")]
+        [TestCase("a (big) cow")]
+        [TestCase("a (big big big) cow")]
+        public void ParseStrings(string input) {
+            var quoted = EncloseInQuotes(input);
+            var expression = Parser.Parse(quoted);
+            Assert.AreEqual(quoted, expression.ToString());
+        }
 
+        string EncloseInQuotes(string str) {
+            return CharConstants.DoubleQuote + str + CharConstants.DoubleQuote;
         }
     }
 }
