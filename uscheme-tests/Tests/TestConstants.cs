@@ -18,5 +18,11 @@ namespace UScheme.Tests {
             PlusSymbol, Number3, new UList {
                         PlusSymbol, Number1, Number2 },
             Number4 };
+
+
+        protected static readonly Symbol SymbolA = Symbol.From("a");
+        protected static readonly Symbol SymbolB = Symbol.From("b");
+        protected static readonly Symbol SymbolC = Symbol.From("c");
+        protected static readonly Symbol SymbolD = Symbol.From("d");
     }
 }

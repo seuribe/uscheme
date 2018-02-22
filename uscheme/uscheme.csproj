@@ -59,7 +59,7 @@
     <Compile Include="Types\Exp.cs" />
     <Compile Include="Types\Boolean.cs" />
     <Compile Include="Types\Numbers.cs" />
-    <Compile Include="Types\Pair.cs" />
+    <Compile Include="Types\Cell.cs" />
     <Compile Include="Exception\ParseException.cs" />
     <Compile Include="Types\Procedure.cs" />
     <Compile Include="Program.cs" />
