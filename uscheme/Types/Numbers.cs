@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -97,6 +98,16 @@ namespace UScheme
         public static readonly Procedure GREATEROREQUALTHAN = new Procedure((UList parameters, Env env) => {
             return PairwiseComparison(NumberLessThan, false, parameters, env);
         });
+
+        public static bool TryParse(string token, out Number number) {
+            number = null;
+            if (int.TryParse(token, out int intValue))
+                number = new IntegerNumber(intValue);
+            else if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue))
+                number = new RealNumber(floatValue);
+
+            return number != null;
+        }
     }
 
     public class IntegerNumber : Number {

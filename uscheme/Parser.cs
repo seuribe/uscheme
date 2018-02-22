@@ -9,24 +9,18 @@ namespace UScheme {
         private static Exp Atom(string token) {
             Tracer.Atom(token);
 
-            if (int.TryParse(token, out int intValue))
-                return new IntegerNumber(intValue);
-            
-            if (float.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue))
-                return new RealNumber(floatValue);
+            if (Number.TryParse(token, out Number number))
+                return number;
 
-            if (Boolean.TryParse(token, out Boolean value))
-                return value;
+            if (Boolean.TryParse(token, out Boolean boolean))
+                return boolean;
 
-            if (IsString(token))
-                return new UString(token.Substring(1, token.Length - 2));
+            if (UString.TryParse(token, out UString strValue))
+                return strValue;
 
             return Symbol.From(token);
         }
 
-        static bool IsString(string token) {
-            return token[0] == DoubleQuote;
-        }
 
         public static bool IsParensClose(int ch) {
             return ch == ParensClose || ch == BracketClose;
@@ -35,7 +29,6 @@ namespace UScheme {
         public static bool IsParensOpen(int ch) {
             return ch == ParensOpen || ch == BracketOpen;
         }
-
 
         public static Exp Parse(string input) {
             var tokenizer = new Tokenizer(input);
