@@ -180,6 +180,7 @@ namespace UScheme {
             env.Bind("not", Not);
             env.Bind("string-append", StringAppend);
             env.Bind("length", Length);
+            env.Bind("vector-length", new Procedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
             env.Bind("nth", Nth);
             env.Bind("map", Map);
             env.Bind("foldl", Foldl);
