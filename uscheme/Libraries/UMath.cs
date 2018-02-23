@@ -2,15 +2,12 @@
 
 namespace UScheme {
     public class UMath {
-
-        class UnaryNumberProc : Procedure {
-            public UnaryNumberProc(Func<double, double> func) {
-                ApplyBody = (Cell parameters, Env env) => {
-                    StdLib.EnsureArity(parameters, 1);
-                    var number = parameters.First as Number;
-                    return new RealNumber((float)func(number.DoubleValue));
-                };
-            }
+        private static Procedure UnaryProcedure(Func<double, double> func) {
+            return new Procedure((Cell parameters, Env env) => {
+                StdLib.EnsureArity(parameters, 1);
+                var number = parameters.First as Number;
+                return new RealNumber((float)func(number.DoubleValue));
+            });
         }
 
         private static Procedure CompareAndCarryIf(Func<Number, Number, bool> takeNew) {
@@ -27,15 +24,14 @@ namespace UScheme {
         }
 
         public static void AddLibrary(Env env) {
-            env.Bind("abs", new UnaryNumberProc(Math.Abs));
-            env.Bind("log", new UnaryNumberProc(Math.Log));
-            env.Bind("sin", new UnaryNumberProc(Math.Sin));
-            env.Bind("cos", new UnaryNumberProc(Math.Cos));
-            env.Bind("acos", new UnaryNumberProc(Math.Acos));
-            env.Bind("asin", new UnaryNumberProc(Math.Asin));
-            env.Bind("tan", new UnaryNumberProc(Math.Tan));
-            env.Bind("atan", new UnaryNumberProc(Math.Atan));
-            env.Bind("max", Max);
+            env.Bind("abs", UnaryProcedure(Math.Abs));
+            env.Bind("log", UnaryProcedure(Math.Log));
+            env.Bind("sin", UnaryProcedure(Math.Sin));
+            env.Bind("cos", UnaryProcedure(Math.Cos));
+            env.Bind("acos", UnaryProcedure(Math.Acos));
+            env.Bind("asin", UnaryProcedure(Math.Asin));
+            env.Bind("tan", UnaryProcedure(Math.Tan));
+            env.Bind("atan", UnaryProcedure(Math.Atan));
             env.Bind("max", CompareAndCarryIf((a, b) => a.LessThan(b)));
             env.Bind("min", CompareAndCarryIf((a, b) => b.LessThan(a)));
 
