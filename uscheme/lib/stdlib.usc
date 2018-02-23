@@ -1,19 +1,5 @@
 ﻿
-(define (null? l)
-	(= 0 (length l)))
-
 (define (member? m l)
 	(if (null? l) #f
 		(if (eq? (car l) m) l
 			(member m (cdr l)))))
-
-(define (first l) (nth 0 l))
-(define (second l) (nth 1 l))
-(define (third l) (nth 2 l))
-(define (fourth l) (nth 3 l))
-(define (fifth l) (nth 4 l))
-(define (sixth l) (nth 5 l))
-(define (seventh l) (nth 6 l))
-(define (eighth l) (nth 7 l))
-(define (ninth l) (nth 8 l))
-
