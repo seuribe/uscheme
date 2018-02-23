@@ -3,7 +3,7 @@
 namespace UScheme {
     public class BinaryNumberProc : Procedure {
         public BinaryNumberProc(Func<double, double, double> func) {
-            EvalProc = (Cell parameters, Env env) => {
+            ApplyBody = (Cell parameters, Env env) => {
                 StdLib.EnsureArity(parameters, 2);
                 var first = parameters.First as Number;
                 var second = parameters.Second as Number;

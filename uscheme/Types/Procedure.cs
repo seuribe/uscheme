@@ -7,36 +7,35 @@ namespace UScheme {
         private Exp body;
         private Env env;
 
-        public EvalProc EvalProc { get; protected set; }
+        public ProcedureBody ApplyBody { get; protected set; }
 
         public Procedure() { }
 
-        public Procedure(List<string> argumentNames, Exp body, Env env) 
-        {
+        public Procedure(List<string> argumentNames, Exp body, Env env) {
             this.argumentNames = argumentNames;
             this.body = body;
             this.env = env;
-            this.EvalProc = EvalBody;
+            this.ApplyBody = UserDefinedBody;
         }
 
-        public Procedure(EvalProc evalProc) {
-            this.EvalProc = evalProc;
+        public Procedure(ProcedureBody body) {
+            this.ApplyBody = body;
         }
 
-        public Exp Eval(Cell values) {
-            return EvalProc(values, env);
+        public Exp Apply(Cell values) {
+            return ApplyBody(values, env);
         }
 
-        public Exp Eval(Exp first) {
-            return EvalProc(Cell.BuildList(first), env);
+        public Exp Apply(Exp first) {
+            return ApplyBody(Cell.BuildList(first), env);
         }
 
-        public Exp Eval(Exp first, Exp second) {
-            return EvalProc(Cell.BuildList(first, second), env);
+        public Exp Apply(Exp first, Exp second) {
+            return ApplyBody(Cell.BuildList(first, second), env);
         }
 
         // externalEnv parameter is needed only for complying with EvalProc delegate
-        private Exp EvalBody(Cell values, Env externalEnv) {
+        private Exp UserDefinedBody(Cell values, Env externalEnv) {
             var callEnvironment = CreateCallEnvironment(values, env);
             return UScheme.Eval(body, callEnvironment);
         }
@@ -51,11 +50,14 @@ namespace UScheme {
         }
 
         public bool UEquals(Exp other) {
-            return (other == this) ||
-                    (other is Procedure &&
-                     body.UEquals((other as Procedure).body) &&
-                     argumentNames.Equals((other as Procedure).argumentNames));
-        }
+            if (other == this)
+                return true;
 
+            var proc = other as Procedure;
+            if (proc == null)
+                return false;
+
+            return body.UEquals(proc.body) && argumentNames.Equals(proc.argumentNames);
+        }
     }
 }

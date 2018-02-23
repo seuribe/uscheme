@@ -106,7 +106,7 @@ namespace UScheme {
             if (parameters.Length() > 2)
                 throw new UException("Not implemented: apply cannot accept more than the procedure and a list");
 
-            return procedure.Eval(parameters.Rest());
+            return procedure.Apply(parameters.Rest());
         });
 
         private static readonly Procedure Map = new Procedure((parameters, env) => {
@@ -115,7 +115,7 @@ namespace UScheme {
 
             var list = new List<Exp>();
             foreach (var exp in parameters.Iterate())
-                list.Add(proc.Eval(exp));
+                list.Add(proc.Apply(exp));
 
             return Cell.BuildList(list);
         });
@@ -125,7 +125,7 @@ namespace UScheme {
             var value = parameters.First;
 
             for (int i = 1 ; i < parameters.Length() ; i++)
-                value = op.Eval(Cell.BuildList(value, parameters[i]));
+                value = op.Apply(Cell.BuildList(value, parameters[i]));
 
             return value;
         }
@@ -136,7 +136,7 @@ namespace UScheme {
             var value = parameters.Second;
             var list = parameters.Third as Cell;
             foreach (var e in list.Iterate())
-                value = op.Eval(Cell.BuildList(value, e));
+                value = op.Apply(Cell.BuildList(value, e));
             
             return value;
         });

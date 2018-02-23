@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UScheme {
 
-    public delegate Exp EvalProc(Cell argumentList, Env env);
+    public delegate Exp ProcedureBody(Cell argumentList, Env env);
 
     public class UScheme {
 
@@ -31,8 +31,8 @@ namespace UScheme {
             return ret;
         }
 
-        static Dictionary<Exp, EvalProc> predefinedProcedures
-            = new Dictionary<Exp, EvalProc> {
+        static Dictionary<Exp, ProcedureBody> predefinedProcedures
+            = new Dictionary<Exp, ProcedureBody> {
                 { Symbol.DEFINE, EvalDefine },
                 { Symbol.COND, EvalCond},
                 { Symbol.SET, EvalSet },
@@ -46,12 +46,12 @@ namespace UScheme {
             };
 
         static Exp EvalList(Cell list, Env env) {
-            if (predefinedProcedures.TryGetValue(list.First, out EvalProc evalProc))
+            if (predefinedProcedures.TryGetValue(list.First, out ProcedureBody evalProc))
                 return evalProc(list.Rest(), env);
 
             var evaluatedParameters = EvalEach(list, env);
             var procedure = evaluatedParameters.First as Procedure;
-            return procedure.Eval(evaluatedParameters.Rest());
+            return procedure.Apply(evaluatedParameters.Rest());
         }
 
         private static Cell EvalEach(Cell parameters, Env env) {
