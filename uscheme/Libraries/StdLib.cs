@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 
 namespace UScheme {
-    partial class StdLib {
+
+    public class StdLib {
 
         public static void EnsureArity(Cell list, int size) {
             var length = list.Length();
@@ -170,25 +171,6 @@ namespace UScheme {
 
         // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static void AddLibrary(Env env) {
-            env.Bind("abs", new UnaryNumberProc(Math.Abs));
-            env.Bind("log", new UnaryNumberProc(Math.Log));
-            env.Bind("sin", new UnaryNumberProc(Math.Sin));
-            env.Bind("cos", new UnaryNumberProc(Math.Cos));
-            env.Bind("acos", new UnaryNumberProc(Math.Acos));
-            env.Bind("asin", new UnaryNumberProc(Math.Asin));
-            env.Bind("tan", new UnaryNumberProc(Math.Tan));
-            env.Bind("atan", new UnaryNumberProc(Math.Atan));
-
-            env.Bind("+", Number.ADD);
-            env.Bind("-", Number.SUB);
-            env.Bind("*", Number.MULT);
-            env.Bind("/", Number.DIV);
-            env.Bind("=", Number.EQUALS);
-            env.Bind("<", Number.LESSTHAN);
-            env.Bind("<=", Number.LESSOREQUALTHAN);
-            env.Bind(">", Number.GREATERTHAN);
-            env.Bind(">=", Number.GREATEROREQUALTHAN);
-
             env.Bind("number?", IsNumber);
             env.Bind("integer?", IsInteger);
             env.Bind("real?", IsReal);

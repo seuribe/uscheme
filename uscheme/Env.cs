@@ -13,6 +13,7 @@ namespace UScheme {
         public static Env InitialEnv() {
             Env env = new Env();
             StdLib.AddLibrary(env);
+            UMath.AddLibrary(env);
             return env;
         }
 
