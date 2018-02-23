@@ -31,7 +31,7 @@ namespace UScheme {
         }
 
         private static Procedure BuildIsProcedure<T>(Func<T, bool> evalFunction = null) where T : Exp {
-            return new Procedure((Cell parameters, Env env) => {
+            return new Procedure(parameters => {
                 EnsureArity(parameters, 1);
                 evalFunction = evalFunction ?? (e => true);
                 return Boolean.Get(parameters.First is T && evalFunction((T)parameters.First));
@@ -46,53 +46,53 @@ namespace UScheme {
         private static readonly Procedure IsBoolean = BuildIsProcedure<Boolean>();
         private static readonly Procedure IsList = BuildIsProcedure<Cell>();
 
-        private static readonly Procedure IsPair = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure IsPair = new Procedure(parameters => {
             EnsureArity(parameters, 1);
             return Boolean.Get(parameters.First is Cell && parameters.First != Cell.Null);
         });
 
-        private static readonly Procedure List = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure List = new Procedure(parameters => {
             return parameters;
         });
 
-        private static readonly Procedure Equal = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Equal = new Procedure(parameters => {
             EnsureArity(parameters, 2);
             return Boolean.Get(parameters.First.UEquals(parameters.Second));
         });
 
-        private static readonly Procedure Eq = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Eq = new Procedure(parameters => {
             EnsureArity(parameters, 2);
             return Boolean.Get(parameters.First == parameters.Second);
         });
 
-        private static readonly Procedure Not = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Not = new Procedure(parameters => {
             EnsureArity(parameters, 1);
             return (parameters.First == Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
         });
 
-        private static readonly Procedure Car = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Car = new Procedure(parameters => {
             EnsureArity(parameters, 1);
             var pair = parameters.First as Cell;
             return pair.car;
         });
 
-        private static readonly Procedure Cdr = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Cdr = new Procedure(parameters => {
             EnsureArity(parameters, 1);
             var pair = parameters.First as Cell;
             return pair.cdr;
         });
 
-        private static readonly Procedure Cons = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Cons = new Procedure(parameters => {
             EnsureArity(parameters, 2);
             return new Cell(parameters.First, parameters.Second);
         });
 
-        private static readonly Procedure Length = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Length = new Procedure(parameters => {
             EnsureArity(parameters, 1);
             return new IntegerNumber((parameters.First as Cell).Length());
         });
 
-        private static readonly Procedure Append = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Append = new Procedure(parameters => {
             EnsureArityMin(parameters, 1);
             EnsureAll(parameters, exp => (exp is Cell) && (exp as Cell).IsList, "append parameters must be lists");
 
@@ -103,7 +103,7 @@ namespace UScheme {
             return cell;
         });
 
-        private static readonly Procedure Apply = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Apply = new Procedure(parameters => {
             EnsureArityMin(parameters, 2);
             EnsureIs<Procedure>(parameters.First);
             EnsureIs<Cell>(parameters.LastCell());
@@ -115,7 +115,7 @@ namespace UScheme {
             return procedure.Apply(parameters.Rest());
         });
 
-        private static readonly Procedure Map = new Procedure((parameters, env) => {
+        private static readonly Procedure Map = new Procedure(parameters => {
             var proc = parameters.First as Procedure;
             var args = parameters.Rest();
 
@@ -126,7 +126,7 @@ namespace UScheme {
             return Cell.BuildList(list);
         });
 
-        public static Exp FoldlBase(Procedure op, Cell parameters, Env env) {
+        public static Exp FoldlBase(Procedure op, Cell parameters) {
             EnsureArityMin(parameters, 2);
             var value = parameters.First;
 
@@ -136,7 +136,7 @@ namespace UScheme {
             return value;
         }
 
-        private static readonly Procedure Foldl = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Foldl = new Procedure(parameters => {
             EnsureArity(parameters, 3);
             var op = parameters.First as Procedure;
             var value = parameters.Second;
@@ -147,14 +147,14 @@ namespace UScheme {
             return value;
         });
 
-        private static readonly Procedure Print = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Print = new Procedure(parameters => {
             var ev = parameters.First;
             // TODO: output should be configurable somewhere
             Console.Out.WriteLine(ev.ToString());
             return ev;
         });
 
-        private static readonly Procedure StringAppend = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure StringAppend = new Procedure(parameters => {
             var sb = new StringBuilder();
             foreach (Exp substring in parameters.Iterate())
                 sb.Append((substring as UString).str);
@@ -162,7 +162,7 @@ namespace UScheme {
             return new UString(sb.ToString());
         });
 
-        private static readonly Procedure Nth = new Procedure((Cell parameters, Env env) => {
+        private static readonly Procedure Nth = new Procedure(parameters => {
             EnsureArity(parameters, 2);
             var index = parameters.First as IntegerNumber;
             var list = parameters.Second as Cell;

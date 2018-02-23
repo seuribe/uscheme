@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace UScheme {
     public class Procedure : Exp {
@@ -7,7 +6,7 @@ namespace UScheme {
         private Exp body;
         private Env env;
 
-        public ProcedureBody ApplyBody { get; protected set; }
+        readonly ProcedureBody applyBody;
 
         public Procedure() { }
 
@@ -15,27 +14,27 @@ namespace UScheme {
             this.argumentNames = argumentNames;
             this.body = body;
             this.env = env;
-            this.ApplyBody = UserDefinedBody;
+            applyBody = UserDefinedBody;
         }
 
         public Procedure(ProcedureBody body) {
-            this.ApplyBody = body;
+            applyBody = body;
         }
 
         public Exp Apply(Cell values) {
-            return ApplyBody(values, env);
+            return applyBody(values);
         }
 
         public Exp Apply(Exp first) {
-            return ApplyBody(Cell.BuildList(first), env);
+            return applyBody(Cell.BuildList(first));
         }
 
         public Exp Apply(Exp first, Exp second) {
-            return ApplyBody(Cell.BuildList(first, second), env);
+            return applyBody(Cell.BuildList(first, second));
         }
 
         // externalEnv parameter is needed only for complying with EvalProc delegate
-        private Exp UserDefinedBody(Cell values, Env externalEnv) {
+        private Exp UserDefinedBody(Cell values) {
             var callEnvironment = CreateCallEnvironment(values, env);
             return UScheme.Eval(body, callEnvironment);
         }

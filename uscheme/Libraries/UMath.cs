@@ -3,7 +3,7 @@
 namespace UScheme {
     public class UMath {
         private static Procedure UnaryProcedure(Func<double, double> func) {
-            return new Procedure((Cell parameters, Env env) => {
+            return new Procedure(parameters => {
                 StdLib.EnsureArity(parameters, 1);
                 var number = parameters.First as Number;
                 return new RealNumber((float)func(number.DoubleValue));
@@ -11,7 +11,7 @@ namespace UScheme {
         }
 
         private static Procedure CompareAndCarryIf(Func<Number, Number, bool> takeNew) {
-            return new Procedure((Cell parameters, Env env) => {
+            return new Procedure(parameters => {
                 StdLib.EnsureArityMin(parameters, 1);
                 StdLib.EnsureAll(parameters, p => (p is Number), "function parameters should be numbers");
                 var result = parameters.First as Number;

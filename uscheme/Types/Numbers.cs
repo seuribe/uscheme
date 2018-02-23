@@ -37,10 +37,10 @@ namespace UScheme
         public abstract bool IsInteger();
 
         static Procedure BinaryOperation<TResult>(Func<Number, Number, TResult> op) where TResult : Exp {
-            return new Procedure((Cell list, Env env) => {
+            return new Procedure(list => {
                 StdLib.EnsureArity(list, 2);
-                var first = UScheme.Eval(list.First, env) as Number;
-                var second = UScheme.Eval(list.Second, env) as Number;
+                var first = list.First as Number;
+                var second = list.Second as Number;
                 return op(first, second);
             });
         }
@@ -50,28 +50,28 @@ namespace UScheme
         static readonly Procedure BinaryMult = BinaryOperation(Mult);
         static readonly Procedure BinaryDiv = BinaryOperation(Div);
 
-        public static readonly Procedure MULT = new Procedure((Cell parameters, Env env) => {
-            return StdLib.FoldlBase(BinaryMult, parameters, env);
+        public static readonly Procedure MULT = new Procedure(parameters => {
+            return StdLib.FoldlBase(BinaryMult, parameters);
         });
 
-        public static readonly Procedure DIV = new Procedure((Cell parameters, Env env) => {
-            return StdLib.FoldlBase(BinaryDiv, parameters, env);
+        public static readonly Procedure DIV = new Procedure(parameters => {
+            return StdLib.FoldlBase(BinaryDiv, parameters);
         });
 
-        public static readonly Procedure ADD = new Procedure((Cell parameters, Env env) => {
-            return StdLib.FoldlBase(BinaryAdd, parameters, env);
+        public static readonly Procedure ADD = new Procedure(parameters => {
+            return StdLib.FoldlBase(BinaryAdd, parameters);
         });
 
-        public static readonly Procedure SUB = new Procedure((Cell parameters, Env env) => {
-            return StdLib.FoldlBase(BinarySub, parameters, env);
+        public static readonly Procedure SUB = new Procedure(parameters => {
+            return StdLib.FoldlBase(BinarySub, parameters);
         });
 
-        static Boolean PairwiseComparison(Func<Number, Number, bool> compFunc, bool expected, Cell list, Env env) {
+        static Boolean PairwiseComparison(Func<Number, Number, bool> compFunc, bool expected, Cell list) {
             StdLib.EnsureArityMin(list, 2);
 
-            var first = UScheme.Eval(list.First, env) as Number;
+            var first = list.First as Number;
             foreach (var exp in list.Rest().Iterate()) {
-                var second = UScheme.Eval(exp, env) as Number;
+                var second = exp as Number;
                 if (compFunc(first, second) != expected)
                     return Boolean.FALSE;
                 else
@@ -81,24 +81,24 @@ namespace UScheme
             return Boolean.TRUE;
         }
 
-        public static readonly Procedure EQUALS = new Procedure((Cell parameters, Env env) => {
-            return PairwiseComparison(NumberEquals, true, parameters, env);
+        public static readonly Procedure EQUALS = new Procedure(parameters => {
+            return PairwiseComparison(NumberEquals, true, parameters);
         });
 
-        public static readonly Procedure LESSTHAN = new Procedure((Cell parameters, Env env) => {
-            return PairwiseComparison(NumberLessThan, true, parameters, env);
+        public static readonly Procedure LESSTHAN = new Procedure(parameters => {
+            return PairwiseComparison(NumberLessThan, true, parameters);
         });
 
-        public static readonly Procedure LESSOREQUALTHAN = new Procedure((Cell parameters, Env env) => {
-            return PairwiseComparison(NumberLessOrEqualThan, true, parameters, env);
+        public static readonly Procedure LESSOREQUALTHAN = new Procedure(parameters => {
+            return PairwiseComparison(NumberLessOrEqualThan, true, parameters);
         });
 
-        public static readonly Procedure GREATERTHAN = new Procedure((Cell parameters, Env env) => {
-            return PairwiseComparison(NumberLessOrEqualThan, false, parameters, env);
+        public static readonly Procedure GREATERTHAN = new Procedure(parameters => {
+            return PairwiseComparison(NumberLessOrEqualThan, false, parameters);
         });
 
-        public static readonly Procedure GREATEROREQUALTHAN = new Procedure((Cell parameters, Env env) => {
-            return PairwiseComparison(NumberLessThan, false, parameters, env);
+        public static readonly Procedure GREATEROREQUALTHAN = new Procedure(parameters => {
+            return PairwiseComparison(NumberLessThan, false, parameters);
         });
 
         public static bool TryParse(string token, out Number number) {
