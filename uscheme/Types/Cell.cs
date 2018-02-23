@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace UScheme {
+
     public class Cell : Exp {
         public Exp car;
         public Exp cdr;
@@ -11,12 +12,37 @@ namespace UScheme {
         public bool IsNull => this == Null;
         public bool IsList => IsNull || ((cdr is Cell) && (cdr as Cell).IsList);
 
-        public static Cell Null = new Cell();
+        public static readonly Cell Null = new Cell();
+
+        public Exp First { get { return this[0]; } }
+        public Exp Second { get { return this[1]; } }
+        public Exp Third { get { return this[2]; } }
+        public Exp Fourth { get { return this[3]; } }
+
+        public Exp this[int index] {
+            get {
+                if (!IsList)
+                    throw new UException("Cell not list!");
+                return NthCell(index).car;
+            }
+            set {
+                if (!IsList)
+                    throw new UException("Cell not list!");
+                NthCell(index).car = value;
+            }
+        }
 
         Cell() { }
         public Cell(Exp car, Exp cdr) {
             this.car = car;
             this.cdr = cdr;
+        }
+
+        Cell NthCell(int index) {
+            if (index == 0)
+                return this;
+
+            return (cdr as Cell).NthCell(index - 1);
         }
 
         // for now, recursive and inefficient. Will replace with something better if/when need arises
@@ -53,8 +79,14 @@ namespace UScheme {
         }
 
         public bool UEquals(Exp other) {
+            if (other == this)
+                return true;
+
             var cell = other as Cell;
-            return cell != null && car.UEquals(cell.car) && cdr.UEquals(cell.cdr);
+            if (cell == null || IsNull != cell.IsNull)
+                return false;
+
+            return car.UEquals(cell.car) && cdr.UEquals(cell.cdr);
         }
     }
 }

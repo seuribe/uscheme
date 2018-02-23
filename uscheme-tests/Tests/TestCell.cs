@@ -87,5 +87,10 @@ namespace UScheme.Tests {
         public void ListForm() {
             Assert.AreEqual("(a b c)", ABCCellFromList.ToString());
         }
+
+        [Test]
+        public void NthGetsCell() {
+            Assert.AreEqual(SymbolA, ABCCellFromList[0]);
+        }
     }
 }
