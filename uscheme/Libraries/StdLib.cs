@@ -55,6 +55,10 @@ namespace UScheme {
             return parameters;
         });
 
+        private static readonly Procedure Vector = new Procedure(parameters => {
+            return new Vector(parameters);
+        });
+
         private static readonly Procedure Equal = new Procedure(parameters => {
             EnsureArity(parameters, 2);
             return Boolean.Get(parameters.First.UEquals(parameters.Second));
@@ -178,6 +182,7 @@ namespace UScheme {
             env.Bind("procedure?", IsProcedure);
             env.Bind("symbol?", IsSymbol);
             env.Bind("list?", IsList);
+            env.Bind("vector?", BuildIsProcedure<Vector>());
             env.Bind("equal?", Equal);
             env.Bind("pair?", IsPair);
             env.Bind("eq?", Eq);
@@ -197,6 +202,7 @@ namespace UScheme {
             env.Bind("car", Car);
             env.Bind("cdr", Cdr);
 
+            env.Bind("vector", Vector);
             Parser.Load("lib/stdlib.usc", env);
         }
     }

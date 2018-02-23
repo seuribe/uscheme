@@ -18,6 +18,7 @@ namespace UScheme {
         public Exp First { get { return this[0]; } }
         public Exp Second { get { return this[1]; } }
         public Exp Third { get { return this[2]; } }
+
         public Exp Fourth { get { return this[3]; } }
 
         public Exp this[int index] {
@@ -35,6 +36,10 @@ namespace UScheme {
         public Cell(Exp car, Exp cdr) {
             this.car = car;
             this.cdr = cdr;
+        }
+
+        internal List<Exp> AsList() {
+            return new List<Exp>(Iterate());
         }
 
         void EnsureIsList() {

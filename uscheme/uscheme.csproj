@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Libraries\UMath.cs" />
+    <Compile Include="Types\Vector.cs" />
     <Compile Include="Util\CharConstants.cs" />
     <Compile Include="Env.cs" />
     <Compile Include="Exception\EvalException.cs" />
