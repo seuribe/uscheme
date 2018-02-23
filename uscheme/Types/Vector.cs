@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -33,6 +34,10 @@ namespace UScheme {
                     return false;
 
             return true;
+        }
+
+        public override string ToString() {
+            return "#(" + string.Join(" ", elements.Select( e => e.ToString() )) + ")";
         }
 
         public IEnumerator<Exp> GetEnumerator() {
