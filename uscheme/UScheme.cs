@@ -8,20 +8,35 @@ namespace UScheme {
 
     public class UScheme {
 
-        public static string Eval(string input, Env env) {
-            return Eval(Parser.Parse(input), env).ToString();
-        }
+        static Dictionary<Exp, InternalForm> predefinedProcedures
+            = new Dictionary<Exp, InternalForm> {
+                { Symbol.DEFINE, EvalDefine },
+                { Symbol.COND, EvalCond },
+                { Symbol.SET, EvalSet },
+                { Symbol.LAMBDA, EvalLambda },
+                { Symbol.AND, EvalAnd },
+                { Symbol.OR, EvalOr },
+                { Symbol.BEGIN, EvalSequential} ,
+                { Symbol.LET, EvalLet },
+                { Symbol.IF, EvalIf },
+                { Symbol.QUOTE, EvalQuote }};
 
         public static Exp Eval(Exp exp, Env env) {
             Tracer.Eval(exp);
 
-            if (exp is Symbol)    // env-defined variables
+            if (exp is Symbol) // env-defined variables
                 return env.Get(exp.ToString());
 
-            if (exp is Cell)
-                return EvalList(exp as Cell, env);
+            if (!(exp is Cell)) // atoms like integer, float, etc.
+                return exp;
 
-            return exp; // atoms like integer, float, etc.
+            var list = exp as Cell;
+            if (predefinedProcedures.TryGetValue(list.First, out InternalForm internalForm))
+                return internalForm(list.Rest(), env);
+
+            var evaluatedParameters = EvalEach(list, env);
+            var procedure = evaluatedParameters.First as Procedure;
+            return procedure.Apply(evaluatedParameters.Rest());
         }
 
         static Exp EvalSequential(Cell expressions, Env env) {
@@ -32,35 +47,8 @@ namespace UScheme {
             return ret;
         }
 
-        static Dictionary<Exp, InternalForm> predefinedProcedures
-            = new Dictionary<Exp, InternalForm> {
-                { Symbol.DEFINE, EvalDefine },
-                { Symbol.COND, EvalCond},
-                { Symbol.SET, EvalSet },
-                { Symbol.LAMBDA, EvalLambda },
-                { Symbol.AND, EvalAnd },
-                { Symbol.OR, EvalOr },
-                { Symbol.BEGIN, EvalSequential},
-                { Symbol.LET, EvalLet},
-                { Symbol.IF, EvalIf },
-                { Symbol.QUOTE, EvalQuote },
-            };
-
-        static Exp EvalList(Cell list, Env env) {
-            if (predefinedProcedures.TryGetValue(list.First, out InternalForm internalForm))
-                return internalForm(list.Rest(), env);
-
-            var evaluatedParameters = EvalEach(list, env);
-            var procedure = evaluatedParameters.First as Procedure;
-            return procedure.Apply(evaluatedParameters.Rest());
-        }
-
         private static Cell EvalEach(Cell parameters, Env env) {
-            var list = new List<Exp>();
-            foreach (var exp in parameters.Iterate())
-                list.Add(Eval(exp, env));
-
-            return Cell.BuildList(list);
+            return Cell.BuildList(parameters.Iterate().Select(exp => Eval(exp, env)).ToList());
         }
 
         private static Exp EvalQuote(Cell parameters, Env env) {
@@ -107,7 +95,6 @@ namespace UScheme {
             return env.Bind(name, new Procedure(procParameters, body, env));
         }
 
-
         private static Exp EvalLet(Cell parameters, Env env) {
             var letEnv = new Env(env);
             letEnv.BindDefinitions(parameters.First as Cell);
@@ -115,17 +102,11 @@ namespace UScheme {
         }
 
         private static Exp EvalAnd(Cell expressions, Env env) {
-            foreach (var exp in expressions.Iterate())
-                if (!Boolean.IsTrue(Eval(exp, env)))
-                    return Boolean.FALSE;
-            return Boolean.TRUE;
+            return Boolean.Get(expressions.Iterate().All(exp => Boolean.IsTrue(Eval(exp, env))));
         }
 
         private static Exp EvalOr(Cell expressions, Env env) {
-            foreach (var exp in expressions.Iterate())
-                if (Boolean.IsTrue(Eval(exp, env)))
-                    return Boolean.TRUE;
-            return Boolean.FALSE;
+            return Boolean.Get(expressions.Iterate().Any(exp => Boolean.IsTrue(Eval(exp, env))));
         }
     }
 }
