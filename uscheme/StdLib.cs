@@ -14,8 +14,8 @@ namespace UScheme {
 
         public static void EnsureArityMin(Cell list, int size) {
             var length = list.Length();
-            if (length != size)
-                throw new EvalException("procedure accepts only " + size + " arguments, " + length + " provided");
+            if (length < size)
+                throw new EvalException("procedure needs at least " + size + " arguments, " + length + " provided");
         }
 
         public static void EnsureAll(Cell list, Func<Exp, bool> predicate, string error) {
