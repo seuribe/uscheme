@@ -13,16 +13,18 @@ namespace UScheme {
             }
         }
 
-        private static Procedure Max = new Procedure((Cell parameters, Env env) => {
-            StdLib.EnsureArityMin(parameters, 1);
-            StdLib.EnsureAll(parameters, p => (p is Number), "function parameters should be numbers");
-            var max = parameters.First as Number;
-            foreach (Number number in parameters.Rest().Iterate())
-                if (max.LessThan(number))
-                    max = number;
+        private static Procedure CompareAndCarryIf(Func<Number, Number, bool> takeNew) {
+            return new Procedure((Cell parameters, Env env) => {
+                StdLib.EnsureArityMin(parameters, 1);
+                StdLib.EnsureAll(parameters, p => (p is Number), "function parameters should be numbers");
+                var result = parameters.First as Number;
+                foreach (Number number in parameters.Rest().Iterate())
+                    if (takeNew(result, number))
+                        result = number;
 
-            return max;
-        });
+                return result;
+            });
+        }
 
         public static void AddLibrary(Env env) {
             env.Bind("abs", new UnaryNumberProc(Math.Abs));
@@ -34,6 +36,8 @@ namespace UScheme {
             env.Bind("tan", new UnaryNumberProc(Math.Tan));
             env.Bind("atan", new UnaryNumberProc(Math.Atan));
             env.Bind("max", Max);
+            env.Bind("max", CompareAndCarryIf((a, b) => a.LessThan(b)));
+            env.Bind("min", CompareAndCarryIf((a, b) => b.LessThan(a)));
 
             env.Bind("+", Number.ADD);
             env.Bind("-", Number.SUB);
