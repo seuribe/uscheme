@@ -38,19 +38,6 @@ namespace UScheme {
             });
         }
 
-        private static readonly Procedure IsNumber = BuildIsProcedure<Number>();
-        private static readonly Procedure IsInteger = BuildIsProcedure<Number>( n => n.IsInteger());
-        private static readonly Procedure IsReal = BuildIsProcedure<Number>(); // all numbers are real with current implementation
-        private static readonly Procedure IsProcedure = BuildIsProcedure<Procedure>();
-        private static readonly Procedure IsSymbol = BuildIsProcedure<Symbol>();
-        private static readonly Procedure IsBoolean = BuildIsProcedure<Boolean>();
-        private static readonly Procedure IsList = BuildIsProcedure<Cell>();
-
-        private static readonly Procedure IsPair = new Procedure(parameters => {
-            EnsureArity(parameters, 1);
-            return Boolean.Get(parameters.First is Cell && parameters.First != Cell.Null);
-        });
-
         private static readonly Procedure List = new Procedure(parameters => {
             return parameters;
         });
@@ -175,16 +162,17 @@ namespace UScheme {
 
         // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static void AddLibrary(Env env) {
-            env.Bind("number?", IsNumber);
-            env.Bind("integer?", IsInteger);
-            env.Bind("real?", IsReal);
-            env.Bind("boolean?", IsBoolean);
-            env.Bind("procedure?", IsProcedure);
-            env.Bind("symbol?", IsSymbol);
-            env.Bind("list?", IsList);
+            env.Bind("number?", BuildIsProcedure<Number>());
+            env.Bind("integer?", BuildIsProcedure<Number>(n => n.IsInteger()));
+            env.Bind("real?", BuildIsProcedure<Number>()); // all numbers are real with current implementation
+            env.Bind("boolean?", BuildIsProcedure<Boolean>());
+            env.Bind("procedure?", BuildIsProcedure<Procedure>());
+            env.Bind("symbol?", BuildIsProcedure<Symbol>());
+            env.Bind("list?", BuildIsProcedure<Cell>( c => c.IsList ));
+            env.Bind("pair?", BuildIsProcedure<Cell>( c => c != Cell.Null ));
             env.Bind("vector?", BuildIsProcedure<Vector>());
+
             env.Bind("equal?", Equal);
-            env.Bind("pair?", IsPair);
             env.Bind("eq?", Eq);
 
             env.Bind("print", Print);
@@ -195,14 +183,15 @@ namespace UScheme {
             env.Bind("nth", Nth);
             env.Bind("map", Map);
             env.Bind("foldl", Foldl);
-            env.Bind("list", List);
             env.Bind("apply", Apply);
             env.Bind("append", Append);
-            env.Bind("cons", Cons);
             env.Bind("car", Car);
             env.Bind("cdr", Cdr);
 
+            env.Bind("list", List);
+            env.Bind("cons", Cons);
             env.Bind("vector", Vector);
+
             Parser.Load("lib/stdlib.usc", env);
         }
     }
