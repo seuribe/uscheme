@@ -45,6 +45,11 @@ namespace UScheme {
         private static readonly Procedure IsBoolean = BuildIsProcedure<Boolean>();
         private static readonly Procedure IsList = BuildIsProcedure<Cell>();
 
+        private static readonly Procedure IsPair = new Procedure((Cell parameters, Env env) => {
+            EnsureArity(parameters, 1);
+            return Boolean.Get(parameters.First is Cell && parameters.First != Cell.Null);
+        });
+
         private static readonly Procedure List = new Procedure((Cell parameters, Env env) => {
             return parameters;
         });
@@ -192,6 +197,7 @@ namespace UScheme {
             env.Bind("symbol?", IsSymbol);
             env.Bind("list?", IsList);
             env.Bind("equal?", Equal);
+            env.Bind("pair?", IsPair);
             env.Bind("eq?", Eq);
 
             env.Bind("print", Print);
