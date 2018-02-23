@@ -34,8 +34,8 @@ namespace UScheme {
             return Find(name).values[name];
         }
 
-        public void BindDefinitions(UList definitions) {
-            foreach (UList def in definitions)
+        public void BindDefinitions(Cell definitions) {
+            foreach (Cell def in definitions.Iterate())
                 Bind(def.First.ToString(), UScheme.Eval(def.Second, this));
         }
 

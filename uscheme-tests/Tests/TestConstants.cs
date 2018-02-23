@@ -13,11 +13,9 @@ namespace UScheme.Tests {
         protected static readonly IntegerNumber Number3 = new IntegerNumber(3);
         protected static readonly IntegerNumber Number4 = new IntegerNumber(4);
 
-        protected static readonly UList SimpleSumForm = new UList { PlusSymbol, Number1, Number2 };
-        protected static readonly UList NestedSumForm = new UList {
-            PlusSymbol, Number3, new UList {
-                        PlusSymbol, Number1, Number2 },
-            Number4 };
+        protected static readonly Cell SimpleSumForm = Cell.BuildList(PlusSymbol, Number1, Number2);
+        protected static readonly Cell NestedSumForm = Cell.BuildList(
+            PlusSymbol, Number3, Cell.BuildList(PlusSymbol, Number1, Number2), Number4);
 
 
         protected static readonly Symbol SymbolA = Symbol.From("a");

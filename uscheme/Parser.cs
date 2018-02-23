@@ -42,17 +42,17 @@ namespace UScheme {
             var token = tokens.Current;
             tokens.MoveNext();
             if (token == "(") {
-                var list = new UList();
+                var list = new List<Exp>();
                 while (tokens.Current != ")") {
                     list.Add(ReadFromTokens(tokens));
                 }
                 tokens.MoveNext();
-                return list;
+                return Cell.BuildList(list);
             }
             if (token == ")")
                 throw new ParseException("Misplaced ')'");
             if (token == "'")
-                return new UList { Symbol.QUOTE, ReadFromTokens(tokens) };
+                return Cell.BuildList(Symbol.QUOTE, ReadFromTokens(tokens));
 
             return Atom(token);
         }

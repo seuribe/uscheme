@@ -37,7 +37,7 @@ namespace UScheme
         public abstract bool IsInteger();
 
         static Procedure BinaryOperation<TResult>(Func<Number, Number, TResult> op) where TResult : Exp {
-            return new Procedure((UList list, Env env) => {
+            return new Procedure((Cell list, Env env) => {
                 StdLib.EnsureArity(list, 2);
                 var first = UScheme.Eval(list.First, env) as Number;
                 var second = UScheme.Eval(list.Second, env) as Number;
@@ -50,52 +50,54 @@ namespace UScheme
         static readonly Procedure BinaryMult = BinaryOperation(Mult);
         static readonly Procedure BinaryDiv = BinaryOperation(Div);
 
-        public static readonly Procedure MULT = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure MULT = new Procedure((Cell parameters, Env env) => {
             return StdLib.FoldlBase(BinaryMult, parameters, env);
         });
 
-        public static readonly Procedure DIV = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure DIV = new Procedure((Cell parameters, Env env) => {
             return StdLib.FoldlBase(BinaryDiv, parameters, env);
         });
 
-        public static readonly Procedure ADD = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure ADD = new Procedure((Cell parameters, Env env) => {
             return StdLib.FoldlBase(BinaryAdd, parameters, env);
         });
 
-        public static readonly Procedure SUB = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure SUB = new Procedure((Cell parameters, Env env) => {
             return StdLib.FoldlBase(BinarySub, parameters, env);
         });
 
-        static Boolean PairwiseComparison(Func<Number, Number, bool> compFunc, bool expected, UList list, Env env) {
+        static Boolean PairwiseComparison(Func<Number, Number, bool> compFunc, bool expected, Cell list, Env env) {
             StdLib.EnsureArityMin(list, 2);
-            var first = UScheme.Eval(list[0], env) as Number;
-            for (int i = 1 ; i < list.Count ; i++) {
-                var second = UScheme.Eval(list[i], env) as Number;
+
+            var first = UScheme.Eval(list.First, env) as Number;
+            foreach (var exp in list.Rest().Iterate()) {
+                var second = UScheme.Eval(exp, env) as Number;
                 if (compFunc(first, second) != expected)
                     return Boolean.FALSE;
                 else
                     first = second;
             }
+
             return Boolean.TRUE;
         }
 
-        public static readonly Procedure EQUALS = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure EQUALS = new Procedure((Cell parameters, Env env) => {
             return PairwiseComparison(NumberEquals, true, parameters, env);
         });
 
-        public static readonly Procedure LESSTHAN = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure LESSTHAN = new Procedure((Cell parameters, Env env) => {
             return PairwiseComparison(NumberLessThan, true, parameters, env);
         });
 
-        public static readonly Procedure LESSOREQUALTHAN = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure LESSOREQUALTHAN = new Procedure((Cell parameters, Env env) => {
             return PairwiseComparison(NumberLessOrEqualThan, true, parameters, env);
         });
 
-        public static readonly Procedure GREATERTHAN = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure GREATERTHAN = new Procedure((Cell parameters, Env env) => {
             return PairwiseComparison(NumberLessOrEqualThan, false, parameters, env);
         });
 
-        public static readonly Procedure GREATEROREQUALTHAN = new Procedure((UList parameters, Env env) => {
+        public static readonly Procedure GREATEROREQUALTHAN = new Procedure((Cell parameters, Env env) => {
             return PairwiseComparison(NumberLessThan, false, parameters, env);
         });
 

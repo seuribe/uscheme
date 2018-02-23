@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UScheme {
 
-    public delegate Exp EvalProc(UList argumentValues, Env env);
+    public delegate Exp EvalProc(Cell argumentList, Env env);
 
     public class UScheme {
 
@@ -17,15 +17,15 @@ namespace UScheme {
             if (exp is Symbol)    // env-defined variables
                 return env.Get(exp.ToString());
 
-            if (exp is UList)
-                return EvalList(exp as UList, env);
+            if (exp is Cell)
+                return EvalList(exp as Cell, env);
 
             return exp; // atoms like integer, float, etc.
         }
 
-        static Exp EvalSequential(UList expressions, Env env) {
+        static Exp EvalSequential(Cell expressions, Env env) {
             Exp ret = null;
-            foreach (var e in expressions)
+            foreach (var e in expressions.Iterate())
                 ret = Eval(e, env);
 
             return ret;
@@ -45,29 +45,33 @@ namespace UScheme {
                 { Symbol.QUOTE, EvalQuote },
             };
 
-        static Exp EvalList(UList list, Env env) {
+        static Exp EvalList(Cell list, Env env) {
             if (predefinedProcedures.TryGetValue(list.First, out EvalProc evalProc))
-                return evalProc(list.Tail(), env);
+                return evalProc(list.Rest(), env);
 
             var evaluatedParameters = EvalEach(list, env);
             var procedure = evaluatedParameters.First as Procedure;
-            return procedure.Eval(evaluatedParameters.Tail());
+            return procedure.Eval(evaluatedParameters.Rest());
         }
 
-        private static UList EvalEach(UList parameters, Env env) {
-            return new UList(parameters.Select(e => UScheme.Eval(e, env)));
+        private static Cell EvalEach(Cell parameters, Env env) {
+            var list = new List<Exp>();
+            foreach (var exp in parameters.Iterate())
+                list.Add(Eval(exp, env));
+
+            return Cell.BuildList(list);
         }
 
-        private static Exp EvalQuote(UList parameters, Env env) {
+        private static Exp EvalQuote(Cell parameters, Env env) {
             return parameters.First;
         }
 
-        private static Exp EvalIf(UList parameters, Env env) {
+        private static Exp EvalIf(Cell parameters, Env env) {
             return Eval(Boolean.IsTrue(Eval(parameters.First, env)) ? parameters.Second : parameters.Third, env);
         }
 
-        private static Exp EvalCond(UList parameters, Env env) {
-            for (int i = 0; i < parameters.Count/2; i++) {
+        private static Exp EvalCond(Cell parameters, Env env) {
+            for (int i = 0; i < parameters.Length()/2; i++) {
                 var condition = parameters[i * 2];
                 if ((Eval(condition, env) as Boolean).Value)
                     return Eval(parameters[i * 2 + 1], env);
@@ -75,46 +79,52 @@ namespace UScheme {
             return Boolean.FALSE;
         }
 
-        private static Exp EvalLambda(UList parameters, Env env) {
-            var argNames = (parameters.First as UList).ToStrings();
+        private static Exp EvalLambda(Cell parameters, Env env) {
+            var argNames = (parameters.First as Cell).ToStringList();
             var body = parameters.Second;
             return new Procedure(argNames, body, env);
         }
 
-        private static Exp EvalSet(UList parameters, Env env) {
+        private static Exp EvalSet(Cell parameters, Env env) {
             var name = parameters.First.ToString();
             var value = Eval(parameters.Second, env);
             return env.Find(name).Bind(name, value);
         }
 
-        private static Exp EvalDefine(UList parameters, Env env) {
-            if (parameters.First is UList)
-                return DefineFunc(parameters.First as UList, parameters.Second, env);
+        private static Exp EvalDefine(Cell parameters, Env env) {
+            if (parameters.First is Cell)
+                return DefineFunc(parameters.First as Cell, parameters.Second, env);
 
             var name = parameters.First.ToString();
             var value = Eval(parameters.Second, env);
             return env.Bind(name, value);
         }
 
-        private static Exp DefineFunc(UList defineParameters, Exp body, Env env) {
+        private static Exp DefineFunc(Cell defineParameters, Exp body, Env env) {
             var name = defineParameters.First.ToString();
-            var procParameters = defineParameters.Tail().ToStrings();
+            var procParameters = defineParameters.Rest().ToStringList();
             return env.Bind(name, new Procedure(procParameters, body, env));
         }
 
 
-        private static Exp EvalLet(UList parameters, Env env) {
+        private static Exp EvalLet(Cell parameters, Env env) {
             var letEnv = new Env(env);
-            letEnv.BindDefinitions(parameters.First as UList);
+            letEnv.BindDefinitions(parameters.First as Cell);
             return Eval(parameters.Second, letEnv);
         }
 
-        private static Exp EvalAnd(UList expressions, Env env) {
-            return Boolean.Get(expressions.All(exp => Boolean.IsTrue(Eval(exp, env))));
+        private static Exp EvalAnd(Cell expressions, Env env) {
+            foreach (var exp in expressions.Iterate())
+                if (!Boolean.IsTrue(Eval(exp, env)))
+                    return Boolean.FALSE;
+            return Boolean.TRUE;
         }
 
-        private static Exp EvalOr(UList expressions, Env env) {
-            return Boolean.Get(expressions.Any(exp => Boolean.IsTrue(Eval(exp, env))));
+        private static Exp EvalOr(Cell expressions, Env env) {
+            foreach (var exp in expressions.Iterate())
+                if (Boolean.IsTrue(Eval(exp, env)))
+                    return Boolean.TRUE;
+            return Boolean.FALSE;
         }
     }
 }
