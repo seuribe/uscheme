@@ -130,6 +130,23 @@ namespace UScheme {
                         continue;
                     }
                 } else if (list.First == Symbol.OR) {
+                    if (list.cdr == Cell.Null) {
+                        result = Boolean.FALSE;
+                        stack.Pop();
+                    } else if (list.Second is Boolean) {
+                        if (Boolean.IsTrue(list.Second)) {
+                            result = Boolean.TRUE;
+                            stack.Pop();
+                        } else {
+                            var third = list.Rest().Rest(); // second is true, remove it and try third
+                            list.cdr = third;
+                            continue;
+                        }
+                    } else {
+                        // second is not a boolean
+                        stack.Push(new Frame { exp = list.Second, env = env, destination = list.Rest() });
+                        continue;
+                    }
                 } else if (list.First == Symbol.COND) {
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
