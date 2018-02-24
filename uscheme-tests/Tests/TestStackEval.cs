@@ -78,12 +78,54 @@ namespace UScheme.Tests {
             ThenBooleanResultIs(true);
         }
 
+        [Test]
+        public void DefineSimpleValue() {
+            WhenEvaluating("(define x 10)");
+            WhenEvaluating("x");
+            ThenIntegerResultIs(10);
+        }
+
+        [Test]
+        public void CanRedefineValues() {
+            WhenEvaluating("(define x 10)");
+            WhenEvaluating("x");
+            ThenIntegerResultIs(10);
+            WhenEvaluating("(define x 11)");
+            WhenEvaluating("x");
+            ThenIntegerResultIs(11);
+        }
+
+        [Test]
+        public void DefineProcedure() {
+            WhenEvaluating("(define (f x) (+ 1 x))");
+            ThenResultIs<SchemeProcedure>();
+            WhenEvaluating("(f 7)");
+            ThenIntegerResultIs(8);
+        }
+
+        [Test]
+        public void DefineOnlyInCurrentScope() {
+            WhenEvaluating("(define (f x) (begin (define k 10) (+ x k)))");
+            WhenEvaluating("(f 7)");
+            ThenIntegerResultIs(17);
+            ThrowsEvalExceptionWhenEvaluating("k");
+        }
+
+        [Test]
+        public void CannotSetUndefinedValues() {
+            ThrowsEvalExceptionWhenEvaluating("(set! x 78)");
+        }
+
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }
 
         protected new void WhenEvaluating(string str) {
             evalResult = UScheme.StackEval(Parser.Parse(str), initialEnv);
+        }
+
+        protected void ThrowsEvalExceptionWhenEvaluating(string str) {
+            Assert.Throws(typeof(EvalException), () => WhenEvaluating(str));
         }
 
         protected void ThenResultIsProcedureAnd(Action<SchemeProcedure> assertion) {

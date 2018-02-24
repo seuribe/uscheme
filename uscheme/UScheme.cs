@@ -53,6 +53,30 @@ namespace UScheme {
                 } else if (list.First == Symbol.QUOTE) {
                     result = list.Second;
                     stack.Pop();
+                } else if (list.First == Symbol.DEFINE) {
+                    if (list.Second is Cell) { // (define (f x y z) ... )
+                        var declaration = list.Second as Cell;
+                        var name = declaration.First.ToString();
+                        var argNames = declaration.Rest().ToStringList();
+                        var body = list.Third;
+                        result = env.Bind(name, new SchemeProcedure(argNames, body, env));
+                        stack.Pop();
+                    } else { // (define f ...)
+                        if (current.paramsEvaluated) {
+                            var name = list.Second.ToString();
+                            result = env.Bind(name, list.Third);
+                            stack.Pop();
+                        } else {
+                            current.paramsEvaluated = true;
+                            stack.Push(new Frame { exp = list.Third, env = env, destination = list.Rest().Rest() });
+                            continue;
+                        }
+                    }
+                        var name = list.Second.ToString();
+                        var value = Eval(list.Third, env);
+                        result = env.Bind(name, value);
+                        stack.Pop();
+                    }
                 } else if (list.First == Symbol.BEGIN) {
                     stack.Pop();
                     foreach (var seqExp in list.Rest().Reverse().Iterate())
