@@ -6,6 +6,8 @@ namespace UScheme.Tests {
     public class TestEval : TestConstants {
 
         Env initialEnv;
+        Exp evalResult;
+
         [SetUp]
         public void SetUp() {
             initialEnv = Env.InitialEnv();
@@ -15,35 +17,56 @@ namespace UScheme.Tests {
         [TestCase("-1", -1)]
         [TestCase("1000", 1000)]
         public void EvalIntegerNumberFromString(string str, int number) {
-            var exp = EvalString(str);
-            Assert.IsInstanceOf<IntegerNumber>(exp);
-            Assert.AreEqual(number, (exp as IntegerNumber).IntValue);
+            WhenEvaluating(str);
+            ThenIntegerResultIs(number);
         }
 
         [TestCase("0.5478", 0.5478f)]
         [TestCase("-100.9", -100.9f)]
         [TestCase("4823089.43943", 4823089.43943f)]
         public void EvalRealNumberFromString(string str, float number) {
-            var exp = EvalString(str);
-            Assert.IsInstanceOf<RealNumber>(exp);
-            Assert.AreEqual(number, (exp as RealNumber).FloatValue);
+            WhenEvaluating(str);
+            ThenRealResultIs(number);
         }
 
         [Test]
         public void EvalSimpleAddition() {
-            var exp = EvalString(SimpleSum);
-            Assert.AreEqual(SimpleSumResult.IntValue, (exp as IntegerNumber).IntValue);
+            WhenEvaluating(SimpleSum);
+            ThenIntegerResultIs(SimpleSumResult);
         }
 
         [Test]
         public void EvalNestedAddition() {
-            var exp = EvalString(NestedSum);
-            Assert.AreEqual(NestedSumResult.IntValue, (exp as IntegerNumber).IntValue);
+            WhenEvaluating(NestedSum);
+            ThenIntegerResultIs(NestedSumResult);
         }
 
-        Exp EvalString(string str) {
-            var exp = Parser.Parse(str);
-            return UScheme.Eval(exp, initialEnv);
+        [Test]
+        public void FunctionLambdaApplication() {
+            WhenEvaluating("((lambda (x) (+ 1 x)) 4)");
+            ThenIntegerResultIs(5);
+        }
+
+        void WhenEvaluating(string str) {
+            evalResult = UScheme.Eval(Parser.Parse(str), initialEnv);
+        }
+
+        void ThenRealResultIs(RealNumber number) {
+            ThenRealResultIs(number.FloatValue);
+        }
+
+        void ThenRealResultIs(float result) {
+            Assert.IsInstanceOf<RealNumber>(evalResult);
+            Assert.AreEqual(result, (evalResult as RealNumber).FloatValue);
+        }
+
+        void ThenIntegerResultIs(IntegerNumber number) {
+            ThenIntegerResultIs(number.IntValue);
+        }
+
+        void ThenIntegerResultIs(int result) {
+            Assert.IsInstanceOf<IntegerNumber>(evalResult);
+            Assert.AreEqual(result, (evalResult as IntegerNumber).IntValue);
         }
     }
 }
