@@ -7,6 +7,9 @@ namespace UScheme.Tests {
         protected static readonly string NestedSum = "(+ 3 (+ 1 2) 4)";
         protected static readonly List<string> NestedSumTokens = new List<string> { "(", "+", "3", "(", "+", "1", "2", ")", "4", ")" };
 
+        protected static readonly IntegerNumber SimpleSumResult = new IntegerNumber(3);
+        protected static readonly IntegerNumber NestedSumResult = new IntegerNumber(10);
+
         protected static readonly Symbol PlusSymbol = Symbol.From("+");
         protected static readonly IntegerNumber Number1 = new IntegerNumber(1);
         protected static readonly IntegerNumber Number2 = new IntegerNumber(2);
