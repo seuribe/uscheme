@@ -107,5 +107,9 @@ namespace UScheme.Tests {
             Assert.IsInstanceOf<Boolean>(evalResult);
             Assert.AreEqual(value, (evalResult as Boolean).Value);
         }
+
+        protected void ThenResultIsExp(Exp expression) {
+            Assert.IsTrue(expression.UEquals(evalResult));
+        }
     }
 }

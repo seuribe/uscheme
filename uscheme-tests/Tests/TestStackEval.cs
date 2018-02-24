@@ -38,6 +38,14 @@ namespace UScheme.Tests {
             ThenIntegerResultIs(1);
         }
 
+        [Test]
+        public void StackEvalQuote() {
+            WhenEvaluating("'(1 2 3)");
+            ThenResultIsExp(Cell.BuildList(Number1, Number2, Number3));
+            WhenEvaluating("(quote (1 2 3))");
+            ThenResultIsExp(Cell.BuildList(Number1, Number2, Number3));
+        }
+
         protected new void WhenEvaluating(string str) {
             evalResult = UScheme.StackEval(Parser.Parse(str), initialEnv);
         }

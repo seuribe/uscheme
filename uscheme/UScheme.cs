@@ -47,6 +47,9 @@ namespace UScheme {
                 } else if (!(exp is Cell)) { // atoms like integer, float, etc.
                     result = exp;
                     stack.Pop();
+                } else if (list.First == Symbol.QUOTE) {
+                    result = list.Second;
+                    stack.Pop();
                 } else if (list.First == Symbol.IF) {
                     if (list.Second is Boolean)
                         current.exp = Boolean.IsTrue(list.Second) ? list.Third : list.Fourth;
