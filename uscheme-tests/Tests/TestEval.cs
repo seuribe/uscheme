@@ -47,8 +47,20 @@ namespace UScheme.Tests {
             ThenIntegerResultIs(5);
         }
 
+        [Test]
+        public void DefineAndCallProcedure() {
+            WhenEvaluating("(define (f x) (+ 1 x))");
+            ThenResultIs<SchemeProcedure>();
+            WhenEvaluating("(f 2)");
+            ThenIntegerResultIs(3);
+        }
+
         void WhenEvaluating(string str) {
             evalResult = UScheme.Eval(Parser.Parse(str), initialEnv);
+        }
+
+        void ThenResultIs<T>() where T : Exp {
+            Assert.IsInstanceOf<T>(evalResult);
         }
 
         void ThenRealResultIs(RealNumber number) {
