@@ -55,6 +55,28 @@ namespace UScheme.Tests {
             ThenIntegerResultIs(3);
         }
 
+        [Test]
+        public void BasicIf() {
+            WhenEvaluating("(if #t 1 2)");
+            ThenIntegerResultIs(1);
+        }
+
+        [Test]
+        public void IfExpandsCondition() {
+            WhenEvaluating("(if (< 1 0) 1 2)");
+            ThenIntegerResultIs(2);
+        }
+
+        [Test]
+        public void IfExpandsOnlyExpectedBranch() {
+            WhenEvaluating("(define r 0)");
+            WhenEvaluating("r");
+            ThenIntegerResultIs(0);
+            WhenEvaluating("(if #t (set! r 1) (set! r 2))");
+            WhenEvaluating("r");
+            ThenIntegerResultIs(1);
+        }
+
         void WhenEvaluating(string str) {
             evalResult = UScheme.Eval(Parser.Parse(str), initialEnv);
         }
