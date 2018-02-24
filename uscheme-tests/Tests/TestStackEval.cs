@@ -148,6 +148,27 @@ namespace UScheme.Tests {
             ThrowsEvalExceptionWhenEvaluating("(set! x 78)");
         }
 
+        [Test]
+        public void EmptyAndIsTrue() {
+            WhenEvaluating("(and)");
+            ThenBooleanResultIs(true);
+        }
+
+        [TestCase("(and #f)", false)]
+        [TestCase("(and #t #t #t)", true)]
+        [TestCase("(and #t #f #t)", false)]
+        public void AndWithValues(string expression, bool expected) {
+            WhenEvaluating(expression);
+            ThenBooleanResultIs(expected);
+        }
+
+        [TestCase("(and (< 0 1) (> 6 2) #t)", true)]
+        [TestCase("(and (= 0 1) #t #t)", false)]
+        public void AndWithNestedExpressions(string expression, bool expected) {
+            WhenEvaluating(expression);
+            ThenBooleanResultIs(expected);
+        }
+
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }
