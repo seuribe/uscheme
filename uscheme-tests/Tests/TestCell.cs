@@ -8,6 +8,7 @@ namespace UScheme.Tests {
 
         static Cell CList;
         static Cell ABACList;
+        static Cell CABAList;
         static Cell ABCell;
         static Cell CABCell;
         static Cell ABCCellFromList;
@@ -23,6 +24,7 @@ namespace UScheme.Tests {
             BCCellFromList = Cell.BuildList(SymbolB, SymbolC);
             CList = Cell.BuildList(SymbolC);
             ABACList = Cell.BuildList(SymbolA, SymbolB, SymbolA, SymbolC);
+            CABAList = Cell.BuildList(SymbolC, SymbolA, SymbolB, SymbolA);
         }
 
         [Test]
@@ -186,6 +188,11 @@ namespace UScheme.Tests {
             var expected = Cell.BuildList(SymbolA, SymbolB, SymbolA, SymbolC, SymbolC);
             list.car = SymbolB;
             Assert.AreEqual(SymbolA, ABACList.car);
+        }
+
+        [Test]
+        public void Reverse() {
+            Assert.IsTrue(ABACList.UEquals(CABAList.Reverse()));
         }
     }
 }

@@ -118,6 +118,13 @@ namespace UScheme {
             }
         }
 
+        public Cell Reverse() {
+            EnsureIsList();
+            var asList = new List<Exp>(Iterate());
+            asList.Reverse();
+            return BuildList(asList);
+        }
+
         Cell NthCell(int index) {
             if (index == 0)
                 return this;
