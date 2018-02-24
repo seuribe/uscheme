@@ -36,8 +36,8 @@ namespace UScheme
 
         public abstract bool IsInteger();
 
-        static Procedure BinaryOperation<TResult>(Func<Number, Number, TResult> op) where TResult : Exp {
-            return new Procedure(list => {
+        static CSharpProcedure BinaryOperation<TResult>(Func<Number, Number, TResult> op) where TResult : Exp {
+            return new CSharpProcedure(list => {
                 StdLib.EnsureArity(list, 2);
                 var first = list.First as Number;
                 var second = list.Second as Number;
@@ -45,24 +45,24 @@ namespace UScheme
             });
         }
 
-        static readonly Procedure BinaryAdd = BinaryOperation(Add);
-        static readonly Procedure BinarySub = BinaryOperation(Sub);
-        static readonly Procedure BinaryMult = BinaryOperation(Mult);
-        static readonly Procedure BinaryDiv = BinaryOperation(Div);
+        static readonly CSharpProcedure BinaryAdd = BinaryOperation(Add);
+        static readonly CSharpProcedure BinarySub = BinaryOperation(Sub);
+        static readonly CSharpProcedure BinaryMult = BinaryOperation(Mult);
+        static readonly CSharpProcedure BinaryDiv = BinaryOperation(Div);
 
-        public static readonly Procedure MULT = new Procedure(parameters => {
+        public static readonly CSharpProcedure MULT = new CSharpProcedure(parameters => {
             return StdLib.FoldlBase(BinaryMult, parameters);
         });
 
-        public static readonly Procedure DIV = new Procedure(parameters => {
+        public static readonly CSharpProcedure DIV = new CSharpProcedure(parameters => {
             return StdLib.FoldlBase(BinaryDiv, parameters);
         });
 
-        public static readonly Procedure ADD = new Procedure(parameters => {
+        public static readonly CSharpProcedure ADD = new CSharpProcedure(parameters => {
             return StdLib.FoldlBase(BinaryAdd, parameters);
         });
 
-        public static readonly Procedure SUB = new Procedure(parameters => {
+        public static readonly CSharpProcedure SUB = new CSharpProcedure(parameters => {
             return StdLib.FoldlBase(BinarySub, parameters);
         });
 
@@ -81,23 +81,23 @@ namespace UScheme
             return Boolean.TRUE;
         }
 
-        public static readonly Procedure EQUALS = new Procedure(parameters => {
+        public static readonly CSharpProcedure EQUALS = new CSharpProcedure(parameters => {
             return PairwiseComparison(NumberEquals, true, parameters);
         });
 
-        public static readonly Procedure LESSTHAN = new Procedure(parameters => {
+        public static readonly CSharpProcedure LESSTHAN = new CSharpProcedure(parameters => {
             return PairwiseComparison(NumberLessThan, true, parameters);
         });
 
-        public static readonly Procedure LESSOREQUALTHAN = new Procedure(parameters => {
+        public static readonly CSharpProcedure LESSOREQUALTHAN = new CSharpProcedure(parameters => {
             return PairwiseComparison(NumberLessOrEqualThan, true, parameters);
         });
 
-        public static readonly Procedure GREATERTHAN = new Procedure(parameters => {
+        public static readonly CSharpProcedure GREATERTHAN = new CSharpProcedure(parameters => {
             return PairwiseComparison(NumberLessOrEqualThan, false, parameters);
         });
 
-        public static readonly Procedure GREATEROREQUALTHAN = new Procedure(parameters => {
+        public static readonly CSharpProcedure GREATEROREQUALTHAN = new CSharpProcedure(parameters => {
             return PairwiseComparison(NumberLessThan, false, parameters);
         });
 

@@ -1,58 +1,62 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace UScheme {
-    public class Procedure : Exp {
-        private List<string> argumentNames;
-        private Exp body;
-        private Env env;
 
-        readonly ProcedureBody applyBody;
+    public interface Procedure : Exp {
+        Exp Apply(Cell values);
+        Env Env { get;  }
+    }
 
-        public Procedure() { }
+    public class CSharpProcedure : Procedure {
+        readonly ProcedureBody body;
 
-        public Procedure(List<string> argumentNames, Exp body, Env env) {
-            this.argumentNames = argumentNames;
+        public CSharpProcedure(ProcedureBody body) {
             this.body = body;
-            this.env = env;
-            applyBody = UserDefinedBody;
         }
 
-        public Procedure(ProcedureBody body) {
-            applyBody = body;
-        }
+        public Env Env { get => Env.Global; }
 
         public Exp Apply(Cell values) {
-            return applyBody(values);
-        }
-
-        public Exp Apply(Exp first) {
-            return applyBody(Cell.BuildList(first));
-        }
-
-        public Exp Apply(Exp first, Exp second) {
-            return applyBody(Cell.BuildList(first, second));
-        }
-
-        // externalEnv parameter is needed only for complying with EvalProc delegate
-        private Exp UserDefinedBody(Cell values) {
-            var callEnvironment = CreateCallEnvironment(values, env);
-            return UScheme.Eval(body, callEnvironment);
-        }
-
-        Env CreateCallEnvironment(Cell callValues, Env outerEnv) {
-            StdLib.EnsureArity(callValues, argumentNames.Count);
-            var evalEnv = new Env(outerEnv);
-            for (int i = 0; i < argumentNames.Count; i++)
-                evalEnv.Bind(argumentNames[i], callValues[i]);
-
-            return evalEnv;
+            return body(values);
         }
 
         public bool UEquals(Exp other) {
             if (other == this)
                 return true;
 
-            var proc = other as Procedure;
+            var proc = other as CSharpProcedure;
+            if (proc == null)
+                return false;
+
+            return body == proc.body;
+        }
+    }
+
+    public class SchemeProcedure : Procedure {
+        public List<string> ArgumentNames { get { return argumentNames; } }
+        private List<string> argumentNames;
+        private Exp body;
+        private Env env;
+
+        public Exp Body { get => body; }
+        public Env Env { get => env; }
+
+        public SchemeProcedure(List<string> argumentNames, Exp body, Env env) {
+            this.argumentNames = argumentNames;
+            this.body = body;
+            this.env = env;
+        }
+
+        public Exp Apply(Cell values) {
+            return UScheme.Eval(body, env);
+        }
+
+        public bool UEquals(Exp other) {
+            if (other == this)
+                return true;
+
+            var proc = other as SchemeProcedure;
             if (proc == null)
                 return false;
 

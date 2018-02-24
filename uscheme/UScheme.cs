@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace UScheme {
-
     public delegate Exp ProcedureBody(Cell argumentList);
     public delegate Exp InternalForm(Cell argumentList, Env env);
 
     public class UScheme {
 
-        static Dictionary<Exp, InternalForm> predefinedProcedures
+        readonly static Dictionary<Exp, InternalForm> SyntacticKeywords
             = new Dictionary<Exp, InternalForm> {
                 { Symbol.DEFINE, EvalDefine },
                 { Symbol.COND, EvalCond },
@@ -31,12 +32,30 @@ namespace UScheme {
                 return exp;
 
             var list = exp as Cell;
-            if (predefinedProcedures.TryGetValue(list.First, out InternalForm internalForm))
+            if (SyntacticKeywords.TryGetValue(list.First, out InternalForm internalForm))
                 return internalForm(list.Rest(), env);
 
             var evaluatedParameters = EvalEach(list, env);
-            var procedure = evaluatedParameters.First as Procedure;
-            return procedure.Apply(evaluatedParameters.Rest());
+            var procedure = evaluatedParameters.First;
+            var parameters = evaluatedParameters.Rest();
+
+            if (procedure is CSharpProcedure)
+                return (procedure as CSharpProcedure).Apply(parameters);
+
+            return Eval((procedure as SchemeProcedure).Body, CreateCallEnvironment(procedure as SchemeProcedure, parameters, env));
+        }
+
+        public static Exp Apply(Procedure proc, Cell parameters) {
+            return Eval(Cell.BuildList(proc, parameters), proc.Env);
+        }
+
+        static Env CreateCallEnvironment(SchemeProcedure procedure, Cell callValues, Env outerEnv) {
+            StdLib.EnsureArity(callValues, procedure.ArgumentNames.Count);
+            var evalEnv = new Env(outerEnv);
+            for (int i = 0 ; i < procedure.ArgumentNames.Count ; i++)
+                evalEnv.Bind(procedure.ArgumentNames[i], callValues[i]);
+
+            return evalEnv;
         }
 
         static Exp EvalSequential(Cell expressions, Env env) {
@@ -71,7 +90,7 @@ namespace UScheme {
         private static Exp EvalLambda(Cell parameters, Env env) {
             var argNames = (parameters.First as Cell).ToStringList();
             var body = parameters.Second;
-            return new Procedure(argNames, body, env);
+            return new SchemeProcedure(argNames, body, env);
         }
 
         private static Exp EvalSet(Cell parameters, Env env) {
@@ -92,7 +111,7 @@ namespace UScheme {
         private static Exp DefineFunc(Cell defineParameters, Exp body, Env env) {
             var name = defineParameters.First.ToString();
             var procParameters = defineParameters.Rest().ToStringList();
-            return env.Bind(name, new Procedure(procParameters, body, env));
+            return env.Bind(name, new SchemeProcedure(procParameters, body, env));
         }
 
         private static Exp EvalLet(Cell parameters, Env env) {
