@@ -101,6 +101,16 @@ namespace UScheme {
                     var body = list.Third;
                     result = new SchemeProcedure(argNames, body, env);
                     stack.Pop();
+                } else if (list.First == Symbol.LET) { // (let ((x ...) (y ...)) ... )
+                    var definitions = list.Second as Cell;
+                    var body = list.Third;
+                    current.env = new Env(env);
+                    current.exp = body;
+                    foreach (Cell definition in definitions.Iterate()) // replace each definitions with a define form
+                        stack.Push(new Frame {
+                            exp = Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
+                            env = current.env });
+                    continue;
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
                         current.exp = (list.First as CSharpProcedure).Apply(list.Rest());

@@ -1,6 +1,6 @@
 ﻿
 namespace UScheme {
-    class UString : Exp {
+    public class UString : Exp {
         public readonly string str;
         public UString(string str) {
             this.str = str;

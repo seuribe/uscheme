@@ -122,6 +122,28 @@ namespace UScheme.Tests {
         }
 
         [Test]
+        public void LetDefinesValues() {
+            WhenEvaluating("(let ((x 10) (y 20)) (+ x y))");
+            ThenIntegerResultIs(30);
+        }
+
+        [Test]
+        public void LetValuesNotInOutsideEnv() {
+            WhenEvaluating("(define x \"sasasa\")");
+            WhenEvaluating("(let ((x 10) (y 20)) (+ x y))");
+            WhenEvaluating("x");
+            ThenStringResultIs("sasasa");
+            ThrowsEvalExceptionWhenEvaluating("y");
+        }
+
+        [Test]
+        public void LetDoesNotOverrideOutsideScope() {
+            WhenEvaluating("(let ((x 10) (y 20)) (+ x y))");
+            ThrowsEvalExceptionWhenEvaluating("x");
+            ThrowsEvalExceptionWhenEvaluating("y");
+        }
+
+        [Test]
         public void CannotSetUndefinedValues() {
             ThrowsEvalExceptionWhenEvaluating("(set! x 78)");
         }
@@ -133,16 +155,5 @@ namespace UScheme.Tests {
         protected new void WhenEvaluating(string str) {
             evalResult = UScheme.StackEval(Parser.Parse(str), initialEnv);
         }
-
-        protected void ThrowsEvalExceptionWhenEvaluating(string str) {
-            Assert.Throws(typeof(EvalException), () => WhenEvaluating(str));
-        }
-
-        protected void ThenResultIsProcedureAnd(Action<SchemeProcedure> assertion) {
-            ThenResultIs<SchemeProcedure>();
-            var proc = evalResult as SchemeProcedure;
-            assertion(proc);
-        }
-
     }
 }

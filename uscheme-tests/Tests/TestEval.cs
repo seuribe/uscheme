@@ -108,8 +108,24 @@ namespace UScheme.Tests {
             Assert.AreEqual(value, (evalResult as Boolean).Value);
         }
 
+        protected void ThenStringResultIs(string value) {
+            Assert.IsInstanceOf<UString>(evalResult);
+            Assert.AreEqual(value, (evalResult as UString).str);
+        }
+
         protected void ThenResultIsExp(Exp expression) {
             Assert.IsTrue(expression.UEquals(evalResult));
         }
+
+        protected void ThrowsEvalExceptionWhenEvaluating(string str) {
+            Assert.Throws(typeof(EvalException), () => WhenEvaluating(str));
+        }
+
+        protected void ThenResultIsProcedureAnd(Action<SchemeProcedure> assertion) {
+            ThenResultIs<SchemeProcedure>();
+            var proc = evalResult as SchemeProcedure;
+            assertion(proc);
+        }
+
     }
 }
