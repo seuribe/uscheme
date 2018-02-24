@@ -103,6 +103,18 @@ namespace UScheme {
             return cdr as Cell;
         }
 
+        public Cell Skip(int n) {
+            EnsureIsList();
+            return DoSkip(n);
+        }
+
+        Cell DoSkip(int n) {
+            if (n <= 0)
+                return this;
+
+            return (cdr as Cell).DoSkip(n - 1);
+        }
+
         public int Length() {
             EnsureIsList();
             return IsNull ? 0 : (1 + Rest().Length());

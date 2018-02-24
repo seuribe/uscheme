@@ -194,6 +194,24 @@ namespace UScheme.Tests {
             ThenBooleanResultIs(expected);
         }
 
+        [Test]
+        public void CondWithBooleans() {
+            WhenEvaluating("(cond #t 1 #f 2)");
+            ThenIntegerResultIs(1);
+        }
+
+        [Test]
+        public void CondWithNestedExpressions() {
+            WhenEvaluating("(cond (> 1 2) 1 (> 2 1) 2)");
+            ThenIntegerResultIs(2);
+        }
+
+        [Test]
+        public void CondWithAllFalse() {
+            WhenEvaluating("(cond (> 1 2) 1 (> 2 3) 2)");
+            ThenBooleanResultIs(false);
+        }
+
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }

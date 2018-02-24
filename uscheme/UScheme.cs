@@ -147,7 +147,23 @@ namespace UScheme {
                         stack.Push(new Frame { exp = list.Second, env = env, destination = list.Rest() });
                         continue;
                     }
-                } else if (list.First == Symbol.COND) {
+                } else if (list.First == Symbol.COND) { // (cond c1 e2 c2 e3 ... cn en)
+                    if (list.cdr == Cell.Null) { // if none is true behavior is undefined. return false, like OR
+                        result = Boolean.FALSE;
+                        stack.Pop();
+                    } else if (list.Second is Boolean) {
+                        if (Boolean.IsTrue(list.Second)) {
+                            current.exp = list.Third;
+                            continue;
+                        } else {
+                            list.cdr = list.Skip(3); // skip first two parameters
+                            continue;
+                        }
+                    } else {
+                        // second is not a boolean
+                        stack.Push(new Frame { exp = list.Second, env = env, destination = list.Rest() });
+                        continue;
+                    }
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
                         current.exp = (list.First as CSharpProcedure).Apply(list.Rest());
