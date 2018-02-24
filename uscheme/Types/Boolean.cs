@@ -1,6 +1,6 @@
 ﻿
 namespace UScheme {
-    class Boolean : Exp {
+    public class Boolean : Exp {
 
         public bool Value { get { return this == TRUE; } }
 

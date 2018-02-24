@@ -5,8 +5,8 @@ namespace UScheme.Tests {
     [TestFixture]
     public class TestEval : TestConstants {
 
-        Env initialEnv;
-        Exp evalResult;
+        protected Env initialEnv;
+        protected Exp evalResult;
 
         [SetUp]
         public void SetUp() {
@@ -77,30 +77,35 @@ namespace UScheme.Tests {
             ThenIntegerResultIs(1);
         }
 
-        void WhenEvaluating(string str) {
+        protected void WhenEvaluating(string str) {
             evalResult = UScheme.Eval(Parser.Parse(str), initialEnv);
         }
 
-        void ThenResultIs<T>() where T : Exp {
+        protected void ThenResultIs<T>() where T : Exp {
             Assert.IsInstanceOf<T>(evalResult);
         }
 
-        void ThenRealResultIs(RealNumber number) {
+        protected void ThenRealResultIs(RealNumber number) {
             ThenRealResultIs(number.FloatValue);
         }
 
-        void ThenRealResultIs(float result) {
+        protected void ThenRealResultIs(float result) {
             Assert.IsInstanceOf<RealNumber>(evalResult);
             Assert.AreEqual(result, (evalResult as RealNumber).FloatValue);
         }
 
-        void ThenIntegerResultIs(IntegerNumber number) {
+        protected void ThenIntegerResultIs(IntegerNumber number) {
             ThenIntegerResultIs(number.IntValue);
         }
 
-        void ThenIntegerResultIs(int result) {
+        protected void ThenIntegerResultIs(int result) {
             Assert.IsInstanceOf<IntegerNumber>(evalResult);
             Assert.AreEqual(result, (evalResult as IntegerNumber).IntValue);
+        }
+
+        protected void ThenBooleanResultIs(bool value) {
+            Assert.IsInstanceOf<Boolean>(evalResult);
+            Assert.AreEqual(value, (evalResult as Boolean).Value);
         }
     }
 }

@@ -22,6 +22,64 @@ namespace UScheme {
                 { Symbol.IF, EvalIf },
                 { Symbol.QUOTE, EvalQuote }};
 
+
+        class Frame {
+            public Exp exp;
+            public Env env;
+            public bool paramsEvaluated = false;
+            public Cell destination;
+        }
+
+        public static Exp StackEval(Exp exp, Env env) {
+            var stack = new Stack<Frame>();
+            stack.Push(new Frame { exp = exp, env = env });
+
+            Exp result = null;
+            while (stack.Count > 0) {
+                var current = stack.Peek();
+                exp = current.exp;
+                env = current.env;
+                var list = exp as Cell;
+
+                if (exp is Symbol) { // env-defined variables
+                    result = env.Get(exp.ToString());
+                    stack.Pop();
+                } else if (!(exp is Cell)) { // atoms like integer, float, etc.
+                    result = exp;
+                    stack.Pop();
+                } else if (list.First == Symbol.IF) {
+                    if (list.Second is Boolean)
+                        current.exp = Boolean.IsTrue(list.Second) ? list.Third : list.Fourth;
+                    else
+                        stack.Push(new Frame {
+                            exp = list.Second,
+                            env = env,
+                            destination = list.cdr as Cell
+                        });
+                    continue;
+                } else if (list.First is CSharpProcedure) {
+                    if (current.paramsEvaluated)
+                        current.exp = (list.First as CSharpProcedure).Apply(list.Rest());
+                    else {
+                        current.paramsEvaluated = true;
+                        var cell = list.Rest();
+                        while (cell != Cell.Null) {
+                            stack.Push(new Frame { exp = cell.car, env = env, destination = cell });
+                            cell = cell.cdr as Cell;
+                        }
+                    }
+                    continue;
+                } else {
+                    stack.Push(new Frame { exp = list.First, env = env, destination = list });
+                    continue;
+                }
+
+                if (current.destination != null)
+                    current.destination.car = result;
+            }
+            return result;
+        }
+
         public static Exp Eval(Exp exp, Env env) {
             Tracer.Eval(exp);
 
