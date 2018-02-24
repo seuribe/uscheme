@@ -3,3 +3,4 @@ uscheme/bin/
 packages/
 uscheme-tests/bin/
 uscheme-tests/obj/
+.vs/
