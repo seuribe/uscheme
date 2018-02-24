@@ -60,10 +60,30 @@ namespace UScheme {
                             destination = list.cdr as Cell
                         });
                     continue;
+                } else if (list.First == Symbol.LAMBDA) {
+                    var argNames = (list.Second as Cell).ToStringList();
+                    var body = list.Third;
+                    result = new SchemeProcedure(argNames, body, env);
+                    stack.Pop();
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
                         current.exp = (list.First as CSharpProcedure).Apply(list.Rest());
                     else {
+                        current.paramsEvaluated = true;
+                        var cell = list.Rest();
+                        while (cell != Cell.Null) {
+                            stack.Push(new Frame { exp = cell.car, env = env, destination = cell });
+                            cell = cell.cdr as Cell;
+                        }
+                    }
+                    continue;
+                } else if (list.First is SchemeProcedure) {
+                    var proc = list.First as SchemeProcedure;
+                    if (current.paramsEvaluated) {
+                        current.paramsEvaluated = false;
+                        current.exp = proc.Body;
+                        current.env = CreateCallEnvironment(proc, list.Rest(), proc.Env);
+                    } else {
                         current.paramsEvaluated = true;
                         var cell = list.Rest();
                         while (cell != Cell.Null) {

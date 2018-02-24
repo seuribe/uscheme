@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace UScheme.Tests {
     [TestFixture]
@@ -46,8 +48,30 @@ namespace UScheme.Tests {
             ThenResultIsExp(Cell.BuildList(Number1, Number2, Number3));
         }
 
+        [Test]
+        public void LambdaParameters() {
+            WhenEvaluating("(lambda (x) (+ 1 x))");
+            ThenResultIsProcedureAnd(p => ProcedureArgumentNamesAre(p, new List<string> { "x" }));
+        }
+
+        [Test]
+        public void LambdaEvaluation() {
+            WhenEvaluating("((lambda (x) (+ 1 x)) 1)");
+            ThenIntegerResultIs(2);
+        }
+
+        protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
+            CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
+        }
+
         protected new void WhenEvaluating(string str) {
             evalResult = UScheme.StackEval(Parser.Parse(str), initialEnv);
+        }
+
+        protected void ThenResultIsProcedureAnd(Action<SchemeProcedure> assertion) {
+            ThenResultIs<SchemeProcedure>();
+            var proc = evalResult as SchemeProcedure;
+            assertion(proc);
         }
 
     }
