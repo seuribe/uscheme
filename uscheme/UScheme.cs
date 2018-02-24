@@ -28,6 +28,9 @@ namespace UScheme {
             public Env env;
             public bool paramsEvaluated = false;
             public Cell destination;
+            public override string ToString() {
+                return exp.ToString();
+            }
         }
 
         public static Exp StackEval(Exp exp, Env env) {
@@ -50,6 +53,11 @@ namespace UScheme {
                 } else if (list.First == Symbol.QUOTE) {
                     result = list.Second;
                     stack.Pop();
+                } else if (list.First == Symbol.BEGIN) {
+                    stack.Pop();
+                    foreach (var seqExp in list.Rest().Reverse().Iterate())
+                        stack.Push(new Frame { exp = seqExp, env = env, destination = current.destination });
+                    continue;
                 } else if (list.First == Symbol.IF) {
                     if (list.Second is Boolean)
                         current.exp = Boolean.IsTrue(list.Second) ? list.Third : list.Fourth;

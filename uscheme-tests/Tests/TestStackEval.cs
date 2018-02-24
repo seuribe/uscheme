@@ -60,6 +60,24 @@ namespace UScheme.Tests {
             ThenIntegerResultIs(2);
         }
 
+        [Test]
+        public void BeginReturnsLastValue() {
+            WhenEvaluating("(begin 1 2 3)");
+            ThenIntegerResultIs(3);
+        }
+
+        [Test]
+        public void BeginWithNestedExpressions() {
+            WhenEvaluating("(begin 1 2 (> 0 1))");
+            ThenBooleanResultIs(false);
+        }
+
+        [Test]
+        public void BeginWithinOtherExpression() {
+            WhenEvaluating("(< (begin 1 2 (+ 1 2)) 4)");
+            ThenBooleanResultIs(true);
+        }
+
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }
