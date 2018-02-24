@@ -72,10 +72,14 @@ namespace UScheme {
                             continue;
                         }
                     }
+                } else if (list.First == Symbol.SET) {
+                    if (current.paramsEvaluated) {
                         var name = list.Second.ToString();
-                        var value = Eval(list.Third, env);
-                        result = env.Bind(name, value);
+                        result = env.Find(name).Bind(name, list.Third);
                         stack.Pop();
+                    } else {
+                        current.paramsEvaluated = true;
+                        stack.Push(new Frame { exp = list.Third, env = env, destination = list.Rest().Rest() });
                     }
                 } else if (list.First == Symbol.BEGIN) {
                     stack.Pop();
