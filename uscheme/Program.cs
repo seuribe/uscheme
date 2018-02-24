@@ -23,7 +23,7 @@ namespace UScheme {
     class Program {
         static void Main(string[] args) {
             var cmdOptions = new CommandLineOptions(args);
-            var environment = Env.InitialEnv();
+            var environment = Env.Global;
 
             if (cmdOptions.LoadFilename != null)
                 Parser.Load(cmdOptions.LoadFilename, environment);

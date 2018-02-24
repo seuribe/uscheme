@@ -4,11 +4,12 @@ using System.Collections.Generic;
 namespace UScheme {
 
     public class Env {
-        private Dictionary<string, Exp> values = new Dictionary<string, Exp>();
+        private readonly Dictionary<string, Exp> values = new Dictionary<string, Exp>();
+        private readonly Env outer;
 
-        private Env outer = null;
+        public static Env Global = InitialEnv();
 
-        public Env() { }
+        Env() { outer = null; }
 
         public static Env InitialEnv() {
             Env env = new Env();
