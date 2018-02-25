@@ -7,9 +7,14 @@ namespace UScheme.Tests {
 
     public class TestStackEval : TestEval {
 
+        [SetUp]
+        public new void SetUp() {
+            UScheme.SetEvaluator(new StackEvaluator());
+        }
+
         [Test]
         public void StackEvalConstant() {
-            var exp = UScheme.StackEval(Number1, Env.Global);
+            var exp = UScheme.Eval(Number1, Env.Global);
             Assert.AreSame(Number1, exp);
         }
 
@@ -217,7 +222,7 @@ namespace UScheme.Tests {
         }
 
         protected new void WhenEvaluating(string str) {
-            evalResult = UScheme.StackEval(Parser.Parse(str), initialEnv);
+            evalResult = UScheme.Eval(Parser.Parse(str), initialEnv);
         }
     }
 }
