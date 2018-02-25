@@ -47,15 +47,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Evaluator.cs" />
+    <Compile Include="Core\RecursiveEvaluator.cs" />
+    <Compile Include="Core\StackEvaluator.cs" />
     <Compile Include="Libraries\UMath.cs" />
     <Compile Include="Types\Vector.cs" />
     <Compile Include="Util\CharConstants.cs" />
-    <Compile Include="Env.cs" />
+    <Compile Include="Core\Env.cs" />
     <Compile Include="Exception\EvalException.cs" />
     <Compile Include="Exception\UException.cs" />
     <Compile Include="REPL.cs" />
     <Compile Include="Util\SimpleStringReader.cs" />
-    <Compile Include="Tokenizer.cs" />
+    <Compile Include="Core\Tokenizer.cs" />
     <Compile Include="Tracer.cs" />
     <Compile Include="Types\Exp.cs" />
     <Compile Include="Types\Boolean.cs" />
@@ -67,8 +70,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Libraries\StdLib.cs" />
     <Compile Include="Types\Symbol.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="UScheme.cs" />
+    <Compile Include="Core\Parser.cs" />
+    <Compile Include="Core\UScheme.cs" />
     <Compile Include="Types\UString.cs" />
   </ItemGroup>
   <ItemGroup>
