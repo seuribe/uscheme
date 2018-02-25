@@ -20,6 +20,9 @@ namespace UScheme {
 
         void SetResultAndPop(Exp result) {
             this.result = result;
+            var current = stack.Peek();
+            if (current.destination != null)
+                current.destination.car = result;
             stack.Pop();
         }
 
@@ -28,7 +31,7 @@ namespace UScheme {
         }
 
         public Exp Eval(Exp exp, Env env) {
-            stack.Push(new Frame { exp = exp, env = env });
+            Push(exp, env);
 
             while (stack.Count > 0) {
                 var current = stack.Peek();
@@ -56,7 +59,6 @@ namespace UScheme {
                         } else {
                             current.paramsEvaluated = true;
                             Push(list.Third, env, list.Rest().Rest());
-                            continue;
                         }
                     }
                 } else if (list.First == Symbol.SET) {
@@ -71,14 +73,11 @@ namespace UScheme {
                     stack.Pop();
                     foreach (var seqExp in list.Rest().Reverse().Iterate())
                         Push(seqExp, env, current.destination);
-
-                    continue;
                 } else if (list.First == Symbol.IF) {
                     if (list.Second is Boolean)
                         current.exp = Boolean.IsTrue(list.Second) ? list.Third : list.Fourth;
                     else
                         Push(list.Second, env, list.cdr as Cell);
-                    continue;
                 } else if (list.First == Symbol.LAMBDA) {
                     var argNames = (list.Second as Cell).ToStringList();
                     var body = list.Third;
@@ -91,7 +90,6 @@ namespace UScheme {
                     foreach (Cell definition in definitions.Iterate()) 
                         Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
                             current.env);
-                    continue;
                 } else if (list.First == Symbol.AND) {
                     if (list.cdr == Cell.Null) {
                         SetResultAndPop(Boolean.TRUE);
@@ -100,11 +98,9 @@ namespace UScheme {
                             SetResultAndPop(Boolean.FALSE);
                         } else {
                             list.cdr = list.Skip(2);
-                            continue;
                         }
                     } else {
                         Push(list.Second, env, list.Rest());
-                        continue;
                     }
                 } else if (list.First == Symbol.OR) {
                     if (list.cdr == Cell.Null) {
@@ -114,11 +110,9 @@ namespace UScheme {
                             SetResultAndPop(Boolean.TRUE);
                         } else {
                             list.cdr = list.Skip(2);
-                            continue;
                         }
                     } else {
                         Push(list.Second, env, list.Rest());
-                        continue;
                     }
                 } else if (list.First == Symbol.COND) { // (cond c1 e2 c2 e3 ... cn en)
                     if (list.cdr == Cell.Null) { // if none is true behavior is undefined. return false, like OR
@@ -126,15 +120,12 @@ namespace UScheme {
                     } else if (list.Second is Boolean) {
                         if (Boolean.IsTrue(list.Second)) {
                             current.exp = list.Third;
-                            continue;
                         } else {
                             list.cdr = list.Skip(3);
-                            continue;
                         }
                     } else {
                         // second is not a boolean
                         Push(list.Second, env, list.Rest());
-                        continue;
                     }
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
@@ -147,7 +138,6 @@ namespace UScheme {
                             cell = cell.cdr as Cell;
                         }
                     }
-                    continue;
                 } else if (list.First is SchemeProcedure) {
                     var proc = list.First as SchemeProcedure;
                     if (current.paramsEvaluated) {
@@ -162,14 +152,10 @@ namespace UScheme {
                             cell = cell.cdr as Cell;
                         }
                     }
-                    continue;
                 } else {
                     Push(list.First, env, list);
-                    continue;
                 }
 
-                if (current.destination != null)
-                    current.destination.car = result;
             }
             return result;
         }
