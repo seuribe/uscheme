@@ -60,34 +60,18 @@ namespace UScheme {
                         }
                     }
                 } else if (list.First == Symbol.SET) {
-                    if (current.paramsEvaluated) {
-                        var name = list.Second.ToString();
-                        SetResultAndPop(env.Find(name).Bind(name, list.Third));
-                    } else {
-                        current.paramsEvaluated = true;
-                        Push(list.Third, env, list.Rest().Rest());
-                    }
+                    EvalSet();
                 } else if (list.First == Symbol.BEGIN) {
-                    stack.Pop();
-                    foreach (var seqExp in list.Rest().Reverse().Iterate())
-                        Push(seqExp, env, current.destination);
+                    EvalBegin();
                 } else if (list.First == Symbol.IF) {
                     if (list.Second is Boolean)
                         ReplaceCurrent(Boolean.IsTrue(list.Second) ? list.Third : list.Fourth);
                     else
                         Push(list.Second, env, list.cdr as Cell);
                 } else if (list.First == Symbol.LAMBDA) {
-                    var argNames = (list.Second as Cell).ToStringList();
-                    var body = list.Third;
-                    SetResultAndPop(new SchemeProcedure(argNames, body, env));
+                    EvalLambda();
                 } else if (list.First == Symbol.LET) { // (let ((x ...) (y ...)) ... )
-                    var definitions = list.Second as Cell;
-                    var body = list.Third;
-                    var letEnv = new Env(env);
-                    ReplaceCurrent(body, letEnv);
-                    foreach (Cell definition in definitions.Iterate()) 
-                        Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
-                            letEnv);
+                    EvalLet();
                 } else if (list.First == Symbol.AND) {
                     EvalAnd();
                 } else if (list.First == Symbol.OR) {
@@ -111,6 +95,39 @@ namespace UScheme {
 
             }
             return result;
+        }
+
+
+        void EvalBegin() {
+            stack.Pop();
+            foreach (var seqExp in current.AsList.Rest().Reverse().Iterate())
+                Push(seqExp, current.env, current.destination);
+        }
+
+        void EvalSet() {
+            if (current.paramsEvaluated) {
+                var name = current.Second.ToString();
+                SetResultAndPop(current.env.Find(name).Bind(name, current.Third));
+            } else {
+                current.paramsEvaluated = true;
+                Push(current.Third, current.env, current.AsList.Rest().Rest());
+            }
+        }
+
+        void EvalLambda() {
+            var argNames = (current.Second as Cell).ToStringList();
+            var body = current.Third;
+            SetResultAndPop(new SchemeProcedure(argNames, body, current.env));
+        }
+
+        void EvalLet() {
+            var definitions = current.Second as Cell;
+            var body = current.Third;
+            var letEnv = new Env(current.env);
+            ReplaceCurrent(body, letEnv);
+            foreach (Cell definition in definitions.Iterate())
+                Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
+                    letEnv);
         }
 
         bool IsValue(Exp exp) {
