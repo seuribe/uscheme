@@ -48,10 +48,7 @@ namespace UScheme {
                 } else if (list.First == Symbol.BEGIN) {
                     EvalBegin();
                 } else if (list.First == Symbol.IF) {
-                    if (list.Second is Boolean)
-                        ReplaceCurrent(Boolean.IsTrue(list.Second) ? list.Third : list.Fourth);
-                    else
-                        Push(list.Second, env, list.cdr as Cell);
+                    EvalIf();
                 } else if (list.First == Symbol.LAMBDA) {
                     EvalLambda();
                 } else if (list.First == Symbol.LET) { // (let ((x ...) (y ...)) ... )
@@ -62,22 +59,27 @@ namespace UScheme {
                     EvalOr();
                 } else if (list.First == Symbol.COND) { // (cond c1 e2 c2 e3 ... cn en)
                     EvalCond();
-                } else if (list.First is CSharpProcedure) {
-                    if (current.paramsEvaluated)
-                        ReplaceCurrent((list.First as CSharpProcedure).Apply(list.Rest()));
-                    else
-                        EvalParametersInPlace(list.Rest(), env);
-                } else if (list.First is SchemeProcedure) {
-                    var proc = list.First as SchemeProcedure;
-                    if (current.paramsEvaluated)
-                        ReplaceCurrent(proc.Body, CreateCallEnvironment(proc, list.Rest(), proc.Env));
-                    else
-                        EvalParametersInPlace(list.Rest(), env);
-                } else {
-                    Push(list.First, env, list);
-                }
+                } else
+                    EvalProcedure();
             }
             return result;
+        }
+
+        void EvalProcedure() {
+            if (current.First is CSharpProcedure) {
+                if (current.paramsEvaluated)
+                    SetResultAndPop((current.First as CSharpProcedure).Apply(current.AsList.Rest()));
+                else
+                    EvalParametersInPlace(current.AsList.Rest(), current.env);
+            } else if (current.First is SchemeProcedure) {
+                var proc = current.First as SchemeProcedure;
+                if (current.paramsEvaluated)
+                    ReplaceCurrent(proc.Body, CreateCallEnvironment(proc, current.AsList.Rest(), proc.Env));
+                else
+                    EvalParametersInPlace(current.AsList.Rest(), current.env);
+            } else {
+                Push(current.First, current.env, current.AsList);
+            }
         }
 
         void EvalDefine() {
@@ -99,6 +101,13 @@ namespace UScheme {
 
         }
 
+        void EvalIf() {
+            if (!current.paramsEvaluated) {
+                current.paramsEvaluated = true;
+                Push(current.Second, current.env, current.AsList.cdr as Cell);
+            } else
+                ReplaceCurrent(Boolean.IsTrue(current.Second) ? current.Third : current.Fourth);
+        }
 
         void EvalBegin() {
             stack.Pop();
