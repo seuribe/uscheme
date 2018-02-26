@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tests\TestCell.cs" />
+    <Compile Include="Tests\TestCond.cs" />
     <Compile Include="Tests\TestConstants.cs" />
     <Compile Include="Tests\TestParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
