@@ -1,7 +1,7 @@
-# µScheme
+# ÂµScheme
 An unpretentious Scheme interpreter in C#
 
-µScheme is a work-in-progress scheme interpreter aiming for [R6RS](http://www.r6rs.org) compatibility. It's main aims are:
+ÂµScheme is a work-in-progress scheme interpreter aiming for [R6RS](http://www.r6rs.org) compatibility. It's main aims are:
 
 * Easy C# interoperability
 * As standard compliant as possible
