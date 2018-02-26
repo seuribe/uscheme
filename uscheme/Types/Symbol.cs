@@ -12,6 +12,7 @@ namespace UScheme {
         public static readonly Symbol LET = new Symbol("let");
         public static readonly Symbol AND = new Symbol("and");
         public static readonly Symbol OR = new Symbol("or");
+        public static readonly Symbol ELSE = new Symbol("else");
 
         public static readonly Symbol[] ReservedSymbols = new Symbol[] {
             IF, COND, DEFINE, SET, LAMBDA, QUOTE, BEGIN, LET, AND, OR

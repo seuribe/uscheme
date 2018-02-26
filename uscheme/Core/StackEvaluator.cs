@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace UScheme {
 
@@ -92,17 +93,7 @@ namespace UScheme {
                 } else if (list.First == Symbol.OR) {
                     EvalOr();
                 } else if (list.First == Symbol.COND) { // (cond c1 e2 c2 e3 ... cn en)
-                    if (list.cdr == Cell.Null) { // if none is true behavior is undefined. return false, like OR
-                        SetResultAndPop(Boolean.FALSE);
-                    } else if (list.Second is Boolean) {
-                        if (Boolean.IsTrue(list.Second)) {
-                            ReplaceCurrent(list.Third);
-                        } else {
-                            SkipParameters(2);
-                        }
-                    } else {
-                        Push(list.Second, env, list.Rest());
-                    }
+                    EvalCond();
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
                         ReplaceCurrent((list.First as CSharpProcedure).Apply(list.Rest()));
@@ -126,43 +117,55 @@ namespace UScheme {
             return exp is Symbol || !(exp is Cell) || !(exp as Cell).IsList;
         }
 
-        void EvalOr() {
+        void EvalBooleanOperation(Exp initialValue, Action ifFalse, Action ifTrue) {
             if (!current.paramsEvaluated) {
                 current.paramsEvaluated = true;
-                result = Boolean.FALSE;
+                result = initialValue;
             }
 
             if (current.AsList.cdr == Cell.Null) {
                 SetResultAndPop(result);
             } else if (IsValue(current.Second)) {
-                if (Boolean.IsTrue(current.Second)) {
-                    SetResultAndPop(current.Second);
-                } else {
-                    SkipParameters(1);
-                }
+                (Boolean.IsTrue(current.Second) ? ifTrue : ifFalse)();
             } else {
                 Push(current.Second, current.env, current.AsList.Rest());
             }
         }
 
-        void EvalAnd() {
-            if (!current.paramsEvaluated) {
-                current.paramsEvaluated = true;
-                result = Boolean.TRUE;
-            }
-
+        void EvalCond() {
             if (current.AsList.cdr == Cell.Null) {
-                SetResultAndPop(result);
-            } else if (IsValue(current.Second)) {
-                if (Boolean.IsFalse(current.Second)) {
-                    SetResultAndPop(Boolean.FALSE);
-                } else {
-                    result = current.Second;
-                    SkipParameters(1);
-                }
-            } else {
-                Push(current.Second, current.env, current.AsList.Rest());
+                SetResultAndPop(Boolean.FALSE);
+                return;
             }
+            var test = (current.Second as Cell).First;
+            var expression = (current.Second as Cell).Second;
+            if (test.UEquals(Symbol.ELSE)) {
+                ReplaceCurrent(expression);
+                return;
+            }
+            if (!IsValue(test)) {
+                Push((current.Second as Cell).First, current.env, current.Second as Cell);
+                return;
+            }
+            if (Boolean.IsTrue(test)) {
+                ReplaceCurrent(expression);
+            } else {
+                SkipParameters(1);
+            }
+        }
+
+        void EvalOr() {
+            EvalBooleanOperation(Boolean.FALSE,
+                ifFalse: () => SkipParameters(1),
+                ifTrue: () => SetResultAndPop(current.Second)
+                );
+        }
+
+        void EvalAnd() {
+            EvalBooleanOperation(Boolean.TRUE,
+                ifFalse: () => SetResultAndPop(current.Second),
+                ifTrue: () => { result = current.Second; SkipParameters(1); }
+                );
         }
 
         void SkipParameters(int numParams) {
