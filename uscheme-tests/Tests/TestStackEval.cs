@@ -211,13 +211,13 @@ namespace UScheme.Tests {
 
         [Test]
         public void ConsPairsAreNotLists() {
-            WhenEvaluating("(define p (cons 1 2))");
+            WhenEvaluating("(cons 1 2)");
             ThenResultSatisfies(exp => (exp is Cell) && !(exp as Cell).IsList);
         }
 
         [Test]
         public void ListsStartingWithSymbolThrow() {
-            ThrowsEvalExceptionWhenEvaluating("((list 1 2) 1 2)");
+            ThrowsEvalExceptionWhenEvaluating("(1 2)");
         }
 
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
