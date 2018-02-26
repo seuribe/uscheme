@@ -184,6 +184,10 @@ namespace UScheme {
             return sb.ToString();
         }
 
+        public Exp Clone() {
+            return Duplicate(this);
+        }
+
         public bool UEquals(Exp other) {
             if (other == this)
                 return true;

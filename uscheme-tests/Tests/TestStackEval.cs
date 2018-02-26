@@ -217,6 +217,13 @@ namespace UScheme.Tests {
             ThenBooleanResultIs(false);
         }
 
+        [Test]
+        public void TailCallOptimized() {
+            WhenEvaluating("(define (f x) (if (<= x 0) x (f (- x 1))))");
+            WhenEvaluating("(f 10)");
+            ThenIntegerResultIs(0);
+        }
+
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }

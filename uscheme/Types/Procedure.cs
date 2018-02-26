@@ -21,6 +21,10 @@ namespace UScheme {
             return body(values);
         }
 
+        public Exp Clone() {
+            return this;
+        }
+
         public bool UEquals(Exp other) {
             if (other == this)
                 return true;
@@ -50,6 +54,10 @@ namespace UScheme {
 
         public Exp Apply(Cell values) {
             return UScheme.Eval(body, env);
+        }
+
+        public Exp Clone() {
+            return new SchemeProcedure(argumentNames, body.Clone(), env);
         }
 
         public bool UEquals(Exp other) {

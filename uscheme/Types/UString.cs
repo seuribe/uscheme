@@ -18,6 +18,11 @@ namespace UScheme {
         public override string ToString() {
             return CharConstants.DoubleQuote + str + CharConstants.DoubleQuote;
         }
+
+        public Exp Clone() {
+            return this;
+        }
+
         public bool UEquals(Exp other) {
             return (other is UString) && str.Equals((other as UString).str);
         }

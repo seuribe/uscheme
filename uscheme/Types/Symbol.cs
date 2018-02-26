@@ -39,6 +39,10 @@ namespace UScheme {
             return str.Equals(token);
         }
 
+        public Exp Clone() {
+            return this;
+        }
+
         public bool UEquals(Exp other) {
             return other is Symbol && str.Equals((other as Symbol).str);
         }

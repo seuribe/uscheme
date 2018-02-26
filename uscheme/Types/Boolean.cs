@@ -43,6 +43,10 @@ namespace UScheme {
             return this == other;
         }
 
+        public Exp Clone() {
+            return this;
+        }
+
         public static Boolean TRUE = new Boolean(TrueString);
         public static Boolean FALSE = new Boolean(FalseString);
     }

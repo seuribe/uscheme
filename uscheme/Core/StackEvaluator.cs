@@ -141,7 +141,7 @@ namespace UScheme {
 
         void ReplaceCurrent(Exp exp, Env env = null) {
             current.paramsEvaluated = false;
-            current.exp = exp;
+            current.exp = exp.Clone();
             current.env = env ?? current.env;
         }
 
@@ -154,7 +154,7 @@ namespace UScheme {
         }
 
         void Push(Exp exp, Env env, Cell destination = null) {
-            stack.Push(new Frame { exp = exp, env = env, destination = destination });
+            stack.Push(new Frame { exp = exp.Clone(), env = env, destination = destination });
         }
 
         void EvalParametersInPlace(Cell cell, Env env) {

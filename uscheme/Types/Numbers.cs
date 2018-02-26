@@ -110,6 +110,10 @@ namespace UScheme
 
             return number != null;
         }
+
+        public Exp Clone() {
+            return this;
+        }
     }
 
     public class IntegerNumber : Number {

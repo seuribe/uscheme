@@ -21,6 +21,10 @@ namespace UScheme {
 
         public Vector(Cell parameters) : this(parameters.AsList()) { }
 
+        public Exp Clone() {
+            return new Vector(new List<Exp>((Exp[])elements.Clone()));
+        }
+
         public bool UEquals(Exp other) {
             if (this == other)
                 return true;
