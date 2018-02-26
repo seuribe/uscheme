@@ -65,21 +65,28 @@ namespace UScheme {
             return result;
         }
 
+        bool IsSelfEvaluating(Exp exp) {
+            return exp is Number || exp is UString || exp is Boolean || IsPurePair(exp) || exp is Procedure;
+        }
+
+        bool IsPurePair(Exp exp) {
+            return exp is Cell && !(exp as Cell).IsList;
+        }
+
         void EvalProcedure() {
-            if (current.First is CSharpProcedure) {
-                if (current.paramsEvaluated)
-                    SetResultAndPop((current.First as CSharpProcedure).Apply(current.AsList.Rest()));
-                else
-                    EvalParametersInPlace(current.AsList.Rest(), current.env);
-            } else if (current.First is SchemeProcedure) {
+            if (!current.paramsEvaluated)
+                EvalAllInPlace(current.AsList, current.env);
+            else if (current.First is CSharpProcedure)
+                SetResultAndPop((current.First as CSharpProcedure).Apply(current.AsList.Rest()));
+            else if (current.First is SchemeProcedure) {
                 var proc = current.First as SchemeProcedure;
-                if (current.paramsEvaluated)
-                    ReplaceCurrent(proc.Body, CreateCallEnvironment(proc, current.AsList.Rest(), proc.Env));
-                else
-                    EvalParametersInPlace(current.AsList.Rest(), current.env);
-            } else {
-                Push(current.First, current.env, current.AsList);
-            }
+                ReplaceCurrent(proc.Body, CreateCallEnvironment(proc, current.AsList.Rest(), proc.Env));
+            } else
+                throw new EvalException("first element of list is not a procedure: " + current.First);
+        }
+
+        bool IsValue(Exp exp) {
+            return exp is Symbol || !(exp is Cell) || !(exp as Cell).IsList;
         }
 
         void EvalDefine() {
@@ -139,10 +146,6 @@ namespace UScheme {
             foreach (Cell definition in definitions.Iterate())
                 Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
                     letEnv);
-        }
-
-        bool IsValue(Exp exp) {
-            return exp is Symbol || !(exp is Cell) || !(exp as Cell).IsList;
         }
 
         void EvalBooleanOperation(Exp initialValue, Action ifFalse, Action ifTrue) {
@@ -216,10 +219,11 @@ namespace UScheme {
             stack.Push(new Frame { exp = exp.Clone(), env = env, destination = destination });
         }
 
-        void EvalParametersInPlace(Cell cell, Env env) {
+        void EvalAllInPlace(Cell cell, Env env) {
             current.paramsEvaluated = true;
             while (cell != Cell.Null) {
-                Push(cell.car, env, cell);
+                if (!IsSelfEvaluating(cell.car))
+                    Push(cell.car, env, cell);
                 cell = cell.cdr as Cell;
             }
         }
