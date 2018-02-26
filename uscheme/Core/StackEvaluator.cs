@@ -31,14 +31,14 @@ namespace UScheme {
 
             while (stack.Count > 0) {
                 current = stack.Peek();
-                exp = current.exp;
-                env = current.env;
-                var list = exp as Cell;
+                var list = current.exp as Cell;
 
-                if (exp is Symbol) { // env-defined variables
-                    SetResultAndPop(env.Get(exp.ToString()));
-                } else if (!(exp is Cell) || !list.IsList) { // atoms like integer, float, etc. and pairs
-                    SetResultAndPop(exp);
+                if (IsSelfEvaluating(current.exp))
+                    SetResultAndPop(current.exp);
+                else if (current.exp is Symbol) {
+                    SetResultAndPop(current.env.Get(current.exp.ToString()));
+                } else if (!(current.exp is Cell) || !list.IsList) {
+                    SetResultAndPop(current.exp);
                 } else if (list.First == Symbol.QUOTE) {
                     SetResultAndPop(list.Second);
                 } else if (list.First == Symbol.DEFINE) {
