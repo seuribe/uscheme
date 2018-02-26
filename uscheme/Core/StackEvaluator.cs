@@ -10,6 +10,12 @@ namespace UScheme {
             public bool paramsEvaluated = false;
             public Cell destination;
 
+            public Cell AsList => exp as Cell;
+            public Exp First => AsList.First;
+            public Exp Second => AsList.Second;
+            public Exp Third => AsList.Third;
+            public Exp Fourth => AsList.Fourth;
+
             public override string ToString() {
                 return exp.ToString();
             }
