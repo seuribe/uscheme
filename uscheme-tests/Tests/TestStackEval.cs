@@ -19,31 +19,11 @@ namespace UScheme.Tests {
         }
 
         [Test]
-        public void StackEvalIfWithExplicitBooleanTrue() {
-            WhenEvaluating("(if #t 1 2)");
-            ThenResultIs<IntegerNumber>();
-            ThenIntegerResultIs(1);
-        }
-
-        [Test]
-        public void StackEvalIfWithExplicitBooleanFalse() {
-            WhenEvaluating("(if #f 1 2)");
-            ThenResultIs<IntegerNumber>();
-            ThenIntegerResultIs(2);
-        }
-
-        [Test]
         public void StackEvalCSharpProcedure() {
             WhenEvaluating("(< 0 1)");
             ThenBooleanResultIs(true);
         }
 
-        [Test]
-        public void StackEvalIfWithExpressionInCondition() {
-            WhenEvaluating("(if (< 0 1) 1 2)");
-            ThenResultIs<IntegerNumber>();
-            ThenIntegerResultIs(1);
-        }
 
         [Test]
         public void StackEvalQuote() {
@@ -233,6 +213,11 @@ namespace UScheme.Tests {
         public void ConsPairsAreNotLists() {
             WhenEvaluating("(define p (cons 1 2))");
             ThenResultSatisfies(exp => (exp is Cell) && !(exp as Cell).IsList);
+        }
+
+        [Test]
+        public void ListsStartingWithSymbolThrow() {
+            ThrowsEvalExceptionWhenEvaluating("((list 1 2) 1 2)");
         }
 
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
