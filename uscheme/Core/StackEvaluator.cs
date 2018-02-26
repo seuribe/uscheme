@@ -2,7 +2,7 @@
 
 namespace UScheme {
 
-    // Not thread safe
+    // Not thread safe!
     public class StackEvaluator : Evaluator {
         class Frame {
             public Exp exp;
@@ -16,25 +16,14 @@ namespace UScheme {
         }
 
         readonly Stack<Frame> stack = new Stack<Frame>();
+        Frame current;
         Exp result = null;
-
-        void SetResultAndPop(Exp result) {
-            this.result = result;
-            var current = stack.Peek();
-            if (current.destination != null)
-                current.destination.car = result;
-            stack.Pop();
-        }
-
-        void Push(Exp exp, Env env, Cell destination = null) {
-            stack.Push(new Frame { exp = exp, env = env, destination = destination });
-        }
 
         public Exp Eval(Exp exp, Env env) {
             Push(exp, env);
 
             while (stack.Count > 0) {
-                var current = stack.Peek();
+                current = stack.Peek();
                 exp = current.exp;
                 env = current.env;
                 var list = exp as Cell;
@@ -75,7 +64,7 @@ namespace UScheme {
                         Push(seqExp, env, current.destination);
                 } else if (list.First == Symbol.IF) {
                     if (list.Second is Boolean)
-                        current.exp = Boolean.IsTrue(list.Second) ? list.Third : list.Fourth;
+                        ReplaceCurrent(Boolean.IsTrue(list.Second) ? list.Third : list.Fourth);
                     else
                         Push(list.Second, env, list.cdr as Cell);
                 } else if (list.First == Symbol.LAMBDA) {
@@ -85,11 +74,11 @@ namespace UScheme {
                 } else if (list.First == Symbol.LET) { // (let ((x ...) (y ...)) ... )
                     var definitions = list.Second as Cell;
                     var body = list.Third;
-                    current.env = new Env(env);
-                    current.exp = body;
+                    var letEnv = new Env(env);
+                    ReplaceCurrent(body, letEnv);
                     foreach (Cell definition in definitions.Iterate()) 
                         Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
-                            current.env);
+                            letEnv);
                 } else if (list.First == Symbol.AND) {
                     if (list.cdr == Cell.Null) {
                         SetResultAndPop(Boolean.TRUE);
@@ -97,7 +86,7 @@ namespace UScheme {
                         if (Boolean.IsFalse(list.Second)) {
                             SetResultAndPop(Boolean.FALSE);
                         } else {
-                            list.cdr = list.Skip(2);
+                            SkipParameters(1);
                         }
                     } else {
                         Push(list.Second, env, list.Rest());
@@ -109,7 +98,7 @@ namespace UScheme {
                         if (Boolean.IsTrue(list.Second)) {
                             SetResultAndPop(Boolean.TRUE);
                         } else {
-                            list.cdr = list.Skip(2);
+                            SkipParameters(1);
                         }
                     } else {
                         Push(list.Second, env, list.Rest());
@@ -119,45 +108,61 @@ namespace UScheme {
                         SetResultAndPop(Boolean.FALSE);
                     } else if (list.Second is Boolean) {
                         if (Boolean.IsTrue(list.Second)) {
-                            current.exp = list.Third;
+                            ReplaceCurrent(list.Third);
                         } else {
-                            list.cdr = list.Skip(3);
+                            SkipParameters(2);
                         }
                     } else {
-                        // second is not a boolean
                         Push(list.Second, env, list.Rest());
                     }
                 } else if (list.First is CSharpProcedure) {
                     if (current.paramsEvaluated)
-                        current.exp = (list.First as CSharpProcedure).Apply(list.Rest());
-                    else {
-                        current.paramsEvaluated = true;
-                        var cell = list.Rest();
-                        while (cell != Cell.Null) {
-                            Push(cell.car, env, cell);
-                            cell = cell.cdr as Cell;
-                        }
-                    }
+                        ReplaceCurrent((list.First as CSharpProcedure).Apply(list.Rest()));
+                    else
+                        EvalParametersInPlace(list.Rest(), env);
                 } else if (list.First is SchemeProcedure) {
                     var proc = list.First as SchemeProcedure;
-                    if (current.paramsEvaluated) {
-                        current.paramsEvaluated = false;
-                        current.exp = proc.Body;
-                        current.env = CreateCallEnvironment(proc, list.Rest(), proc.Env);
-                    } else {
-                        current.paramsEvaluated = true;
-                        var cell = list.Rest();
-                        while (cell != Cell.Null) {
-                            Push(cell.car, env, cell);
-                            cell = cell.cdr as Cell;
-                        }
-                    }
+                    if (current.paramsEvaluated)
+                        ReplaceCurrent(proc.Body, CreateCallEnvironment(proc, list.Rest(), proc.Env));
+                    else
+                        EvalParametersInPlace(list.Rest(), env);
                 } else {
                     Push(list.First, env, list);
                 }
 
             }
             return result;
+        }
+
+        void SkipParameters(int numParams) {
+            var list = current.exp as Cell;
+            list.cdr = list.Skip(numParams + 1);
+        }
+
+        void ReplaceCurrent(Exp exp, Env env = null) {
+            current.paramsEvaluated = false;
+            current.exp = exp;
+            current.env = env ?? current.env;
+        }
+
+        void SetResultAndPop(Exp result) {
+            this.result = result;
+            var current = stack.Peek();
+            if (current.destination != null)
+                current.destination.car = result;
+            stack.Pop();
+        }
+
+        void Push(Exp exp, Env env, Cell destination = null) {
+            stack.Push(new Frame { exp = exp, env = env, destination = destination });
+        }
+
+        void EvalParametersInPlace(Cell cell, Env env) {
+            current.paramsEvaluated = true;
+            while (cell != Cell.Null) {
+                Push(cell.car, env, cell);
+                cell = cell.cdr as Cell;
+            }
         }
 
         static Env CreateCallEnvironment(SchemeProcedure procedure, Cell callValues, Env outerEnv) {
