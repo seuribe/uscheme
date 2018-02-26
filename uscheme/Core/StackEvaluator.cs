@@ -137,17 +137,14 @@ namespace UScheme {
                 SetResultAndPop(Boolean.FALSE);
                 return;
             }
+
             var test = (current.Second as Cell).First;
             var expression = (current.Second as Cell).Second;
             if (test.UEquals(Symbol.ELSE)) {
                 ReplaceCurrent(expression);
-                return;
-            }
-            if (!IsValue(test)) {
+            } else if (!IsValue(test)) {
                 Push((current.Second as Cell).First, current.env, current.Second as Cell);
-                return;
-            }
-            if (Boolean.IsTrue(test)) {
+            } else if (Boolean.IsTrue(test)) {
                 ReplaceCurrent(expression);
             } else {
                 SkipParameters(1);
