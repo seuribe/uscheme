@@ -52,19 +52,25 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\Scheme\TestCons.cs" />
+    <Compile Include="Tests\Scheme\TestQuote.cs" />
     <Compile Include="Tests\TestCell.cs" />
-    <Compile Include="Tests\TestCond.cs" />
+    <Compile Include="Tests\Scheme\TestCond.cs" />
+    <Compile Include="Tests\Scheme\TestConditionalForms.cs" />
     <Compile Include="Tests\TestConstants.cs" />
-    <Compile Include="Tests\TestDefine.cs" />
-    <Compile Include="Tests\TestIf.cs" />
-    <Compile Include="Tests\TestLambda.cs" />
-    <Compile Include="Tests\TestMathFunctions.cs" />
-    <Compile Include="Tests\TestNumericConstants.cs" />
+    <Compile Include="Tests\Scheme\TestDefine.cs" />
+    <Compile Include="Tests\Scheme\TestIf.cs" />
+    <Compile Include="Tests\Scheme\TestLambda.cs" />
+    <Compile Include="Tests\Scheme\TestLet.cs" />
+    <Compile Include="Tests\Scheme\TestMathFunctions.cs" />
+    <Compile Include="Tests\Scheme\TestNumericConstants.cs" />
     <Compile Include="Tests\TestParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\TestStackEval.cs" />
+    <Compile Include="Tests\Scheme\TestSequential.cs" />
+    <Compile Include="Tests\Scheme\TestSet.cs" />
+    <Compile Include="Tests\Scheme\MiscelaneousEval.cs" />
     <Compile Include="Tests\TestTokenizer.cs" />
-    <Compile Include="Tests\TestEval.cs" />
+    <Compile Include="Tests\Scheme\TestEval.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

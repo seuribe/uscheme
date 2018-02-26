@@ -1,10 +1,11 @@
 ﻿using System;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace UScheme.Tests {
 
     [TestFixture]
-    public class TestEval : TestConstants {
+    public abstract class TestEval : TestConstants {
 
         protected Env initialEnv;
         protected Exp evalResult;
@@ -81,6 +82,10 @@ namespace UScheme.Tests {
             var expA = UScheme.Eval(Parser.Parse(a), initialEnv);
             var expB = UScheme.Eval(Parser.Parse(b), initialEnv);
             Assert.IsTrue(expA.UEquals(expB));
+        }
+
+        protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
+            CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }
     }
 }
