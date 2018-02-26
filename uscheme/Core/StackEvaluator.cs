@@ -90,17 +90,7 @@ namespace UScheme {
                 } else if (list.First == Symbol.AND) {
                     EvalAnd();
                 } else if (list.First == Symbol.OR) {
-                    if (list.cdr == Cell.Null) {
-                        SetResultAndPop(Boolean.FALSE);
-                    } else if (list.Second is Boolean) {
-                        if (Boolean.IsTrue(list.Second)) {
-                            SetResultAndPop(Boolean.TRUE);
-                        } else {
-                            SkipParameters(1);
-                        }
-                    } else {
-                        Push(list.Second, env, list.Rest());
-                    }
+                    EvalOr();
                 } else if (list.First == Symbol.COND) { // (cond c1 e2 c2 e3 ... cn en)
                     if (list.cdr == Cell.Null) { // if none is true behavior is undefined. return false, like OR
                         SetResultAndPop(Boolean.FALSE);
@@ -134,6 +124,25 @@ namespace UScheme {
 
         bool IsValue(Exp exp) {
             return exp is Symbol || !(exp is Cell) || !(exp as Cell).IsList;
+        }
+
+        void EvalOr() {
+            if (!current.paramsEvaluated) {
+                current.paramsEvaluated = true;
+                result = Boolean.FALSE;
+            }
+
+            if (current.AsList.cdr == Cell.Null) {
+                SetResultAndPop(result);
+            } else if (IsValue(current.Second)) {
+                if (Boolean.IsTrue(current.Second)) {
+                    SetResultAndPop(current.Second);
+                } else {
+                    SkipParameters(1);
+                }
+            } else {
+                Push(current.Second, current.env, current.AsList.Rest());
+            }
         }
 
         void EvalAnd() {

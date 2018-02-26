@@ -27,7 +27,7 @@ namespace UScheme {
         }
 
         public static bool IsTrue(Exp exp) {
-            return exp != FALSE;
+            return !IsFalse(exp);
         }
 
         public override string ToString() {

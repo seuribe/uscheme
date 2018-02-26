@@ -183,7 +183,6 @@ namespace UScheme.Tests {
             ThenResultIsExp(expected);
         }
 
-
         [Test]
         public void EmptyOrIsFalse() {
             WhenEvaluating("(or)");
@@ -205,6 +204,14 @@ namespace UScheme.Tests {
         public void OrWithNestedExpressions(string expression, bool expected) {
             WhenEvaluating(expression);
             ThenBooleanResultIs(expected);
+        }
+
+        [TestCase("(or #t 3)", "#t")]
+        [TestCase("(or 'a #t 'd)", "'a")]
+        public void OrReturnsLastTrueExpression(string expression, string expectedString) {
+            var expected = UScheme.Eval(Parser.Parse(expectedString), initialEnv);
+            WhenEvaluating(expression);
+            ThenResultIsExp(expected);
         }
 
         [Test]
