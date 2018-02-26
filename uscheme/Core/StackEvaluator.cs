@@ -51,13 +51,13 @@ namespace UScheme {
                     EvalIf();
                 } else if (list.First == Symbol.LAMBDA) {
                     EvalLambda();
-                } else if (list.First == Symbol.LET) { // (let ((x ...) (y ...)) ... )
+                } else if (list.First == Symbol.LET) {
                     EvalLet();
                 } else if (list.First == Symbol.AND) {
                     EvalAnd();
                 } else if (list.First == Symbol.OR) {
                     EvalOr();
-                } else if (list.First == Symbol.COND) { // (cond c1 e2 c2 e3 ... cn en)
+                } else if (list.First == Symbol.COND) {
                     EvalCond();
                 } else
                     EvalProcedure();
