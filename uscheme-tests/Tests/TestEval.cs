@@ -127,5 +127,8 @@ namespace UScheme.Tests {
             assertion(proc);
         }
 
+        protected void ThenResultSatisfies(Func<Exp, bool> predicate) {
+            Assert.IsTrue(predicate(evalResult));
+        }
     }
 }

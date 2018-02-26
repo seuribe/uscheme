@@ -32,6 +32,8 @@ namespace UScheme {
                     SetResultAndPop(env.Get(exp.ToString()));
                 } else if (!(exp is Cell)) { // atoms like integer, float, etc.
                     SetResultAndPop(exp);
+                } else if (!list.IsList) {
+                    SetResultAndPop(exp);
                 } else if (list.First == Symbol.QUOTE) {
                     SetResultAndPop(list.Second);
                 } else if (list.First == Symbol.DEFINE) {

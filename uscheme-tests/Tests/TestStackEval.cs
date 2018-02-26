@@ -224,6 +224,19 @@ namespace UScheme.Tests {
             ThenIntegerResultIs(0);
         }
 
+        [Test]
+        public void ConsBuildsAPair() {
+            WhenEvaluating("(cons 1 2)");
+            ThenResultIs<Cell>();
+            ThenResultIsExp(new Cell(Number1, Number2));
+        }
+
+        [Test]
+        public void ConsPairsAreNotLists() {
+            WhenEvaluating("(define p (cons 1 2))");
+            ThenResultSatisfies(exp => (exp is Cell) && !(exp as Cell).IsList);
+        }
+
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }
