@@ -44,21 +44,7 @@ namespace UScheme {
                 } else if (list.First == Symbol.QUOTE) {
                     SetResultAndPop(list.Second);
                 } else if (list.First == Symbol.DEFINE) {
-                    if (list.Second is Cell) { // (define (f x y z) ... )
-                        var declaration = list.Second as Cell;
-                        var name = declaration.First.ToString();
-                        var argNames = declaration.Rest().ToStringList();
-                        var body = list.Third;
-                        SetResultAndPop(env.Bind(name, new SchemeProcedure(argNames, body, env)));
-                    } else { // (define f ...)
-                        if (current.paramsEvaluated) {
-                            var name = list.Second.ToString();
-                            SetResultAndPop(env.Bind(name, list.Third));
-                        } else {
-                            current.paramsEvaluated = true;
-                            Push(list.Third, env, list.Rest().Rest());
-                        }
-                    }
+                    EvalDefine();
                 } else if (list.First == Symbol.SET) {
                     EvalSet();
                 } else if (list.First == Symbol.BEGIN) {
@@ -92,9 +78,27 @@ namespace UScheme {
                 } else {
                     Push(list.First, env, list);
                 }
-
             }
             return result;
+        }
+
+        void EvalDefine() {
+            if (current.Second is Cell) { // (define (f x y z) ... )
+                var declaration = current.Second as Cell;
+                var name = declaration.First.ToString();
+                var argNames = declaration.Rest().ToStringList();
+                var body = current.Third;
+                SetResultAndPop(current.env.Bind(name, new SchemeProcedure(argNames, body, current.env)));
+            } else { // (define f ...)
+                if (current.paramsEvaluated) {
+                    var name = current.Second.ToString();
+                    SetResultAndPop(current.env.Bind(name, current.Third));
+                } else {
+                    current.paramsEvaluated = true;
+                    Push(current.Third, current.env, current.AsList.Rest().Rest());
+                }
+            }
+
         }
 
 
