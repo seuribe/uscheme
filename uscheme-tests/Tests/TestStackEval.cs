@@ -175,6 +175,14 @@ namespace UScheme.Tests {
             ThenBooleanResultIs(expected);
         }
 
+        [TestCase("(and #t 3)", "3")]
+        [TestCase("(and #t 'd)", "'d")]
+        public void AndReturnsLastExpression(string expression, string expectedString) {
+            var expected = UScheme.Eval(Parser.Parse(expectedString), initialEnv);
+            WhenEvaluating(expression);
+            ThenResultIsExp(expected);
+        }
+
 
         [Test]
         public void EmptyOrIsFalse() {
