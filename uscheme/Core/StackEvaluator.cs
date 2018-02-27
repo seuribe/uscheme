@@ -26,7 +26,14 @@ namespace UScheme {
         Frame current;
         Exp result = null;
 
+        void Reset() {
+            stack.Clear();
+            result = null;
+            current = null;
+        }
+
         public Exp Eval(Exp exp, Env env) {
+            Reset();
             Push(exp, env);
 
             while (stack.Count > 0) {
