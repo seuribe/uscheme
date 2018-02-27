@@ -15,6 +15,9 @@ namespace UScheme {
             if (Boolean.TryParse(token, out Boolean boolean))
                 return boolean;
 
+            if (Character.TryParse(token, out Character ch))
+                return ch;
+
             if (UString.TryParse(token, out UString strValue))
                 return strValue;
 
