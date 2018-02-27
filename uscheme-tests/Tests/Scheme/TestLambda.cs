@@ -7,6 +7,14 @@ namespace UScheme.Tests {
     public class TestLambda : TestEval {
 
         [Test]
+        public void LambdaWithMultipleFormsInBody() {
+            WhenEvaluating("(lambda (x) (set! x (+ 1 x)) x)");
+            ThenResultIsProcedureAnd(p => ProcedureArgumentNamesAre(p, new List<string> { "x" }));
+            WhenEvaluating("((lambda (x) (set! x (+ 1 x)) x) 4)");
+            ThenIntegerResultIs(5);
+        }
+
+        [Test]
         public void LambdaParameters() {
             WhenEvaluating("(lambda (x) (+ 1 x))");
             ThenResultIsProcedureAnd(p => ProcedureArgumentNamesAre(p, new List<string> { "x" }));

@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Evaluator.cs" />
-    <Compile Include="Core\RecursiveEvaluator.cs" />
     <Compile Include="Core\StackEvaluator.cs" />
     <Compile Include="Libraries\UMath.cs" />
     <Compile Include="Types\Vector.cs" />

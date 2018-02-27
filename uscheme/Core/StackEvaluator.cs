@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace UScheme {
 
@@ -86,10 +87,17 @@ namespace UScheme {
             else if (current.First is CSharpProcedure)
                 SetResultAndPop((current.First as CSharpProcedure).Apply(current.AsList.Rest()));
             else if (current.First is SchemeProcedure) {
-                var proc = current.First as SchemeProcedure;
-                ReplaceCurrent(proc.Body, CreateCallEnvironment(proc, current.AsList.Rest(), proc.Env));
+                EvalSchemeProcedure();
             } else
-                throw new EvalException("first element of list is not a procedure: " + current.First);
+                Error("first element of list is not a procedure: " + current.First);
+        }
+
+        void EvalSchemeProcedure() {
+            var proc = current.First as SchemeProcedure;
+            var bodyEnv = CreateCallEnvironment(proc, current.AsList.Rest(), proc.Env);
+            stack.Pop();
+            foreach (var bodyExp in Cell.Duplicate(proc.Body).Reverse().Iterate())
+                Push(bodyExp, bodyEnv, current.destination);
         }
 
         bool IsValue(Exp exp) {
@@ -101,7 +109,7 @@ namespace UScheme {
                 var declaration = current.Second as Cell;
                 var name = declaration.First.ToString();
                 var argNames = declaration.Rest().ToStringList();
-                var body = current.Third;
+                var body = current.AsList.Skip(2);
                 SetResultAndPop(current.env.Bind(name, new SchemeProcedure(argNames, body, current.env)));
             } else { // (define f ...)
                 if (current.paramsEvaluated) {
@@ -141,7 +149,7 @@ namespace UScheme {
 
         void EvalLambda() {
             var argNames = (current.Second as Cell).ToStringList();
-            var body = current.Third;
+            var body = current.AsList.Skip(2);
             SetResultAndPop(new SchemeProcedure(argNames, body, current.env));
         }
 
@@ -242,6 +250,19 @@ namespace UScheme {
                 evalEnv.Bind(procedure.ArgumentNames[i], callValues[i]);
 
             return evalEnv;
+        }
+
+        void Error(string message) {
+            var stackTrace = BuildStackTrace();
+            throw new EvalException(string.Format("Error evaluating expression: {0}\nStack Trace:\n{1}", message, stackTrace));
+        }
+
+        string BuildStackTrace() {
+            var trace = new StringBuilder();
+            foreach (var frame in stack) {
+                trace.Append(frame.ToString()).Append("\n");
+            }
+            return trace.ToString();
         }
     }
 }
