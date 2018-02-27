@@ -45,12 +45,15 @@ namespace UScheme {
             var token = tokens.Current;
             tokens.MoveNext();
             if (token == "(") {
-                var list = new List<Exp>();
-                while (tokens.Current != ")") {
-                    list.Add(ReadFromTokens(tokens));
-                }
+                var list = ReadUntilClosingParens(tokens);
                 tokens.MoveNext();
                 return Cell.BuildList(list);
+            }
+            if (token == "#") {
+                tokens.MoveNext(); // '('
+                var list = ReadUntilClosingParens(tokens);
+                tokens.MoveNext();
+                return new Vector(list);
             }
             if (token == ")")
                 throw new ParseException("Misplaced ')'");
@@ -60,6 +63,13 @@ namespace UScheme {
             return Atom(token);
         }
 
+        static List<Exp> ReadUntilClosingParens(IEnumerator<string> tokens) {
+            var list = new List<Exp>();
+            while (tokens.Current != ")") {
+                list.Add(ReadFromTokens(tokens));
+            }
+            return list;
+        }
 
         public static void Load(string filename, Env environment) {
             using (var sr = new StreamReader(filename)) {

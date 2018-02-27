@@ -33,6 +33,8 @@ namespace UScheme {
                     Emit(Quote);
                 else if (reader.Current == DoubleQuote)
                     Emit(ReadString(reader));
+                else if (reader.Current == Hash)
+                    Emit(Hash);
                 else if (IsWhitespace(reader.Current)) {
                     DiscardWhitespace(reader);
                     continue;

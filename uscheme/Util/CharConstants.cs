@@ -5,6 +5,7 @@ namespace UScheme {
         public const char BracketOpen = '[';
         public const char ParensClose = ')';
         public const char BracketClose = ']';
+        public const char Hash = '#';
         public const char Space = ' ';
         public const char SemiColon = ';';
         public const char DoubleQuote = '"';

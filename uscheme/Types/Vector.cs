@@ -15,6 +15,10 @@ namespace UScheme {
             set { elements[index] = value; }
         }
 
+        public Vector(Exp[] elements) {
+            this.elements = elements;
+        }
+
         public Vector(List<Exp> elements) {
             this.elements = elements.ToArray();
         }

@@ -4,6 +4,14 @@ namespace UScheme.Tests {
 
     [TestFixture]
     public class TestParser : TestConstants {
+
+        Exp evalResult;
+
+        [SetUp]
+        public void SetUp() {
+            evalResult = null;
+        }
+
         [Test]
         public void ParseAtom() {
             var expression = Parser.Parse("4");
@@ -43,6 +51,21 @@ namespace UScheme.Tests {
             var quoted = EncloseInQuotes(input);
             var expression = Parser.Parse(quoted);
             Assert.AreEqual(quoted, expression.ToString());
+        }
+
+        [TestCase("#(1)")]
+        [TestCase("#((list 1 2) 'a 47)")]
+        public void ParseVectors(string expression) {
+            WhenParsing(expression);
+            ThenResultIs<Vector>();
+        }
+
+        void WhenParsing(string str) {
+            evalResult = Parser.Parse(str);
+        }
+
+        void ThenResultIs<T>() {
+            Assert.IsInstanceOf<T>(evalResult);
         }
 
         string EncloseInQuotes(string str) {
