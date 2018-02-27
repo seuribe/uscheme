@@ -55,6 +55,7 @@
     <Compile Include="Tests\Scheme\TestCons.cs" />
     <Compile Include="Tests\Scheme\TestProcedures.cs" />
     <Compile Include="Tests\Scheme\TestQuote.cs" />
+    <Compile Include="Tests\Scheme\TestUString.cs" />
     <Compile Include="Tests\TestCell.cs" />
     <Compile Include="Tests\Scheme\TestCond.cs" />
     <Compile Include="Tests\Scheme\TestConditionalForms.cs" />

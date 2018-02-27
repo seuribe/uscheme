@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace UScheme {
 
@@ -19,6 +17,12 @@ namespace UScheme {
                 throw new EvalException("procedure needs at least " + size + " arguments, " + length + " provided");
         }
 
+        public static void EnsureArityWithin(Cell list, int min, int max = int.MaxValue) {
+            var length = list.Length();
+            if (length < min || length > max)
+                throw new EvalException("invalid number of arguments for procedure: " + length);
+        }
+
         public static void EnsureAll(Cell list, Func<Exp, bool> predicate, string error) {
             foreach (var exp in list.Iterate())
                 if (!predicate(exp))
@@ -30,7 +34,7 @@ namespace UScheme {
                 throw new EvalException("Expected " + typeof(T).ToString() + ", got " + typeof(Exp).ToString());
         }
 
-        private static Procedure IsA<T>(Func<T, bool> evalFunction = null) where T : Exp {
+        public static Procedure IsA<T>(Func<T, bool> evalFunction = null) where T : Exp {
             return new CSharpProcedure(parameters => {
                 EnsureArity(parameters, 1);
                 evalFunction = evalFunction ?? (e => true);
@@ -147,14 +151,6 @@ namespace UScheme {
             return ev;
         });
 
-        private static readonly Procedure StringAppend = new CSharpProcedure(parameters => {
-            var sb = new StringBuilder();
-            foreach (Exp substring in parameters.Iterate())
-                sb.Append((substring as UString).str);
-            
-            return new UString(sb.ToString());
-        });
-
         private static readonly Procedure Nth = new CSharpProcedure(parameters => {
             EnsureArity(parameters, 2);
             var index = parameters.First as IntegerNumber;
@@ -173,6 +169,7 @@ namespace UScheme {
             env.Bind("list?", IsA<Cell>( c => c.IsList ));
             env.Bind("pair?", IsA<Cell>( c => c != Cell.Null ));
             env.Bind("vector?", IsA<Vector>());
+            env.Bind("string?", IsA<UString>());
 
             env.Bind("equal?", Equal);
             env.Bind("eq?", Eq);
@@ -180,7 +177,6 @@ namespace UScheme {
             env.Bind("print", Print);
 
             env.Bind("not", Not);
-            env.Bind("string-append", StringAppend);
             env.Bind("length", Length);
             env.Bind("vector-length", new CSharpProcedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
             env.Bind("nth", Nth);

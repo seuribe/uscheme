@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Core\Evaluator.cs" />
     <Compile Include="Core\StackEvaluator.cs" />
+    <Compile Include="Libraries\StringLib.cs" />
     <Compile Include="Libraries\UMath.cs" />
     <Compile Include="Types\Character.cs" />
     <Compile Include="Types\Vector.cs" />
