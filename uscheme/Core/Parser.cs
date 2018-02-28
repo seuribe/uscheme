@@ -49,12 +49,17 @@ namespace UScheme {
                 tokens.MoveNext();
                 return Cell.BuildList(list);
             }
-            if (token == "#") {
-                tokens.MoveNext(); // '('
-                var list = ReadUntilClosingParens(tokens);
-                tokens.MoveNext();
-                return new Vector(list);
-            }
+            if (token == "#")
+                if (tokens.Current == "(") {
+                    tokens.MoveNext(); // '('
+                    var list = ReadUntilClosingParens(tokens);
+                    tokens.MoveNext();
+                    return new Vector(list);
+                } else { // append next token for dealing with #t & #f
+                    token += tokens.Current;
+                    tokens.MoveNext();
+                }
+
             if (token == ")")
                 throw new ParseException("Misplaced ')'");
             if (token == "'")
