@@ -33,6 +33,10 @@ namespace UScheme {
             throw new EvalException("symbol '" + name + "' not found");
         }
 
+        public bool Has(string name) {
+            return values.ContainsKey(name) || (outer != null && outer.Has(name));
+        }
+
         public Exp Get(string name) {
             return Find(name).values[name];
         }

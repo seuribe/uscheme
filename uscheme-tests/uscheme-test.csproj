@@ -67,6 +67,7 @@
     <Compile Include="Tests\Scheme\TestLet.cs" />
     <Compile Include="Tests\Scheme\TestMathFunctions.cs" />
     <Compile Include="Tests\Scheme\TestNumericConstants.cs" />
+    <Compile Include="Tests\TestEnv.cs" />
     <Compile Include="Tests\TestParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Scheme\TestSequential.cs" />
