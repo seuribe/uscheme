@@ -4,3 +4,5 @@ packages/
 uscheme-tests/bin/
 uscheme-tests/obj/
 .vs/
+uscheme-console/bin/
+uscheme-console/obj/
