@@ -6,3 +6,5 @@ uscheme-tests/obj/
 .vs/
 uscheme-console/bin/
 uscheme-console/obj/
+uscheme-unity/obj/
+uscheme-unity/bin/

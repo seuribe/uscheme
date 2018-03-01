@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uscheme", "uscheme\uscheme.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uscheme-test", "uscheme-tests\uscheme-test.csproj", "{4CABEAE4-B9A9-4CF8-B798-08C14CEA06BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uscheme-unity", "uscheme-unity\uscheme-unity.csproj", "{47AB2F37-0224-4051-9037-A74417BCD8F7}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uscheme-console", "uscheme-console\uscheme-console.csproj", "{9E05DBF7-DF58-458F-A3FC-67A0DB3C372C}"
 EndProject
 Global
@@ -23,6 +25,10 @@ Global
 		{4CABEAE4-B9A9-4CF8-B798-08C14CEA06BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CABEAE4-B9A9-4CF8-B798-08C14CEA06BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CABEAE4-B9A9-4CF8-B798-08C14CEA06BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47AB2F37-0224-4051-9037-A74417BCD8F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47AB2F37-0224-4051-9037-A74417BCD8F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47AB2F37-0224-4051-9037-A74417BCD8F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47AB2F37-0224-4051-9037-A74417BCD8F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E05DBF7-DF58-458F-A3FC-67A0DB3C372C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E05DBF7-DF58-458F-A3FC-67A0DB3C372C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E05DBF7-DF58-458F-A3FC-67A0DB3C372C}.Release|Any CPU.ActiveCfg = Release|Any CPU
