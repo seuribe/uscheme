@@ -5,6 +5,13 @@ namespace UScheme.Tests {
     public class TestProcedures : TestEval {
 
         [Test]
+        public void ProcedureWithoutParameters() {
+            WhenEvaluating("(define (f) 1)");
+            WhenEvaluating("(f)");
+            ThenIntegerResultIs(1);
+        }
+
+        [Test]
         public void ProcedureWithMultipleFormsInBody() {
             WhenEvaluating("(define (f x) x x x (- 1 x))");
             WhenEvaluating("(f 7)");

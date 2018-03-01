@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace UScheme {
 
     public interface Procedure : Exp {
-        Exp Apply(Cell values);
+        Exp Apply(Cell values = null);
         Env Env { get;  }
     }
 
@@ -17,8 +17,8 @@ namespace UScheme {
 
         public Env Env { get => Env.Global; }
 
-        public Exp Apply(Cell values) {
-            return body(values);
+        public Exp Apply(Cell values = null) {
+            return body(values ?? Cell.Null);
         }
 
         public Exp Clone() {
@@ -52,8 +52,9 @@ namespace UScheme {
             this.env = env;
         }
 
-        public Exp Apply(Cell values) {
-            return UScheme.Eval(body, env);
+        public Exp Apply(Cell values = null) {
+            throw new EvalException("SchemeProcedure.Apply should not be called");
+//            return UScheme.Eval(body, env);
         }
 
         public Exp Clone() {
