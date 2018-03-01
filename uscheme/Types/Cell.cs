@@ -144,16 +144,19 @@ namespace UScheme {
             return (cdr as Cell).NthCell(index - 1);
         }
 
-        // for now, recursive and inefficient. Will replace with something better if/when need arises
-        public static Cell BuildList(List<Exp> elements) {
-            if (elements.Count == 0)
+        public static Cell BuildList(IEnumerable<Exp> elements) {
+            return BuildList(elements.GetEnumerator());
+        }
+
+        public static Cell BuildList(IEnumerator<Exp> enumerator) {
+            if (!enumerator.MoveNext())
                 return Null;
 
-            return new Cell(elements[0], BuildList(elements.Skip(1).ToList()));
+            return new Cell(enumerator.Current, BuildList(enumerator));
         }
 
         public static Cell BuildList(params Exp[] elements) {
-            return BuildList(elements.ToList());
+            return BuildList(elements.AsEnumerable().GetEnumerator());
         }
 
         public override string ToString() {

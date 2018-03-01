@@ -15,7 +15,7 @@ namespace UScheme {
             set { elements[index] = value; }
         }
 
-        public Vector(Exp[] elements) {
+        public Vector(params Exp[] elements) {
             this.elements = elements;
         }
 
