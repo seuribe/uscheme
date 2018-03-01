@@ -31,10 +31,16 @@ namespace UScheme {
             return new UString(builder.ToString());
         });
 
+        private static readonly Procedure NumberToString = new CSharpProcedure(parameters => {
+            StdLib.EnsureArity(parameters, 1);
+            return new UString((parameters.First as Number).ToString());
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("string-append", StringAppend);
             env.Bind("string-length", StringLength);
             env.Bind("make-string", MakeString);
+            env.Bind("number->string", NumberToString);
         }
     }
 }
