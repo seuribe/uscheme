@@ -37,6 +37,10 @@ namespace UScheme {
             return values.ContainsKey(name) || (outer != null && outer.Has(name));
         }
 
+        public Exp Set(string name, Exp value) {
+            return Find(name).Bind(name, value);
+        }
+
         public Exp Get(string name) {
             return Find(name).values[name];
         }

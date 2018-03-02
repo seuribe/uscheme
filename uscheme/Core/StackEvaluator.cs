@@ -166,10 +166,9 @@ namespace UScheme {
         }
 
         void EvalSet() {
-            if (current.paramsEvaluated) {
-                var name = current.Second.ToString();
-                SetResultAndPop(current.env.Find(name).Bind(name, current.Third));
-            } else
+            if (current.paramsEvaluated)
+                SetResultAndPop(current.env.Set(current.Second.ToString(), current.Third));
+            else
                 PushParameter(2);
         }
 
@@ -196,7 +195,7 @@ namespace UScheme {
                 result = initialValue;
             }
 
-            if (current.AsList.cdr == Cell.Null) {
+            if (NoParameters()) {
                 SetResultAndPop(result);
             } else if (IsValue(current.Second)) {
                 (Boolean.IsTrue(current.Second) ? ifTrue : ifFalse)();
@@ -205,8 +204,12 @@ namespace UScheme {
             }
         }
 
+        bool NoParameters() {
+            return current.AsList.cdr == Cell.Null;
+        }
+
         void EvalCond() {
-            if (current.AsList.cdr == Cell.Null) {
+            if (NoParameters()) {
                 SetResultAndPop(Boolean.FALSE);
                 return;
             }
@@ -220,13 +223,13 @@ namespace UScheme {
             } else if (Boolean.IsTrue(test)) {
                 ReplaceCurrent(expression);
             } else {
-                SkipParameters(1);
+                RemoveCurrentParameters(1);
             }
         }
 
         void EvalOr() {
             EvalBooleanOperation(Boolean.FALSE,
-                ifFalse: () => SkipParameters(1),
+                ifFalse: () => RemoveCurrentParameters(1),
                 ifTrue: () => SetResultAndPop(current.Second)
                 );
         }
@@ -234,11 +237,11 @@ namespace UScheme {
         void EvalAnd() {
             EvalBooleanOperation(Boolean.TRUE,
                 ifFalse: () => SetResultAndPop(current.Second),
-                ifTrue: () => { result = current.Second; SkipParameters(1); }
+                ifTrue: () => { result = current.Second; RemoveCurrentParameters(1); }
                 );
         }
 
-        void SkipParameters(int numParams) {
+        void RemoveCurrentParameters(int numParams) {
             var list = current.exp as Cell;
             list.cdr = list.Skip(numParams + 1);
         }
