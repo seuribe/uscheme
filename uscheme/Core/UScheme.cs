@@ -16,8 +16,9 @@ namespace UScheme {
             return evaluator.Eval(exp, env);
         }
 
-        public static Exp Apply(Procedure proc, Cell parameters) {
-            return Eval(Cell.BuildList(proc, parameters), proc.Env);
+        public static Exp Apply(Procedure proc, Cell parameters = null) {
+            var procCall = parameters == null ? Cell.BuildList(proc) : Cell.BuildList(proc, parameters);
+            return Eval(procCall, proc.Env);
         }
 
     }
