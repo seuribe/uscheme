@@ -87,5 +87,9 @@ namespace UScheme.Tests {
         protected void ProcedureArgumentNamesAre(SchemeProcedure proc, IEnumerable<string> argumentNames) {
             CollectionAssert.AreEqual(argumentNames, proc.ArgumentNames);
         }
+
+        protected void ThenEnvContains(string id) {
+            Assert.IsTrue(initialEnv.Has(id));
+        }
     }
 }

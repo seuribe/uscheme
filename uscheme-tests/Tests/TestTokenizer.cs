@@ -31,5 +31,12 @@ namespace UScheme.Tests {
             var output = new Tokenizer(NestedSum).Tokens;
             CollectionAssert.AreEqual(NestedSumTokens, output);
         }
+
+        [Test]
+        public void ReturnsAllTokensFromMultipleForms() {
+            var code = "(list 1 2) (cons 1 2)";
+            var output = new Tokenizer(code).Tokens;
+            Assert.AreEqual(10, output.Count);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -37,11 +38,22 @@ namespace UScheme {
             var tokenizer = new Tokenizer(input);
             var tokens = tokenizer.Tokens.GetEnumerator();
             tokens.MoveNext();
-            return ReadFromTokens(tokens);
+            return ReadProgramOrExpression(tokens);
+        }
+
+        static Exp ReadProgramOrExpression(IEnumerator<string> tokens) {
+            var forms = new List<Exp>();
+            try {
+                while (true)
+                    forms.Add(ReadNextForm(tokens));
+            } catch (Exception e) {
+            }
+
+            return (forms.Count == 1) ? forms[0] : new Program(forms);
         }
 
         // Expects the enumerator to already be at the first element
-        static Exp ReadFromTokens(IEnumerator<string> tokens) {
+        static Exp ReadNextForm(IEnumerator<string> tokens) {
             var token = tokens.Current;
             tokens.MoveNext();
             if (token == "(") {
@@ -63,7 +75,7 @@ namespace UScheme {
             if (token == ")")
                 throw new ParseException("Misplaced ')'");
             if (token == "'")
-                return Cell.BuildList(Symbol.QUOTE, ReadFromTokens(tokens));
+                return Cell.BuildList(Symbol.QUOTE, ReadNextForm(tokens));
 
             return Atom(token);
         }
@@ -71,7 +83,7 @@ namespace UScheme {
         static List<Exp> ReadUntilClosingParens(IEnumerator<string> tokens) {
             var list = new List<Exp>();
             while (tokens.Current != ")") {
-                list.Add(ReadFromTokens(tokens));
+                list.Add(ReadNextForm(tokens));
             }
             return list;
         }

@@ -13,6 +13,12 @@ namespace UScheme.Tests {
         }
 
         [Test]
+        [Ignore("not implemented correctly yet")]
+        public void ParseIncompleteThrows() {
+            Assert.Throws<ParseException>(() => Parser.Parse("(define"));
+        }
+
+        [Test]
         public void ParseAtom() {
             var expression = Parser.Parse("4");
             Assert.IsTrue(expression.UEquals(Number4));

@@ -53,6 +53,7 @@
     <Compile Include="Libraries\UMath.cs" />
     <Compile Include="Libraries\VectorLib.cs" />
     <Compile Include="Types\Character.cs" />
+    <Compile Include="Types\Program.cs" />
     <Compile Include="Types\Vector.cs" />
     <Compile Include="Util\CharConstants.cs" />
     <Compile Include="Core\Env.cs" />

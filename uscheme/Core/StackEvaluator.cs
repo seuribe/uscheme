@@ -35,7 +35,13 @@ namespace UScheme {
 
         public Exp Eval(Exp exp, Env env) {
             Reset();
-            Push(exp, env);
+            if (exp is Program) {
+                var forms = new List<Exp>((exp as Program).forms);
+                forms.Reverse();
+                foreach(Exp form in forms)
+                    Push(form, env);
+            } else
+                Push(exp, env);
 
             while (stack.Count > 0) {
                 current = stack.Peek();

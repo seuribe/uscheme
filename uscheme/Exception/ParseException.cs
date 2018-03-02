@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace UScheme {
-    class ParseException : UException {
+    public class ParseException : UException {
         public ParseException(string message) : base(message) { }
     }
 }
