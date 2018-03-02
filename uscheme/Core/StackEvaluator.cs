@@ -13,6 +13,7 @@ namespace UScheme {
             public Cell destination;
 
             public Cell AsList => exp as Cell;
+            public Cell Rest => AsList.Rest();
             public Exp First => AsList.First;
             public Exp Second => AsList.Second;
             public Exp Third => AsList.Third;
@@ -33,6 +34,28 @@ namespace UScheme {
             current = null;
         }
 
+        void Push(Exp exp, Env env, Cell destination = null) {
+            stack.Push(new Frame { exp = exp.Clone(), env = env, destination = destination });
+            current = stack.Peek();
+        }
+
+        void PushAll(IEnumerable<Exp> expressions, Env env, Cell destination = null) {
+            var reversed = new List<Exp>(expressions);
+            reversed.Reverse();
+            foreach (var seqExp in reversed)
+                Push(seqExp, env, destination);
+            current = stack.Peek();
+        }
+
+        void PushProcedureParameters(Cell cell, Env env) {
+            current.paramsEvaluated = true;
+            while (cell != Cell.Null) {
+                if (!IsSelfEvaluating(cell.car))
+                    Push(cell.car, env, cell);
+                cell = cell.cdr as Cell;
+            }
+        }
+
         public Exp Eval(Exp exp, Env env) {
             Reset();
             if (exp is Sequence)
@@ -41,7 +64,6 @@ namespace UScheme {
                 Push(exp, env);
 
             while (stack.Count > 0) {
-                current = stack.Peek();
                 var list = current.exp as Cell;
 
                 if (IsSelfEvaluating(current.exp))
@@ -90,9 +112,9 @@ namespace UScheme {
 
         void EvalProcedure() {
             if (!current.paramsEvaluated)
-                EvalAllInPlace(current.AsList, current.env);
+                PushProcedureParameters(current.AsList, current.env);
             else if (current.First is CSharpProcedure)
-                SetResultAndPop((current.First as CSharpProcedure).Apply(current.AsList.Rest()));
+                SetResultAndPop((current.First as CSharpProcedure).Apply(current.Rest));
             else if (current.First is SchemeProcedure) {
                 EvalSchemeProcedure();
             } else
@@ -101,10 +123,11 @@ namespace UScheme {
 
         void EvalSchemeProcedure() {
             var proc = current.First as SchemeProcedure;
-            var bodyEnv = CreateCallEnvironment(proc, current.AsList.Rest(), proc.Env);
+            var bodyEnv = CreateCallEnvironment(proc, current.Rest, proc.Env);
+            var destination = current.destination;
             stack.Pop();
             foreach (var bodyExp in Cell.Duplicate(proc.Body).Reverse().Iterate())
-                Push(bodyExp, bodyEnv, current.destination);
+                Push(bodyExp, bodyEnv, destination);
         }
 
         bool IsValue(Exp exp) {
@@ -178,7 +201,7 @@ namespace UScheme {
             } else if (IsValue(current.Second)) {
                 (Boolean.IsTrue(current.Second) ? ifTrue : ifFalse)();
             } else {
-                Push(current.Second, current.env, current.AsList.Rest());
+                Push(current.Second, current.env, current.Rest);
             }
         }
 
@@ -228,31 +251,11 @@ namespace UScheme {
 
         void SetResultAndPop(Exp result) {
             this.result = result;
-            var current = stack.Peek();
             if (current.destination != null)
                 current.destination.car = result;
             stack.Pop();
-        }
-
-        void Push(Exp exp, Env env, Cell destination = null) {
-            stack.Push(new Frame { exp = exp.Clone(), env = env, destination = destination });
-        }
-
-
-        void PushAll(IEnumerable<Exp> expressions, Env env, Cell destination = null) {
-            var reversed = new List<Exp>(expressions);
-            reversed.Reverse();
-            foreach (var seqExp in reversed)
-                Push(seqExp, env, destination);
-        }
-
-        void EvalAllInPlace(Cell cell, Env env) {
-            current.paramsEvaluated = true;
-            while (cell != Cell.Null) {
-                if (!IsSelfEvaluating(cell.car))
-                    Push(cell.car, env, cell);
-                cell = cell.cdr as Cell;
-            }
+            if (stack.Count > 0)
+                current = stack.Peek();
         }
 
         static Env CreateCallEnvironment(SchemeProcedure procedure, Cell callValues, Env outerEnv) {
