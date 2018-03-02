@@ -11,6 +11,12 @@ namespace UScheme.Tests {
         }
 
         [Test]
+        public void LetAcceptsMultipleFormsInBody() {
+            WhenEvaluating("(let ((x 1)) 1 2)");
+            ThenIntegerResultIs(2);
+        }
+
+        [Test]
         public void LetValuesNotInOutsideEnv() {
             WhenEvaluating("(define x \"sasasa\")");
             WhenEvaluating("(let ((x 10) (y 20)) (+ x y))");

@@ -161,9 +161,10 @@ namespace UScheme {
 
         void EvalLet() {
             var definitions = current.Second as Cell;
-            var body = current.Third;
+            var body = current.AsList.Skip(2);
             var letEnv = new Env(current.env);
-            ReplaceCurrent(body, letEnv);
+            stack.Pop();
+            PushAll(body.Iterate(), letEnv, current.destination);
             foreach (Cell definition in definitions.Iterate())
                 Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
                     letEnv);
