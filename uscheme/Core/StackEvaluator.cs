@@ -48,8 +48,6 @@ namespace UScheme {
                     SetResultAndPop(current.exp);
                 else if (current.exp is Symbol) {
                     SetResultAndPop(current.env.Get(current.exp.ToString()));
-                } else if (!(current.exp is Cell) || !list.IsList) {
-                    SetResultAndPop(current.exp);
                 } else if (list.First == Symbol.QUOTE) {
                     SetResultAndPop(list.Second);
                 } else if (list.First == Symbol.DEFINE) {
@@ -77,7 +75,9 @@ namespace UScheme {
         }
 
         bool IsSelfEvaluating(Exp exp) {
-            return exp is Number || exp is UString || exp is Boolean || IsPurePair(exp) || exp is Procedure;
+            return exp is Number || exp is UString || exp is Boolean ||
+                   exp is Vector || exp is Character || IsPurePair(exp) ||
+                   exp is Procedure;
         }
 
         bool IsPurePair(Exp exp) {
