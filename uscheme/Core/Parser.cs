@@ -49,7 +49,7 @@ namespace UScheme {
             } catch (Exception e) {
             }
 
-            return (forms.Count == 1) ? forms[0] : new Program(forms);
+            return (forms.Count == 1) ? forms[0] : new Sequence(forms);
         }
 
         // Expects the enumerator to already be at the first element

@@ -35,12 +35,9 @@ namespace UScheme {
 
         public Exp Eval(Exp exp, Env env) {
             Reset();
-            if (exp is Program) {
-                var forms = new List<Exp>((exp as Program).forms);
-                forms.Reverse();
-                foreach(Exp form in forms)
-                    Push(form, env);
-            } else
+            if (exp is Sequence)
+                PushAll((exp as Sequence).forms, env);
+            else
                 Push(exp, env);
 
             while (stack.Count > 0) {
@@ -60,7 +57,7 @@ namespace UScheme {
                 } else if (list.First == Symbol.SET) {
                     EvalSet();
                 } else if (list.First == Symbol.BEGIN) {
-                    EvalBegin();
+                    EvalSequence();
                 } else if (list.First == Symbol.IF) {
                     EvalIf();
                 } else if (list.First == Symbol.LAMBDA) {
@@ -137,10 +134,9 @@ namespace UScheme {
                 ReplaceCurrent(Boolean.IsTrue(current.Second) ? current.Third : current.Fourth);
         }
 
-        void EvalBegin() {
+        void EvalSequence() {
             stack.Pop();
-            foreach (var seqExp in current.AsList.Rest().Reverse().Iterate())
-                Push(seqExp, current.env, current.destination);
+            PushAll(current.AsList.Rest().Iterate(), current.env, current.destination);
         }
 
         void EvalSet() {
@@ -238,6 +234,14 @@ namespace UScheme {
 
         void Push(Exp exp, Env env, Cell destination = null) {
             stack.Push(new Frame { exp = exp.Clone(), env = env, destination = destination });
+        }
+
+
+        void PushAll(IEnumerable<Exp> expressions, Env env, Cell destination = null) {
+            var reversed = new List<Exp>(expressions);
+            reversed.Reverse();
+            foreach (var seqExp in reversed)
+                Push(seqExp, env, destination);
         }
 
         void EvalAllInPlace(Cell cell, Env env) {

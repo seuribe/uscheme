@@ -53,7 +53,7 @@
     <Compile Include="Libraries\UMath.cs" />
     <Compile Include="Libraries\VectorLib.cs" />
     <Compile Include="Types\Character.cs" />
-    <Compile Include="Types\Program.cs" />
+    <Compile Include="Types\Sequence.cs" />
     <Compile Include="Types\Vector.cs" />
     <Compile Include="Util\CharConstants.cs" />
     <Compile Include="Core\Env.cs" />
@@ -88,6 +88,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NUnit3TestAdapter.3.9.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit3TestAdapter.3.9.0\build\net35\NUnit3TestAdapter.props'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) C:\src\r0rs\Assets\uscheme</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
