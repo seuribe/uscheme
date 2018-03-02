@@ -118,39 +118,36 @@ namespace UScheme {
                 var argNames = declaration.Rest().ToStringList();
                 var body = current.AsList.Skip(2);
                 SetResultAndPop(current.env.Bind(name, new SchemeProcedure(argNames, body, current.env)));
-            } else { // (define f ...)
-                if (current.paramsEvaluated) {
-                    var name = current.Second.ToString();
-                    SetResultAndPop(current.env.Bind(name, current.Third));
-                } else {
-                    current.paramsEvaluated = true;
-                    Push(current.Third, current.env, current.AsList.Rest().Rest());
-                }
-            }
+            } else if (current.paramsEvaluated) { // (define f ...)
+                var name = current.Second.ToString();
+                SetResultAndPop(current.env.Bind(name, current.Third));
+            } else
+                PushParameter(2);
+        }
 
+        void PushParameter(int index) {
+            current.paramsEvaluated = true;
+            Push(current.AsList[index], current.env, current.AsList.Skip(index));
         }
 
         void EvalIf() {
-            if (!current.paramsEvaluated) {
-                current.paramsEvaluated = true;
-                Push(current.Second, current.env, current.AsList.cdr as Cell);
-            } else
+            if (!current.paramsEvaluated)
+                PushParameter(1);
+            else
                 ReplaceCurrent(Boolean.IsTrue(current.Second) ? current.Third : current.Fourth);
         }
 
         void EvalSequence() {
             stack.Pop();
-            PushAll(current.AsList.Rest().Iterate(), current.env, current.destination);
+            PushAll(current.Rest.Iterate(), current.env, current.destination);
         }
 
         void EvalSet() {
             if (current.paramsEvaluated) {
                 var name = current.Second.ToString();
                 SetResultAndPop(current.env.Find(name).Bind(name, current.Third));
-            } else {
-                current.paramsEvaluated = true;
-                Push(current.Third, current.env, current.AsList.Rest().Rest());
-            }
+            } else
+                PushParameter(2);
         }
 
         void EvalLambda() {
