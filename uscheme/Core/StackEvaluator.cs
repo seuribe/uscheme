@@ -49,7 +49,7 @@ namespace UScheme {
                 else if (current.exp is Symbol) {
                     SetResultAndPop(current.env.Get(current.exp.ToString()));
                 } else if (list.First == Symbol.QUOTE) {
-                    SetResultAndPop(list.Second);
+                    EvalQuote();
                 } else if (list.First == Symbol.DEFINE) {
                     EvalDefine();
                 } else if (list.First == Symbol.SET) {
@@ -82,6 +82,10 @@ namespace UScheme {
 
         bool IsPurePair(Exp exp) {
             return exp is Cell && !(exp as Cell).IsList;
+        }
+
+        void EvalQuote() {
+            SetResultAndPop(current.Second);
         }
 
         void EvalProcedure() {
