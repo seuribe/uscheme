@@ -3,6 +3,14 @@
 namespace UScheme.Tests {
     [TestFixture]
     public class TestDefine : TestEval {
+
+        [Test]
+        public void DefineWithVariadic() {
+            WhenEvaluating("(define (f a b . c) (+ a b (length c)))");
+            WhenEvaluating("(f 1 2 3 4 5)");
+            ThenIntegerResultIs(6);
+        }
+
         [Test]
         public void DefineAndCallProcedure() {
             WhenEvaluating("(define (f x) (+ 1 x))");

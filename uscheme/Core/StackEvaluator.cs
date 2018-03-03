@@ -135,17 +135,27 @@ namespace UScheme {
         }
 
         void EvalDefine() {
-            if (current.Second is Cell) { // (define (f x y z) ... )
-                var declaration = current.Second as Cell;
-                var name = declaration.First.ToString();
-                var argNames = declaration.Rest().ToStringList();
-                var body = current.AsList.Skip(2);
-                SetResultAndPop(current.env.Bind(name, CreateProcedure(body, current.env, argNames)));
-            } else if (current.paramsEvaluated) { // (define f ...)
-                var name = current.Second.ToString();
-                SetResultAndPop(current.env.Bind(name, current.Third));
-            } else
+            if (current.Second is Cell)
+                DefineProcedure();
+            else if (current.paramsEvaluated)
+                SetResultAndPop(current.env.Bind(current.Second.ToString(), current.Third));
+            else
                 PushParameter(2);
+        }
+
+        void DefineProcedure() { // (define (f x y z . rest) ... )
+            var declaration = current.Second as Cell;
+            var name = declaration.First.ToString();
+            var argNames = declaration.Rest().ToStringList();
+            var body = current.AsList.Skip(2);
+            string variadicName = null;
+            if (argNames.Count >= 3 && argNames[argNames.Count - 2] == ".") {
+                variadicName = argNames[argNames.Count - 1];
+                argNames.RemoveRange(argNames.Count - 2, 2);
+            }
+            var proc = CreateProcedure(body, current.env, argNames, variadicName);
+            current.env.Bind(name, proc);
+            SetResultAndPop(proc);
         }
 
         void PushParameter(int index) {
