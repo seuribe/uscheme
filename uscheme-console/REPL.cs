@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 
 namespace UScheme {
-    public class REPL {
+    public class REPL : CharConstants {
         readonly TextReader textIn;
         readonly TextWriter textOut;
         readonly Env environment;
@@ -61,24 +61,20 @@ namespace UScheme {
         bool CanEvaluateString() {
             var chars = buffer.ToString().ToCharArray();
             return HasBalancedParens(chars) &&
-                   (IsQuote(chars) || StartAndEndCoherentParens(chars));
+                   (IsQuoted(chars) || StartAndEndCoherentParens(chars));
         }
 
         bool StartAndEndCoherentParens(char[] chars) {
-            return Parser.IsParensOpen(chars[0]) == Parser.IsParensClose(chars[chars.Length - 1]);
-        }
-
-        bool IsQuote(char[] chars) {
-            return chars[0] == Parser.Quote;
+            return IsParensOpen(chars[0]) == IsParensClose(chars[chars.Length - 1]);
         }
 
         bool HasBalancedParens(char[] chars) {
             int openParens = 0;
 
             for (int i = 0 ; i < chars.Length && openParens >= 0 ; i++)
-                if (Parser.IsParensOpen(chars[i]))
+                if (IsParensOpen(chars[i]))
                     openParens++;
-                else if (Parser.IsParensClose(chars[i]))
+                else if (IsParensClose(chars[i]))
                     openParens--;
 
             return openParens == 0;

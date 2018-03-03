@@ -22,6 +22,10 @@ namespace UScheme {
         public static bool IsWhitespace(int ch) => Array.IndexOf(WhitespaceChars, ch) != -1;
         public static bool IsAtomEnd(int ch) => Array.IndexOf(AtomEndChars, ch) != -1;
 
+        public static bool IsParensClose(int ch) => ch == ParensClose || ch == BracketClose;
+        public static bool IsParensOpen(int ch) => ch == ParensOpen || ch == BracketOpen;
+        public static bool IsQuoted(char[] chars) => chars[0] == Quote;
+
         public static readonly int[] AtomEndChars = new int[] {
             Space, Tab, Newline, CarriageReturn, ParensClose, BracketClose };
 

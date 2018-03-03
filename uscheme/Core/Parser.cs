@@ -25,15 +25,6 @@ namespace UScheme {
             return Identifier.From(token);
         }
 
-
-        public static bool IsParensClose(int ch) {
-            return ch == ParensClose || ch == BracketClose;
-        }
-
-        public static bool IsParensOpen(int ch) {
-            return ch == ParensOpen || ch == BracketOpen;
-        }
-
         public static Exp Parse(string input) {
             var tokenizer = new Tokenizer(input);
             var tokens = tokenizer.Tokens.GetEnumerator();
