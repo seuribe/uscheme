@@ -173,9 +173,20 @@ namespace UScheme {
         }
 
         void EvalLambda() {
-            var argNames = (current.Second as Cell).ToStringList();
             var body = current.AsList.Skip(2);
-            SetResultAndPop(CreateProcedure(body, current.env, argNames));
+            var args = current.Second;
+            List<string> argNames = null;
+            string variadicName = null;
+            if (args is Cell) {
+                argNames = (current.Second as Cell).ToStringList();
+                if (argNames.Count >= 3 && argNames[argNames.Count - 2] == ".") {
+                    variadicName = argNames[argNames.Count - 1];
+                    argNames.RemoveRange(argNames.Count - 2, 2);
+                }
+            } else {
+                variadicName = current.Second.ToString();
+            }
+            SetResultAndPop(CreateProcedure(body, current.env, argNames, variadicName));
         }
 
         Exp CreateProcedure(Cell body, Env env, List<string> argNames = null, string variadicName = null) {
@@ -266,10 +277,13 @@ namespace UScheme {
         }
 
         static Env CreateCallEnvironment(SchemeProcedure procedure, Cell callValues, Env outerEnv) {
-            StdLib.EnsureArity(callValues, procedure.ArgumentNames.Count);
+//            StdLib.EnsureArity(callValues, procedure.ArgumentNames.Count);
             var evalEnv = new Env(outerEnv);
-            for (int i = 0 ; i < procedure.ArgumentNames.Count ; i++)
+            for (int i = 0 ; i < procedure.NumberFixedArguments ; i++)
                 evalEnv.Bind(procedure.ArgumentNames[i], callValues[i]);
+
+            if (procedure.HasVariadicArguments)
+                evalEnv.Bind(procedure.VariadicName, callValues.Skip(procedure.NumberFixedArguments));
 
             return evalEnv;
         }

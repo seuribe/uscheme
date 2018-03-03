@@ -39,10 +39,15 @@ namespace UScheme {
 
     public class SchemeProcedure : Procedure {
         public List<string> ArgumentNames { get { return argumentNames; } }
-        private List<string> argumentNames;
-        private string variadicName;
-        private Cell body;
-        private Env env;
+        public string VariadicName { get { return variadicName; } }
+        public bool HasVariadicArguments => variadicName != null;
+        public bool HasFixedArguments => ArgumentNames != null;
+        public int NumberFixedArguments => HasFixedArguments ? argumentNames.Count : 0;
+
+        private readonly List<string> argumentNames;
+        private readonly string variadicName;
+        private readonly Cell body;
+        private readonly Env env;
 
         public Cell Body { get => body; }
         public Env Env { get => env; }

@@ -37,5 +37,17 @@ namespace UScheme.Tests {
             WhenEvaluating("((lambda (x) (+ 1 x)) 4)");
             ThenIntegerResultIs(5);
         }
+
+        [Test]
+        public void LambdaWithListParameter() {
+            WhenEvaluating("((lambda ll (length ll)) 1 2 3)");
+            ThenIntegerResultIs(3);
+        }
+
+        [Test]
+        public void LambdaWithVariadic() {
+            WhenEvaluating("((lambda (a b . c) (+ a b (length c))) 1 2 3 4 5)");
+            ThenIntegerResultIs(6);
+        }
     }
 }
