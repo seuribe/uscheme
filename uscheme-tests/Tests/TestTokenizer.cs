@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace UScheme.Tests {
     [TestFixture]
@@ -10,7 +11,7 @@ namespace UScheme.Tests {
         [TestCase(')', true)]
         [TestCase(']', true)]
         public void IdentifiesAtomsEnd(char ch, bool expected) {
-            Assert.AreEqual(expected, Tokenizer.IsAtomEnd(ch));
+            Assert.AreEqual(expected, CharConstants.IsAtomEnd(ch));
         }
 
         [Test]
@@ -37,6 +38,16 @@ namespace UScheme.Tests {
             var code = "(list 1 2) (cons 1 2)";
             var output = new Tokenizer(code).Tokens;
             Assert.AreEqual(10, output.Count);
+        }
+
+        [Test]
+        public void EmitsDotInProcArguments() {
+            var code = "(define (f x . y) x)";
+            var output = new Tokenizer(code).Tokens;
+            var expected = new List<string> {
+                "(", "define", "(", "f", "x", ".", "y", ")", "x", ")"
+            };
+            CollectionAssert.AreEqual(expected, output);
         }
     }
 }
