@@ -15,30 +15,18 @@ namespace UScheme {
             this.textIn = textIn;
             this.textOut = textOut;
             this.environment = environment;
+            AddControlProcedures();
         }
 
-        bool ProcessCommand(string line) {
-            if (line.Equals("!quit"))
-                exit = true;
-            else if (line.Equals("!buffer"))
-                textOut.WriteLine(buffer.ToString());
-            else if (line.Equals("!clear"))
-                buffer.Clear();
-            else
-                return false;
-
-            return true;
+        void AddControlProcedures() {
+            environment.Bind("quit", new CSharpProcedure(args => { exit = true; return null; }));
         }
 
         public void Start() {
             while (!exit) {
                 textOut.Write("uscheme > ");
 
-                var line = textIn.ReadLine();
-                if (ProcessCommand(line))
-                    continue;
-
-                buffer.Append(line);
+                buffer.Append(textIn.ReadLine());
 
                 if (CanEvaluateString())
                     ProcessBuffer();
