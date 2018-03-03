@@ -47,10 +47,10 @@ namespace UScheme {
 
         void ProcessBuffer() {
             try {
-
                 var expression = Parser.Parse(buffer.ToString());
                 var result = UScheme.Eval(expression, environment);
-                textOut.WriteLine(result.ToString());
+                if (result != null)
+                    textOut.WriteLine(result.ToString());
             } catch (UException e) {
                 textOut.WriteLine("Error: " + e.Message);
             } finally {
@@ -60,7 +60,6 @@ namespace UScheme {
 
         bool CanEvaluateString() {
             var chars = buffer.ToString().ToCharArray();
-
             return HasBalancedParens(chars) &&
                    (IsQuote(chars) || StartAndEndCoherentParens(chars));
         }
