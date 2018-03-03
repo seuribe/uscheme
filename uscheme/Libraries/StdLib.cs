@@ -108,7 +108,6 @@ namespace UScheme {
                 throw new UException("Not implemented: apply cannot accept more than the procedure and a list");
 
             return UScheme.Eval(Cell.BuildList(procedure, parameters.Rest()), procedure.Env);
-//            return procedure.Apply(parameters.Rest());
         });
 
         private static readonly CSharpProcedure Map = new CSharpProcedure(parameters => {
@@ -158,14 +157,12 @@ namespace UScheme {
             return list[index.IntValue];
         });
 
-        // TODO: for-each, cons, pair?, eval, zip, foldr, compose
         public static void AddLibrary(Env env) {
             env.Bind("number?", IsA<Number>());
             env.Bind("integer?", IsA<Number>(n => n.IsInteger()));
             env.Bind("real?", IsA<Number>()); // all numbers are real with current implementation
             env.Bind("boolean?", IsA<Boolean>());
             env.Bind("procedure?", IsA<Procedure>());
-            env.Bind("symbol?", IsA<Symbol>());
             env.Bind("list?", IsA<Cell>( c => c.IsList ));
             env.Bind("pair?", IsA<Cell>( c => c != Cell.Null ));
             env.Bind("vector?", IsA<Vector>());
@@ -190,8 +187,6 @@ namespace UScheme {
             env.Bind("list", List);
             env.Bind("cons", Cons);
             env.Bind("vector", Vector);
-
-//            Parser.Load("lib/stdlib.usc", env);
         }
     }
 }

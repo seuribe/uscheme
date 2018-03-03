@@ -66,7 +66,7 @@ namespace UScheme.Tests {
         }
 
         protected void ThenResultIsSymbol(string str) {
-            Assert.IsTrue(Symbol.From(str).UEquals(evalResult));
+            Assert.IsTrue(Identifier.From(str).UEquals(evalResult));
         }
 
         protected void ThenResultIs(string str) {

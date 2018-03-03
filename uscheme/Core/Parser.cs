@@ -22,7 +22,7 @@ namespace UScheme {
             if (UString.TryParse(token, out UString strValue))
                 return strValue;
 
-            return Symbol.From(token);
+            return Identifier.From(token);
         }
 
 
@@ -46,7 +46,7 @@ namespace UScheme {
             try {
                 while (true)
                     forms.Add(ReadNextForm(tokens));
-            } catch (Exception e) {
+            } catch (Exception) {
             }
 
             return (forms.Count == 1) ? forms[0] : new Sequence(forms);
@@ -75,7 +75,7 @@ namespace UScheme {
             if (token == ")")
                 throw new ParseException("Misplaced ')'");
             if (token == "'")
-                return Cell.BuildList(Symbol.QUOTE, ReadNextForm(tokens));
+                return Cell.BuildList(Identifier.QUOTE, ReadNextForm(tokens));
 
             return Atom(token);
         }

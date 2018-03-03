@@ -29,7 +29,7 @@ namespace UScheme.Tests {
         [Test]
         public void CondWithElse() {
             WhenEvaluating("(cond ((> 1 2) 1) ((> 2 3) 2) (else 'result))");
-            ThenResultIsExp(Symbol.From("result"));
+            ThenResultIsExp(Identifier.From("result"));
         }
     }
 }

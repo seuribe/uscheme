@@ -17,24 +17,24 @@ namespace UScheme.Tests {
 
         [SetUp]
         public void SetUp() {
-            ABCell = new Cell(SymbolA, SymbolB);
-            CABCell = new Cell(SymbolC, ABCell);
-            ABCCellFromList = Cell.BuildList(new List<Exp> { SymbolA, SymbolB, SymbolC });
-            ABCCellFromArray = Cell.BuildList(SymbolA, SymbolB, SymbolC);
-            BCCellFromList = Cell.BuildList(SymbolB, SymbolC);
-            CList = Cell.BuildList(SymbolC);
-            ABACList = Cell.BuildList(SymbolA, SymbolB, SymbolA, SymbolC);
-            CABAList = Cell.BuildList(SymbolC, SymbolA, SymbolB, SymbolA);
+            ABCell = new Cell(A, B);
+            CABCell = new Cell(C, ABCell);
+            ABCCellFromList = Cell.BuildList(new List<Exp> { A, B, C });
+            ABCCellFromArray = Cell.BuildList(A, B, C);
+            BCCellFromList = Cell.BuildList(B, C);
+            CList = Cell.BuildList(C);
+            ABACList = Cell.BuildList(A, B, A, C);
+            CABAList = Cell.BuildList(C, A, B, A);
         }
 
         [Test]
         public void CarReturnsCar() {
-            Assert.AreEqual(SymbolA, ABCell.car);
+            Assert.AreEqual(A, ABCell.car);
         }
 
         [Test]
         public void CdrReturnsCdr() {
-            Assert.AreEqual(SymbolB, ABCell.cdr);
+            Assert.AreEqual(B, ABCell.cdr);
         }
 
         [Test]
@@ -76,21 +76,21 @@ namespace UScheme.Tests {
 
         [Test]
         public void BuildsUnitaryList() {
-            var list = Cell.BuildList(SymbolC);
+            var list = Cell.BuildList(C);
             Assert.AreEqual(1, list.Length());
             Assert.IsTrue(list.IsList);
             Assert.IsFalse(list.IsNull);
-            Assert.IsTrue(SymbolC.UEquals(list.First));
+            Assert.IsTrue(C.UEquals(list.First));
         }
 
         [Test]
         public void PositionFunctions() {
-            var list = Cell.BuildList(SymbolA, SymbolB, SymbolA, SymbolC);
+            var list = Cell.BuildList(A, B, A, C);
 
-            Assert.IsTrue(SymbolA.Equals(list.First));
-            Assert.IsTrue(SymbolB.Equals(list.Second));
-            Assert.IsTrue(SymbolA.Equals(list.Third));
-            Assert.IsTrue(SymbolC.Equals(list.Fourth));
+            Assert.IsTrue(A.Equals(list.First));
+            Assert.IsTrue(B.Equals(list.Second));
+            Assert.IsTrue(A.Equals(list.Third));
+            Assert.IsTrue(C.Equals(list.Fourth));
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace UScheme.Tests {
 
         [Test]
         public void NthGetsCell() {
-            Assert.AreEqual(SymbolA, ABCCellFromList[0]);
+            Assert.AreEqual(A, ABCCellFromList[0]);
         }
 
         [Test]
@@ -134,18 +134,18 @@ namespace UScheme.Tests {
             foreach (var exp in ABCCellFromList.Iterate()) {
                 values.Add(exp);
             }
-            Assert.AreEqual(new List<Exp> { SymbolA, SymbolB, SymbolC }, values);
+            Assert.AreEqual(new List<Exp> { A, B, C }, values);
         }
 
         [Test]
         public void LastReturnsLast() {
-            Assert.IsTrue(SymbolC.UEquals(ABACList.Last()));
+            Assert.IsTrue(C.UEquals(ABACList.Last()));
         }
 
         [Test]
         public void LastCellReturnsLastCell() {
             var lastCell = ABCCellFromList.LastCell();
-            Assert.AreEqual(SymbolC, lastCell.car);
+            Assert.AreEqual(C, lastCell.car);
             Assert.AreEqual(Cell.Null, lastCell.cdr);
         }
 
@@ -157,7 +157,7 @@ namespace UScheme.Tests {
         [Test]
         public void CannotAddToNullList() {
             var list = Cell.Null;
-            Assert.Throws<UException>(() => list.Add(SymbolC));
+            Assert.Throws<UException>(() => list.Add(C));
         }
 
         [Test]
@@ -169,25 +169,25 @@ namespace UScheme.Tests {
         [Test]
         public void DuplicateDoesNotModifyOriginal() {
             var dup = Cell.Duplicate(ABACList);
-            dup.car = SymbolC;
+            dup.car = C;
             Assert.IsFalse(dup.UEquals(ABACList));
-            Assert.AreEqual(SymbolC, dup.car);
-            Assert.AreEqual(SymbolA, ABACList.car);
+            Assert.AreEqual(C, dup.car);
+            Assert.AreEqual(A, ABACList.car);
         }
 
         [Test]
         public void AppendAppends() {
             var list = Cell.Append(ABACList, CList);
-            var expected = Cell.BuildList(SymbolA, SymbolB, SymbolA, SymbolC, SymbolC);
+            var expected = Cell.BuildList(A, B, A, C, C);
             Assert.IsTrue(expected.UEquals(list));
         }
 
         [Test]
         public void AppendDoesNotModifyOriginal() {
             var list = Cell.Append(ABACList, CList);
-            var expected = Cell.BuildList(SymbolA, SymbolB, SymbolA, SymbolC, SymbolC);
-            list.car = SymbolB;
-            Assert.AreEqual(SymbolA, ABACList.car);
+            var expected = Cell.BuildList(A, B, A, C, C);
+            list.car = B;
+            Assert.AreEqual(A, ABACList.car);
         }
 
         [Test]

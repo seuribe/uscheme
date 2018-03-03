@@ -68,27 +68,27 @@ namespace UScheme {
 
                 if (IsSelfEvaluating(current.exp))
                     SetResultAndPop(current.exp);
-                else if (current.exp is Symbol) {
+                else if (current.exp is Identifier) {
                     SetResultAndPop(current.env.Get(current.exp.ToString()));
-                } else if (list.First == Symbol.QUOTE) {
+                } else if (list.First == Identifier.QUOTE) {
                     EvalQuote();
-                } else if (list.First == Symbol.DEFINE) {
+                } else if (list.First == Identifier.DEFINE) {
                     EvalDefine();
-                } else if (list.First == Symbol.SET) {
+                } else if (list.First == Identifier.SET) {
                     EvalSet();
-                } else if (list.First == Symbol.BEGIN) {
+                } else if (list.First == Identifier.BEGIN) {
                     EvalSequence();
-                } else if (list.First == Symbol.IF) {
+                } else if (list.First == Identifier.IF) {
                     EvalIf();
-                } else if (list.First == Symbol.LAMBDA) {
+                } else if (list.First == Identifier.LAMBDA) {
                     EvalLambda();
-                } else if (list.First == Symbol.LET) {
+                } else if (list.First == Identifier.LET) {
                     EvalLet();
-                } else if (list.First == Symbol.AND) {
+                } else if (list.First == Identifier.AND) {
                     EvalAnd();
-                } else if (list.First == Symbol.OR) {
+                } else if (list.First == Identifier.OR) {
                     EvalOr();
-                } else if (list.First == Symbol.COND) {
+                } else if (list.First == Identifier.COND) {
                     EvalCond();
                 } else
                     EvalProcedure();
@@ -131,7 +131,7 @@ namespace UScheme {
         }
 
         bool IsValue(Exp exp) {
-            return exp is Symbol || !(exp is Cell) || !(exp as Cell).IsList;
+            return exp is Identifier || !(exp is Cell) || !(exp as Cell).IsList;
         }
 
         void EvalDefine() {
@@ -185,7 +185,7 @@ namespace UScheme {
             stack.Pop();
             PushAll(body.Iterate(), letEnv, current.destination);
             foreach (Cell definition in definitions.Iterate())
-                Push(Cell.BuildList(Symbol.DEFINE, Symbol.From(definition.First.ToString()), definition.Second),
+                Push(Cell.BuildList(Identifier.DEFINE, Identifier.From(definition.First.ToString()), definition.Second),
                     letEnv);
         }
 
@@ -216,7 +216,7 @@ namespace UScheme {
 
             var test = (current.Second as Cell).First;
             var expression = (current.Second as Cell).Second;
-            if (test.UEquals(Symbol.ELSE)) {
+            if (test.UEquals(Identifier.ELSE)) {
                 ReplaceCurrent(expression);
             } else if (!IsValue(test)) {
                 Push((current.Second as Cell).First, current.env, current.Second as Cell);

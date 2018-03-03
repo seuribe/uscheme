@@ -27,7 +27,7 @@ namespace UScheme.Tests {
         [Test]
         public void ParseSingletonList() {
             var expression = Parser.Parse("(f)");
-            Assert.IsTrue(expression.UEquals(Cell.BuildList(Symbol.From("f"))));
+            Assert.IsTrue(expression.UEquals(Cell.BuildList(Identifier.From("f"))));
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace UScheme.Tests {
         [Test]
         public void ParseQuote() {
             var expression = Parser.Parse("'a");
-            Assert.IsTrue(expression.UEquals(Cell.BuildList(Symbol.QUOTE, Symbol.From("a"))));
+            Assert.IsTrue(expression.UEquals(Cell.BuildList(Identifier.QUOTE, Identifier.From("a"))));
         }
 
         [TestCase("a")]

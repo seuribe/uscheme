@@ -70,7 +70,7 @@
     <Compile Include="Types\Procedure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Libraries\StdLib.cs" />
-    <Compile Include="Types\Symbol.cs" />
+    <Compile Include="Core\Identifier.cs" />
     <Compile Include="Core\Parser.cs" />
     <Compile Include="Core\UScheme.cs" />
     <Compile Include="Types\UString.cs" />
