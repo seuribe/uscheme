@@ -40,14 +40,16 @@ namespace UScheme {
     public class SchemeProcedure : Procedure {
         public List<string> ArgumentNames { get { return argumentNames; } }
         private List<string> argumentNames;
+        private string variadicName;
         private Cell body;
         private Env env;
 
         public Cell Body { get => body; }
         public Env Env { get => env; }
 
-        public SchemeProcedure(List<string> argumentNames, Cell body, Env env) {
+        public SchemeProcedure(Cell body, Env env, List<string> argumentNames = null, string variadicVariable = null) {
             this.argumentNames = argumentNames;
+            this.variadicName = variadicVariable;
             this.body = body;
             this.env = env;
         }
@@ -58,7 +60,7 @@ namespace UScheme {
         }
 
         public Exp Clone() {
-            return new SchemeProcedure(argumentNames, Cell.Duplicate(body), env);
+            return new SchemeProcedure(Cell.Duplicate(body), env, argumentNames, variadicName);
         }
 
         public bool UEquals(Exp other) {

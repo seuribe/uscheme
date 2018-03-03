@@ -91,7 +91,7 @@ namespace UScheme {
                 } else if (list.First == Identifier.COND) {
                     EvalCond();
                 } else
-                    EvalProcedure();
+                    EvalProcedureCall();
             }
             return result;
         }
@@ -110,18 +110,18 @@ namespace UScheme {
             SetResultAndPop(current.Second);
         }
 
-        void EvalProcedure() {
+        void EvalProcedureCall() {
             if (!current.paramsEvaluated)
                 PushProcedureParameters(current.AsList, current.env);
             else if (current.First is CSharpProcedure)
                 SetResultAndPop((current.First as CSharpProcedure).Apply(current.Rest));
             else if (current.First is SchemeProcedure) {
-                EvalSchemeProcedure();
+                EvalSchemeProcedureCall();
             } else
                 Error("first element of list is not a procedure: " + current.First);
         }
 
-        void EvalSchemeProcedure() {
+        void EvalSchemeProcedureCall() {
             var proc = current.First as SchemeProcedure;
             var bodyEnv = CreateCallEnvironment(proc, current.Rest, proc.Env);
             var destination = current.destination;
@@ -140,7 +140,7 @@ namespace UScheme {
                 var name = declaration.First.ToString();
                 var argNames = declaration.Rest().ToStringList();
                 var body = current.AsList.Skip(2);
-                SetResultAndPop(current.env.Bind(name, new SchemeProcedure(argNames, body, current.env)));
+                SetResultAndPop(current.env.Bind(name, CreateProcedure(body, current.env, argNames)));
             } else if (current.paramsEvaluated) { // (define f ...)
                 var name = current.Second.ToString();
                 SetResultAndPop(current.env.Bind(name, current.Third));
@@ -175,7 +175,11 @@ namespace UScheme {
         void EvalLambda() {
             var argNames = (current.Second as Cell).ToStringList();
             var body = current.AsList.Skip(2);
-            SetResultAndPop(new SchemeProcedure(argNames, body, current.env));
+            SetResultAndPop(CreateProcedure(body, current.env, argNames));
+        }
+
+        Exp CreateProcedure(Cell body, Env env, List<string> argNames = null, string variadicName = null) {
+            return new SchemeProcedure(body, env, argNames, variadicName);
         }
 
         void EvalLet() {
