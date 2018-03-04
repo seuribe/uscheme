@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace UScheme {
 
     public interface Procedure : Exp {
-        Exp Apply(Cell values = null);
-        Env Env { get;  }
+        Env Env { get; }
     }
 
     public class CSharpProcedure : Procedure {
@@ -57,11 +55,6 @@ namespace UScheme {
             this.variadicName = variadicVariable;
             this.body = body;
             this.env = env;
-        }
-
-        public Exp Apply(Cell values = null) {
-            throw new EvalException("SchemeProcedure.Apply should not be called");
-//            return UScheme.Eval(body, env);
         }
 
         public Exp Clone() {
