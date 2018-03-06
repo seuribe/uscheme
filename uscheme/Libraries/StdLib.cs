@@ -133,17 +133,6 @@ namespace UScheme {
             return UScheme.Eval(Cell.BuildList(procedure, parameters.Rest()), procedure.Env);
         });
 
-        private static readonly CSharpProcedure Map = new CSharpProcedure(parameters => {
-            var proc = parameters.First as Procedure;
-            var args = parameters.Rest();
-
-            var list = new List<Exp>();
-            foreach (var exp in parameters.Iterate())
-                list.Add(UScheme.Apply(proc, Cell.BuildList(exp)));
-
-            return Cell.BuildList(list);
-        });
-
         // Only to be used in internal (CSharp) procedures
         public static Exp FoldlBase(CSharpProcedure op, Cell parameters) {
             EnsureArityMin(parameters, 2);
@@ -155,29 +144,11 @@ namespace UScheme {
             return value;
         }
 
-        private static readonly Procedure Foldl = new CSharpProcedure(parameters => {
-            EnsureArity(parameters, 3);
-            var op = parameters.First as Procedure;
-            var value = parameters.Second;
-            var list = parameters.Third as Cell;
-            foreach (var e in list.Iterate())
-                value = UScheme.Apply(op, Cell.BuildList(value, e));
-            
-            return value;
-        });
-
         private static readonly Procedure Print = new CSharpProcedure(parameters => {
             var ev = parameters.First;
             // TODO: output should be configurable somewhere
             Console.Out.WriteLine(ev.ToString());
             return ev;
-        });
-
-        private static readonly Procedure Nth = new CSharpProcedure(parameters => {
-            EnsureArity(parameters, 2);
-            var index = parameters.First as IntegerNumber;
-            var list = parameters.Second as Cell;
-            return list[index.IntValue];
         });
 
         public static void AddLibrary(Env env) {
@@ -200,9 +171,6 @@ namespace UScheme {
             env.Bind("not", Not);
             env.Bind("length", Length);
             env.Bind("vector-length", new CSharpProcedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
-            env.Bind("nth", Nth);
-            env.Bind("map", Map);
-            env.Bind("foldl", Foldl);
             env.Bind("apply", Apply);
             env.Bind("append", Append);
             env.Bind("car", Car);

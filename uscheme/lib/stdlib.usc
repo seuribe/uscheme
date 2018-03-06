@@ -1,5 +1,30 @@
 ﻿
 (define (member? m l)
-	(if (null? l) #f
-		(if (eq? (car l) m) l
-			(member m (cdr l)))))
+  (if (null? l)
+      #f
+      (if (eq? (car l) m)
+          l
+          (member m (cdr l)))))
+
+(define (nth n lst)
+  (if (= n 0)
+      (car lst)
+      (nth (- n 1) (cdr lst))))
+
+; Taken from https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Towards_a_Standard_Library
+
+(define (foldl func accum lst)
+  (if (null? lst)
+      accum
+      (foldl func (func accum (car lst)) (cdr lst))))
+
+(define (foldr func end lst)
+  (if (null? lst)
+      end
+      (func (car lst) (foldr func end (cdr lst)))))
+
+(define (map func lst)
+  (foldr (lambda (x y) (cons (func x) y)) '() lst))
+
+(define (filter pred lst)
+  (foldr (lambda (x y) (if (pred x) (cons x y) y)) '() lst))
