@@ -147,6 +147,7 @@ namespace UScheme {
             env.Bind("pair?", IsA<Cell>( c => c != Cell.Null ));
             env.Bind("vector?", IsA<Vector>());
             env.Bind("string?", IsA<UString>());
+            env.Bind("byte-vector?", IsA<ByteVector>());
 
             env.Bind("equal?", Equal);
             env.Bind("eqv?", Eqv);
@@ -155,6 +156,7 @@ namespace UScheme {
             env.Bind("print", Print);
 
             env.Bind("vector-length", new CSharpProcedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
+            env.Bind("byte-vector-length", new CSharpProcedure(list => new IntegerNumber(((list as Cell).First as ByteVector).Length) ));
             env.Bind("apply", Apply);
             env.Bind("append", Append);
             env.Bind("car", Car);

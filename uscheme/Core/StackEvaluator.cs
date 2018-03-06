@@ -99,7 +99,7 @@ namespace UScheme {
         bool IsSelfEvaluating(Exp exp) {
             return exp is Number || exp is UString || exp is Boolean ||
                    exp is Vector || exp is Character || IsPurePair(exp) ||
-                   exp is Procedure;
+                   exp is ByteVector || exp is Procedure;
         }
 
         bool IsPurePair(Exp exp) {

@@ -27,7 +27,7 @@ namespace UScheme {
         public static bool IsQuoted(char[] chars) => chars[0] == Quote;
 
         public static readonly int[] AtomEndChars = new int[] {
-            Space, Tab, Newline, CarriageReturn, ParensClose, BracketClose };
+            Space, Tab, Newline, CarriageReturn, ParensClose, BracketClose, ParensOpen, BracketOpen };
 
         public static readonly int[] WhitespaceChars = new int[] {
             Space, Tab, Newline, CarriageReturn

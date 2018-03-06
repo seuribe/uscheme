@@ -57,12 +57,15 @@ namespace UScheme {
                     tokens.MoveNext(); // '('
                     var list = ReadUntilClosingParens(tokens);
                     tokens.MoveNext();
-                    return new Vector(list);
+                    return Vector.FromList(list);
                 } else if (tokens.Current == "vu8") {
+                    tokens.MoveNext(); // 'vu8'
+                    if (tokens.Current != "(")
+                        throw new ParseException("expected '(' after #vu8");
                     tokens.MoveNext(); // '('
                     var list = ReadUntilClosingParens(tokens);
                     tokens.MoveNext();
-                    return new ByteVector(list);
+                    return ByteVector.FromList(list);
                 } else { // append next token for dealing with #t & #f
                     token += tokens.Current;
                     tokens.MoveNext();
@@ -74,6 +77,12 @@ namespace UScheme {
                 return Cell.BuildList(Identifier.QUOTE, ReadNextForm(tokens));
 
             return Atom(token);
+        }
+
+        static void ExpectAndSkip(IEnumerator<string> tokens, string expected) {
+            if (tokens.Current != expected)
+                throw new ParseException("Expected " + expected + " but instead found " + tokens.Current);
+
         }
 
         static List<Exp> ReadUntilClosingParens(IEnumerator<string> tokens) {
