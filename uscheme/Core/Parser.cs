@@ -58,6 +58,11 @@ namespace UScheme {
                     var list = ReadUntilClosingParens(tokens);
                     tokens.MoveNext();
                     return new Vector(list);
+                } else if (tokens.Current == "vu8") {
+                    tokens.MoveNext(); // '('
+                    var list = ReadUntilClosingParens(tokens);
+                    tokens.MoveNext();
+                    return new ByteVector(list);
                 } else { // append next token for dealing with #t & #f
                     token += tokens.Current;
                     tokens.MoveNext();

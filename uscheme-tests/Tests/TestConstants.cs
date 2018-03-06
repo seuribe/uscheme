@@ -15,6 +15,8 @@ namespace UScheme.Tests {
         protected static readonly IntegerNumber Number2 = new IntegerNumber(2);
         protected static readonly IntegerNumber Number3 = new IntegerNumber(3);
         protected static readonly IntegerNumber Number4 = new IntegerNumber(4);
+        protected static readonly IntegerNumber Number100 = new IntegerNumber(100);
+        protected static readonly IntegerNumber Number200 = new IntegerNumber(200);
 
         protected static readonly Cell SimpleSumForm = Cell.BuildList(PlusSymbol, Number1, Number2);
         protected static readonly Cell NestedSumForm = Cell.BuildList(
