@@ -4,29 +4,23 @@ using System.Text;
 
 namespace UScheme {
 
-    public class ByteVector : Exp {
-        readonly byte[] data;
+    public class ByteVector : BaseVector<byte> {
 
-        public byte this[int index] {
-            get { return data[index]; }
-            set { data[index] = value; }
-        }
+        public ByteVector(byte[] data) : base(data) { }
 
-        public ByteVector(byte[] data) {
-            this.data = data;
-        }
-
-        public ByteVector(List<Exp> elements) {
-            this.data = new byte[elements.Count];
+        public static ByteVector FromList(List<Exp> elements) {
+            var data = new byte[elements.Count];
             for (int i = 0 ; i < data.Length ; i++)
                 data[i] = (byte)((elements[i] as Number).IntValue);
-        }
 
-        public Exp Clone() {
             return new ByteVector(data);
         }
 
-        public bool UEquals(Exp other) {
+        public override Exp Clone() {
+            return new ByteVector(data);
+        }
+
+        public override bool UEquals(Exp other) {
             return other == this ||
                 ((other is ByteVector) && ByteArrayEquals(data, (other as ByteVector).data));
         }

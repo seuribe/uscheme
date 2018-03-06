@@ -4,52 +4,41 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace UScheme {
-    public class Vector : Exp, IEnumerable<Exp>, IEnumerable {
+    public class Vector : BaseVector<Exp>, IEnumerable<Exp>, IEnumerable {
 
-        public int Length { get { return elements.Length; } }
+        public Vector(params Exp[] elements) : base(elements) { }
 
-        readonly Exp[] elements;
-
-        public Exp this[int index] {
-            get { return elements[index]; }
-            set { elements[index] = value; }
+        public static Vector FromList(List<Exp> elements) {
+            return new Vector(elements.ToArray());
         }
 
-        public Vector(params Exp[] elements) {
-            this.elements = elements;
+        public static Vector FromCell(Cell parameters) => FromList(parameters.AsList());
+
+        public override Exp Clone() {
+            return new Vector((Exp[])data.Clone());
         }
 
-        public Vector(List<Exp> elements) {
-            this.elements = elements.ToArray();
-        }
-
-        public Vector(Cell parameters) : this(parameters.AsList()) { }
-
-        public Exp Clone() {
-            return new Vector(new List<Exp>((Exp[])elements.Clone()));
-        }
-
-        public bool UEquals(Exp other) {
+        public override bool UEquals(Exp other) {
             if (this == other)
                 return true;
 
             var vector = other as Vector;
-            if (vector == null || elements.Length != vector.elements.Length)
+            if (vector == null || data.Length != vector.data.Length)
                 return false;
 
             for (int i = 0 ; i < Length ; i++)
-                if (!elements[i].UEquals(vector[i]))
+                if (!data[i].UEquals(vector[i]))
                     return false;
 
             return true;
         }
 
         public override string ToString() {
-            return "#(" + string.Join(" ", elements.Select( e => e.ToString() )) + ")";
+            return "#(" + string.Join(" ", data.Select( e => e.ToString() )) + ")";
         }
 
         public IEnumerator<Exp> GetEnumerator() {
-            return elements.GetEnumerator() as IEnumerator<Exp>;
+            return data.GetEnumerator() as IEnumerator<Exp>;
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

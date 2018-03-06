@@ -8,7 +8,7 @@ namespace UScheme.Tests {
         [Test]
         public void CreateFromExpList() {
             var exps = new List<Exp> { Number1, Number2, Number100, Number200 };
-            var bv = new ByteVector(exps);
+            var bv = ByteVector.FromList(exps);
             Assert.AreEqual((byte)1, bv[0]);
             Assert.AreEqual((byte)2, bv[1]);
             Assert.AreEqual((byte)100, bv[2]);
