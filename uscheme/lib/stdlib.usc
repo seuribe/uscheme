@@ -11,6 +11,8 @@
       (car lst)
       (nth (- n 1) (cdr lst))))
 
+(define (not x) (eq? x #f))
+
 ; Taken from https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Towards_a_Standard_Library
 
 (define (foldl func accum lst)

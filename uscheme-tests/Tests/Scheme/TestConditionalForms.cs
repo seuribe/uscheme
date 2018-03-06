@@ -4,6 +4,18 @@ namespace UScheme.Tests {
     [TestFixture]
     public class TestConditionalForms : TestEval {
 
+        [TestCase("#f", true)]
+        [TestCase("#t", false)]
+        [TestCase("1", false)]
+        [TestCase("'()", false)]
+        [TestCase("'a", false)]
+        [TestCase("(list)", false)]
+        [TestCase("'a", false)]
+        public void Not(string exp, bool expected) {
+            WhenEvaluating("(not " + exp + ")");
+            ThenBooleanResultIs(expected);
+        }
+
         [Test]
         public void EmptyAndIsTrue() {
             WhenEvaluating("(and)");
