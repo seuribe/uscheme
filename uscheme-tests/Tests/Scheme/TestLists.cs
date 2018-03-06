@@ -9,5 +9,17 @@ namespace UScheme.Tests {
             WhenEvaluating("(nth " + index + " " + listExpression + ")");
             ThenResultIsExp(Parser.Parse(expected));
         }
+
+        [Test]
+        public void BuildListWithElements() {
+            WhenEvaluating("(list 1 2 3)");
+            ThenResultIsExp(Cell.BuildList(Number1, Number2, Number3));
+        }
+
+        [Test]
+        public void BuildEmptyList() {
+            WhenEvaluating("(list)");
+            ThenResultIsExp(Cell.BuildList());
+        }
     }
 }

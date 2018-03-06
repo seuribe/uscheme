@@ -42,10 +42,6 @@ namespace UScheme {
             });
         }
 
-        private static readonly Procedure List = new CSharpProcedure(parameters => {
-            return parameters;
-        });
-
         private static readonly Procedure Vector = new CSharpProcedure(parameters => {
             return new Vector(parameters);
         });
