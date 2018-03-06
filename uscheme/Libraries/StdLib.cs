@@ -55,6 +55,29 @@ namespace UScheme {
             return Boolean.Get(parameters.First.UEquals(parameters.Second));
         });
 
+        private static readonly Procedure Eqv = new CSharpProcedure(parameters => {
+            EnsureArity(parameters, 2);
+            var first = parameters.First;
+            var second = parameters.Second;
+            return Boolean.Get(
+                first == second || // This also covers boolean, Identifiers & empty lists
+                (first.GetType() == second.GetType() &&
+                    (AreSameCharacter(first, second) || AreSameNumber(first, second))
+                ));
+        });
+
+        private static bool AreSameNumber(Exp a, Exp b) {
+            return a.GetType() == typeof(Number) && AreSameAs<Number, float>(a, b, ch => ch.FloatValue);
+        }
+
+        private static bool AreSameCharacter(Exp a, Exp b) {
+            return a.GetType() == typeof(Character) && AreSameAs<Character, char>(a, b, ch => ch.character);
+        }
+
+        private static bool AreSameAs<T, Tin>(Exp a, Exp b, Func<T, Tin> accessor) where T : Exp {
+            return accessor((T)a).Equals(accessor((T)b));
+        }
+
         private static readonly Procedure Eq = new CSharpProcedure(parameters => {
             EnsureArity(parameters, 2);
             return Boolean.Get(parameters.First == parameters.Second);
@@ -169,6 +192,7 @@ namespace UScheme {
             env.Bind("string?", IsA<UString>());
 
             env.Bind("equal?", Equal);
+            env.Bind("eqv?", Eqv);
             env.Bind("eq?", Eq);
 
             env.Bind("print", Print);
