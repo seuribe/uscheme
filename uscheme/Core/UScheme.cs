@@ -6,6 +6,9 @@ namespace UScheme {
     public delegate Exp InternalForm(Cell argumentList, Env env);
 
     public class UScheme {
+
+        public static string LibraryDir = @"./lib/";
+
         static Evaluator evaluator = new StackEvaluator();
 
         public static void SetEvaluator(Evaluator evaluator) {
@@ -20,6 +23,5 @@ namespace UScheme {
             var procCall = parameters == null ? Cell.BuildList(proc) : Cell.BuildList(proc, parameters);
             return Eval(procCall, proc.Env);
         }
-
     }
 }

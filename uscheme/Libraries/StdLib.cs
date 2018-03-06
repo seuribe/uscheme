@@ -187,6 +187,8 @@ namespace UScheme {
             env.Bind("list", List);
             env.Bind("cons", Cons);
             env.Bind("vector", Vector);
+
+            Parser.Load(UScheme.LibraryDir + "stdlib.usc", env);
         }
     }
 }
