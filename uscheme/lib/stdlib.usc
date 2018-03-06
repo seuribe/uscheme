@@ -13,6 +13,13 @@
 
 (define list (lambda n n))
 
+(define (length lst)
+  (define (length-recur lst accum)
+    (if (eq? lst '())
+        accum
+        (length-recur (cdr lst) (+ 1 accum))))
+  (length-recur lst 0))
+
 (define (not x) (eq? x #f))
 
 ; Taken from https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Towards_a_Standard_Library

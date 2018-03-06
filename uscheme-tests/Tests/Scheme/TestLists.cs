@@ -21,5 +21,13 @@ namespace UScheme.Tests {
             WhenEvaluating("(list)");
             ThenResultIsExp(Cell.BuildList());
         }
+
+        [TestCase("(list 1 2 3 4)", 4)]
+        [TestCase("(list)", 0)]
+        [TestCase("(list (list 1 2 3) (list))", 2)]
+        public void ListLength(string expression, int expected) {
+            WhenEvaluating("(length " + expression + ")");
+            ThenIntegerResultIs(expected);
+        }
     }
 }

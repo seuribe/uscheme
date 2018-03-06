@@ -101,11 +101,6 @@ namespace UScheme {
             return new Cell(parameters.First, parameters.Second);
         });
 
-        private static readonly Procedure Length = new CSharpProcedure(parameters => {
-            EnsureArity(parameters, 1);
-            return new IntegerNumber((parameters.First as Cell).Length());
-        });
-
         private static readonly Procedure Append = new CSharpProcedure(parameters => {
             EnsureArityMin(parameters, 1);
             EnsureAll(parameters, exp => (exp is Cell) && (exp as Cell).IsList, "append parameters must be lists");
@@ -165,14 +160,12 @@ namespace UScheme {
             env.Bind("print", Print);
 
             env.Bind("not", Not);
-            env.Bind("length", Length);
             env.Bind("vector-length", new CSharpProcedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
             env.Bind("apply", Apply);
             env.Bind("append", Append);
             env.Bind("car", Car);
             env.Bind("cdr", Cdr);
 
-            env.Bind("list", List);
             env.Bind("cons", Cons);
             env.Bind("vector", Vector);
 
