@@ -79,11 +79,6 @@ namespace UScheme {
             return Boolean.Get(parameters.First == parameters.Second);
         });
 
-        private static readonly Procedure Not = new CSharpProcedure(parameters => {
-            EnsureArity(parameters, 1);
-            return (parameters.First == Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
-        });
-
         private static readonly Procedure Car = new CSharpProcedure(parameters => {
             EnsureArity(parameters, 1);
             var pair = parameters.First as Cell;
@@ -159,7 +154,6 @@ namespace UScheme {
 
             env.Bind("print", Print);
 
-            env.Bind("not", Not);
             env.Bind("vector-length", new CSharpProcedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
             env.Bind("apply", Apply);
             env.Bind("append", Append);
