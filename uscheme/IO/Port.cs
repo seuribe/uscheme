@@ -8,11 +8,13 @@
             IsOutput = output;
         }
 
-        public abstract Exp ReadChar();
-        public abstract Exp PeekChar();
-        public abstract Exp CharReady();
+        public abstract int ReadChar();
+        public abstract int PeekChar();
+        public abstract bool CharReady();
 
-        public abstract Exp WriteChar(Character ch);
+        public abstract void WriteChar(char ch);
+
+        public abstract void Close();
 
         public Exp Clone() => this;
         public bool UEquals(Exp other) => other == this;

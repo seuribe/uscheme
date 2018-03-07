@@ -7,10 +7,18 @@ namespace UScheme {
         private readonly Dictionary<string, Exp> values = new Dictionary<string, Exp>();
         private readonly Env outer;
 
-        public Port CurrentInput = new TextReaderPort(Console.In);
-        public Port CurrentOutput = new TextWriterPort(Console.Out);
+        public Port CurrentInput;
+        public Port CurrentOutput;
 
-        public static Env Global = InitialEnv();
+        public static Env Global {
+            get {
+                if (globalEnv == null)
+                    globalEnv = InitialEnv();
+
+                return globalEnv;
+            }
+        }
+        static Env globalEnv = null;
 
         Env() { outer = null; }
 
@@ -19,6 +27,9 @@ namespace UScheme {
             StdLib.AddLibrary(env);
             UMath.AddLibrary(env);
             StringLib.AddLibrary(env);
+            IOLib.AddLibrary(env);
+            env.CurrentInput = new TextReaderPort(Console.In);
+            env.CurrentOutput = new TextWriterPort(Console.Out);
             return env;
         }
 

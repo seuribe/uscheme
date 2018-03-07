@@ -4,26 +4,33 @@ using System.IO;
 namespace UScheme {
     public class TextWriterPort : Port {
         readonly TextWriter writer;
+        bool closed = false;
 
         public TextWriterPort(TextWriter writer) : base(output: true) {
             this.writer = writer;
         }
 
-        public override Exp CharReady() {
+        public override bool CharReady() {
             throw new NotImplementedException();
         }
 
-        public override Exp PeekChar() {
+        public override int PeekChar() {
             throw new NotImplementedException();
         }
 
-        public override Exp ReadChar() {
+        public override int ReadChar() {
             throw new NotImplementedException();
         }
 
-        public override Exp WriteChar(Character ch) {
-            writer.Write(ch.character);
-            return SpecialObject.OK;
+        public override void Close() {
+            writer.Flush();
+            writer.Close();
+            closed = true;
+        }
+
+        public override void WriteChar(char ch) {
+            if (!closed)
+                writer.Write(ch);
         }
     }
 }
