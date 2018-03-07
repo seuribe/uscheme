@@ -1,5 +1,8 @@
 ﻿namespace UScheme {
     public class Character : Exp {
+
+        public static readonly Character Newline = new Character(CharConstants.Newline);
+
         public readonly char character;
 
         public Character(char character) {
