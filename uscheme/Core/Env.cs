@@ -7,6 +7,9 @@ namespace UScheme {
         private readonly Dictionary<string, Exp> values = new Dictionary<string, Exp>();
         private readonly Env outer;
 
+        public Port CurrentInput = new TextReaderPort(Console.In);
+        public Port CurrentOutput = new TextWriterPort(Console.Out);
+
         public static Env Global = InitialEnv();
 
         Env() { outer = null; }
