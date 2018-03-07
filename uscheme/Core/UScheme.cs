@@ -7,21 +7,11 @@ namespace UScheme {
 
     public class UScheme {
 
-        public static string LibraryDir = @"./lib/";
-
-        static Evaluator evaluator = new StackEvaluator();
-
-        public static void SetEvaluator(Evaluator evaluator) {
-            UScheme.evaluator = evaluator;
-        }
+        // TODO: externalize this to somewhere local / not in repository
+        public static string LibraryDir = @"C:/src/uscheme/uscheme/lib/";
 
         public static Exp Eval(Exp exp, Env env) {
-            return evaluator.Eval(exp, env);
-        }
-
-        public static Exp Apply(Procedure proc, Cell parameters = null) {
-            var procCall = parameters == null ? Cell.BuildList(proc) : Cell.BuildList(proc, parameters);
-            return Eval(procCall, proc.Env);
+            return new StackEvaluator().Eval(exp, env);
         }
     }
 }

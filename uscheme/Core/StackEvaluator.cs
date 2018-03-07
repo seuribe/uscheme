@@ -24,15 +24,9 @@ namespace UScheme {
             }
         }
 
-        readonly Stack<Frame> stack = new Stack<Frame>();
+        Stack<Frame> stack = new Stack<Frame>();
         Frame current;
-        Exp result = null;
-
-        void Reset() {
-            stack.Clear();
-            result = null;
-            current = null;
-        }
+        Exp result;
 
         void Push(Exp exp, Env env, Cell destination = null) {
             stack.Push(new Frame { exp = exp.Clone(), env = env, destination = destination });
@@ -57,43 +51,49 @@ namespace UScheme {
         }
 
         public Exp Eval(Exp exp, Env env) {
-            Reset();
             if (exp is Sequence)
                 PushAll((exp as Sequence).forms, env);
             else
                 Push(exp, env);
 
             while (stack.Count > 0) {
-                var list = current.exp as Cell;
-
                 if (IsSelfEvaluating(current.exp))
                     SetResultAndPop(current.exp);
-                else if (current.exp is Identifier) {
+                else if (current.exp is Identifier)
                     SetResultAndPop(current.env.Get(current.exp.ToString()));
-                } else if (list.First == Identifier.QUOTE) {
-                    EvalQuote();
-                } else if (list.First == Identifier.DEFINE) {
-                    EvalDefine();
-                } else if (list.First == Identifier.SET) {
-                    EvalSet();
-                } else if (list.First == Identifier.BEGIN) {
-                    EvalSequence();
-                } else if (list.First == Identifier.IF) {
-                    EvalIf();
-                } else if (list.First == Identifier.LAMBDA) {
-                    EvalLambda();
-                } else if (list.First == Identifier.LET) {
-                    EvalLet();
-                } else if (list.First == Identifier.AND) {
-                    EvalAnd();
-                } else if (list.First == Identifier.OR) {
-                    EvalOr();
-                } else if (list.First == Identifier.COND) {
-                    EvalCond();
-                } else
+                else if (!EvaluatedSyntacticForm())
                     EvalProcedureCall();
             }
             return result;
+        }
+
+        bool EvaluatedSyntacticForm() {
+            var first = (current.exp as Cell).First;
+
+            if (first == Identifier.QUOTE)
+                EvalQuote();
+            else if (first == Identifier.DEFINE)
+                EvalDefine();
+            else if (first == Identifier.SET)
+                EvalSet();
+            else if (first == Identifier.BEGIN)
+                EvalSequence();
+            else if (first == Identifier.IF)
+                EvalIf();
+            else if (first == Identifier.LAMBDA)
+                EvalLambda();
+            else if (first == Identifier.LET)
+                EvalLet();
+            else if (first == Identifier.AND)
+                EvalAnd();
+            else if (first == Identifier.OR)
+                EvalOr();
+            else if (first == Identifier.COND)
+                EvalCond();
+            else
+                return false;
+
+            return true;
         }
 
         bool IsSelfEvaluating(Exp exp) {

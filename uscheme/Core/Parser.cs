@@ -29,10 +29,10 @@ namespace UScheme {
             var tokenizer = new Tokenizer(input);
             var tokens = tokenizer.Tokens.GetEnumerator();
             tokens.MoveNext();
-            return ReadProgramOrExpression(tokens);
+            return ReadThunk(tokens);
         }
 
-        static Exp ReadProgramOrExpression(IEnumerator<string> tokens) {
+        static Exp ReadThunk(IEnumerator<string> tokens) {
             var forms = new List<Exp>();
             try {
                 while (true)

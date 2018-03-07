@@ -3,10 +3,6 @@
 namespace UScheme.Tests {
     [TestFixture]
     public class TestCond : TestEval {
-        [SetUp]
-        public new void SetUp() {
-            UScheme.SetEvaluator(new StackEvaluator());
-        }
 
         [Test]
         public void CondWithBooleans() {
