@@ -5,11 +5,11 @@ using System.Text;
 namespace UScheme {
 
     // Not thread safe!
-    public class StackEvaluator : Evaluator {
+    public class StackEvaluator {
         class Frame {
             public Exp exp;
             public Env env;
-            public bool paramsEvaluated = false;
+            public bool ready = false;
             public Cell destination;
 
             public Cell AsList => exp as Cell;
@@ -42,7 +42,7 @@ namespace UScheme {
         }
 
         void PushProcedureParameters(Cell cell, Env env) {
-            current.paramsEvaluated = true;
+            current.ready = true;
             while (cell != Cell.Null) {
                 if (!IsSelfEvaluating(cell.car))
                     Push(cell.car, env, cell);
@@ -111,7 +111,7 @@ namespace UScheme {
         }
 
         void EvalProcedureCall() {
-            if (!current.paramsEvaluated)
+            if (!current.ready)
                 PushProcedureParameters(current.AsList, current.env);
             else if (current.First is CSharpProcedure)
                 SetResultAndPop((current.First as CSharpProcedure).Apply(current.Rest));
@@ -124,10 +124,9 @@ namespace UScheme {
         void EvalSchemeProcedureCall() {
             var proc = current.First as SchemeProcedure;
             var bodyEnv = CreateCallEnvironment(proc, current.Rest, proc.Env);
-            var destination = current.destination;
             stack.Pop();
             foreach (var bodyExp in Cell.Duplicate(proc.Body).Reverse().Iterate())
-                Push(bodyExp, bodyEnv, destination);
+                Push(bodyExp, bodyEnv, current.destination);
         }
 
         bool IsValue(Exp exp) {
@@ -137,7 +136,7 @@ namespace UScheme {
         void EvalDefine() {
             if (current.Second is Cell)
                 DefineProcedure();
-            else if (current.paramsEvaluated)
+            else if (current.ready)
                 SetResultAndPop(current.env.Bind(current.Second.ToString(), current.Third));
             else
                 PushParameter(2);
@@ -145,26 +144,23 @@ namespace UScheme {
 
         void DefineProcedure() { // (define (f x y z . rest) ... )
             var declaration = current.Second as Cell;
-            var name = declaration.First.ToString();
-            var argNames = declaration.Rest().ToStringList();
-            var body = current.AsList.Skip(2);
+            List<string> argNames;
             string variadicName = null;
-            if (argNames.Count >= 3 && argNames[argNames.Count - 2] == ".") {
-                variadicName = argNames[argNames.Count - 1];
-                argNames.RemoveRange(argNames.Count - 2, 2);
-            }
+            GetProcedureArguments(declaration.Rest().ToStringList(), out argNames, out variadicName);
+            var body = current.AsList.Skip(2);
             var proc = CreateProcedure(body, current.env, argNames, variadicName);
+            var name = declaration.First.ToString();
             current.env.Bind(name, proc);
             SetResultAndPop(proc);
         }
 
         void PushParameter(int index) {
-            current.paramsEvaluated = true;
+            current.ready = true;
             Push(current.AsList[index], current.env, current.AsList.Skip(index));
         }
 
         void EvalIf() {
-            if (!current.paramsEvaluated)
+            if (!current.ready)
                 PushParameter(1);
             else
                 ReplaceCurrent(Boolean.IsTrue(current.Second) ? current.Third : current.Fourth);
@@ -176,7 +172,7 @@ namespace UScheme {
         }
 
         void EvalSet() {
-            if (current.paramsEvaluated)
+            if (current.ready)
                 SetResultAndPop(current.env.Set(current.Second.ToString(), current.Third));
             else
                 PushParameter(2);
@@ -184,19 +180,25 @@ namespace UScheme {
 
         void EvalLambda() {
             var body = current.AsList.Skip(2);
-            var args = current.Second;
+            var args = current.Second as Cell;
             List<string> argNames = null;
             string variadicName = null;
-            if (args is Cell) {
-                argNames = (current.Second as Cell).ToStringList();
-                if (argNames.Count >= 3 && argNames[argNames.Count - 2] == ".") {
-                    variadicName = argNames[argNames.Count - 1];
-                    argNames.RemoveRange(argNames.Count - 2, 2);
-                }
-            } else {
+            if (args != null)
+                GetProcedureArguments(args.ToStringList(), out argNames, out variadicName);
+            else
                 variadicName = current.Second.ToString();
-            }
             SetResultAndPop(CreateProcedure(body, current.env, argNames, variadicName));
+        }
+
+        void GetProcedureArguments(List<string> allArguments, out List<string> argNames, out string variadicName) {
+            var count = allArguments.Count;
+            if (count >= 3 && allArguments[count - 2] == ".") {
+                variadicName = allArguments[count - 1];
+                argNames = allArguments.GetRange(0, count - 2);
+            } else {
+                argNames = allArguments;
+                variadicName = null;
+            }
         }
 
         Exp CreateProcedure(Cell body, Env env, List<string> argNames = null, string variadicName = null) {
@@ -215,8 +217,8 @@ namespace UScheme {
         }
 
         void EvalBooleanOperation(Exp initialValue, Action ifFalse, Action ifTrue) {
-            if (!current.paramsEvaluated) {
-                current.paramsEvaluated = true;
+            if (!current.ready) {
+                current.ready = true;
                 result = initialValue;
             }
 
@@ -272,7 +274,7 @@ namespace UScheme {
         }
 
         void ReplaceCurrent(Exp exp, Env env = null) {
-            current.paramsEvaluated = false;
+            current.ready = false;
             current.exp = exp.Clone();
             current.env = env ?? current.env;
         }
@@ -287,7 +289,6 @@ namespace UScheme {
         }
 
         static Env CreateCallEnvironment(SchemeProcedure procedure, Cell callValues, Env outerEnv) {
-//            StdLib.EnsureArity(callValues, procedure.ArgumentNames.Count);
             var evalEnv = new Env(outerEnv);
             for (int i = 0 ; i < procedure.NumberFixedArguments ; i++)
                 evalEnv.Bind(procedure.ArgumentNames[i], callValues[i]);

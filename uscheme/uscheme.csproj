@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Evaluator.cs" />
     <Compile Include="Core\StackEvaluator.cs" />
     <Compile Include="IO\SpecialObject.cs" />
     <Compile Include="IO\TextReaderPort.cs" />
