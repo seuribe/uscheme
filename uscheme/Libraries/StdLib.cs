@@ -149,6 +149,8 @@ namespace UScheme {
             env.Bind("string?", IsA<UString>());
             env.Bind("byte-vector?", IsA<ByteVector>());
             env.Bind("char?", IsA<Character>());
+            env.Bind("null?", new CSharpProcedure(p => Boolean.Get(p.First == Cell.Null)));
+            env.Bind("symbol?", IsA<Identifier>());
 
             env.Bind("equal?", Equal);
             env.Bind("eqv?", Eqv);
