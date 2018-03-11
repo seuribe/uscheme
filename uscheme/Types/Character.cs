@@ -25,6 +25,10 @@
             return this;
         }
 
+        public override string ToString() {
+            return string.Format("U+{0:X4} ", System.Convert.ToUInt16(character));
+        }
+
         public bool UEquals(Exp other) {
             var asChar = other as Character;
             return asChar != null && asChar.character == character;
