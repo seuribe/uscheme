@@ -31,6 +31,19 @@ namespace UScheme {
             return new UString(builder.ToString());
         });
 
+        static readonly Procedure StringFromChars = new CSharpProcedure(parameters => {
+            var sb = new StringBuilder();
+            foreach (Character ch in parameters.Iterate())
+                sb.Append(ch.character);
+            return new UString(sb.ToString());
+        });
+
+        private static readonly Procedure StringRef = new CSharpProcedure(parameters => {
+            var str = parameters.First as UString;
+            var index = parameters.Second as IntegerNumber;
+            return new Character(str.str[index.IntValue]);
+        });
+
         private static readonly Procedure NumberToString = new CSharpProcedure(parameters => {
             StdLib.EnsureArity(parameters, 1);
             return new UString((parameters.First as Number).ToString());
@@ -41,6 +54,8 @@ namespace UScheme {
             env.Bind("string-length", StringLength);
             env.Bind("make-string", MakeString);
             env.Bind("number->string", NumberToString);
+            env.Bind("string", StringFromChars);
+            env.Bind("string-ref", StringRef);
         }
     }
 }
