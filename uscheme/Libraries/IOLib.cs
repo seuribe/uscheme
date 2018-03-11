@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 
 namespace UScheme {
-    public class IOLib {
+    public class IOLib : CoreLib {
 
         static Exp Read(Port port) {
             var sb = new StringBuilder();
@@ -68,7 +68,7 @@ namespace UScheme {
         });
 
         public static void AddLibrary(Env env) {
-            env.Bind("port?", StdLib.IsA<Port>());
+            env.Bind("port?", IsA<Port>());
             env.Bind("input-port?", CallWithFirstAsPort(port => Boolean.Get(port != null && port.IsInput) ));
             env.Bind("output-port?", CallWithFirstAsPort(port => Boolean.Get(port != null && port.IsOutput)));
 

@@ -1,8 +1,8 @@
 ﻿namespace UScheme {
-    public class VectorLib {
+    public class VectorLib : CoreLib {
         private static readonly Procedure MakeVector = new CSharpProcedure(parameters => {
-            StdLib.EnsureArityWithin(parameters, 1, 2);
-            StdLib.EnsureIs<IntegerNumber>(parameters.First);
+            EnsureArityWithin(parameters, 1, 2);
+            EnsureIs<IntegerNumber>(parameters.First);
             int len = (parameters.First as IntegerNumber).IntValue;
             Exp fill = (parameters.Length() == 2) ? new IntegerNumber(0) : parameters.Second;
             var value = new Exp[len];
@@ -12,7 +12,7 @@
         });
 
         private static readonly Procedure VectorLength = new CSharpProcedure(parameters => {
-            StdLib.EnsureArity(parameters, 1);
+            EnsureArity(parameters, 1);
             return new IntegerNumber((parameters.First as Vector).Length);
         });
 

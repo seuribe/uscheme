@@ -1,10 +1,10 @@
 ﻿using System;
 
 namespace UScheme {
-    public class UMath {
+    public class MathLib : CoreLib {
         private static Procedure UnaryProcedure(Func<double, double> func) {
             return new CSharpProcedure(parameters => {
-                StdLib.EnsureArity(parameters, 1);
+                EnsureArity(parameters, 1);
                 var number = parameters.First as Number;
                 return new RealNumber((float)func(number.DoubleValue));
             });
@@ -12,8 +12,8 @@ namespace UScheme {
 
         private static Procedure CompareAndCarryIf(Func<Number, Number, bool> takeNew) {
             return new CSharpProcedure(parameters => {
-                StdLib.EnsureArityMin(parameters, 1);
-                StdLib.EnsureAll(parameters, p => (p is Number), "function parameters should be numbers");
+                EnsureArityMin(parameters, 1);
+                EnsureAll(parameters, p => (p is Number), "function parameters should be numbers");
                 var result = parameters.First as Number;
                 foreach (Number number in parameters.Rest().Iterate())
                     if (takeNew(result, number))

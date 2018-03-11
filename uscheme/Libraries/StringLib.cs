@@ -46,7 +46,7 @@ namespace UScheme {
         });
 
         private static readonly Procedure NumberToString = new CSharpProcedure(parameters => {
-            StdLib.EnsureArity(parameters, 1);
+            EnsureArity(parameters, 1);
             return new UString((parameters.First as Number).ToString());
         });
 

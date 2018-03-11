@@ -25,7 +25,7 @@ namespace UScheme {
         public static Env InitialEnv() {
             Env env = new Env();
             StdLib.AddLibrary(env);
-            UMath.AddLibrary(env);
+            MathLib.AddLibrary(env);
             StringLib.AddLibrary(env);
             IOLib.AddLibrary(env);
             CharLib.AddLibrary(env);

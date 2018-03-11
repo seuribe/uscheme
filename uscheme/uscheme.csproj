@@ -55,7 +55,7 @@
     <Compile Include="Libraries\CoreLib.cs" />
     <Compile Include="Libraries\IOLib.cs" />
     <Compile Include="Libraries\StringLib.cs" />
-    <Compile Include="Libraries\UMath.cs" />
+    <Compile Include="Libraries\MathLib.cs" />
     <Compile Include="Libraries\VectorLib.cs" />
     <Compile Include="Types\BaseVector.cs" />
     <Compile Include="Types\ByteVector.cs" />
