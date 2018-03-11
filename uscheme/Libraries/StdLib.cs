@@ -148,6 +148,7 @@ namespace UScheme {
             env.Bind("vector?", IsA<Vector>());
             env.Bind("string?", IsA<UString>());
             env.Bind("byte-vector?", IsA<ByteVector>());
+            env.Bind("char?", IsA<Character>());
 
             env.Bind("equal?", Equal);
             env.Bind("eqv?", Eqv);
