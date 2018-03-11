@@ -21,6 +21,10 @@
             return new Character(str.Substring(2)[0]);
         }
 
+        public IntegerNumber ToInteger() {
+            return new IntegerNumber(System.Convert.ToUInt16(character));
+        }
+
         public Exp Clone() {
             return this;
         }
