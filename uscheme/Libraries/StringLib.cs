@@ -50,6 +50,19 @@ namespace UScheme {
             return new UString((parameters.First as Number).ToString());
         });
 
+        private static readonly Procedure StringList = new CSharpProcedure(parameters => {
+            var str = parameters.First as UString;
+            if (str.str.Length == 0)
+                return Cell.Null;
+
+            var list = new Cell(new Character(str.str[0]));
+            var current = list;
+            for (int i = 1 ; i < str.str.Length ; i++)
+                current = (current.cdr = new Cell(new Character(str.str[i]))) as Cell;
+
+            return list;
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("string-append", StringAppend);
             env.Bind("string-length", StringLength);
@@ -58,6 +71,7 @@ namespace UScheme {
             env.Bind("string", StringFromChars);
             env.Bind("string-ref", StringRef);
             env.Bind("string=?", ListUEqual<UString>());
+            env.Bind("string->list", StringList);
         }
     }
 }
