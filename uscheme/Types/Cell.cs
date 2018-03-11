@@ -33,9 +33,9 @@ namespace UScheme {
         }
 
         protected Cell() { }
-        public Cell(Exp car, Exp cdr) {
+        public Cell(Exp car, Exp cdr = null) {
             this.car = car;
-            this.cdr = cdr;
+            this.cdr = cdr ?? Cell.Null;
         }
 
         internal List<Exp> AsList() {
