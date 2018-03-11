@@ -57,6 +57,7 @@ namespace UScheme {
             env.Bind("number->string", NumberToString);
             env.Bind("string", StringFromChars);
             env.Bind("string-ref", StringRef);
+            env.Bind("string=?", ListUEqual<UString>());
         }
     }
 }

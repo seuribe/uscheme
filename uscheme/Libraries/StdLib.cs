@@ -93,17 +93,6 @@ namespace UScheme {
             return value;
         }
 
-        static readonly Procedure SymbolEq = new CSharpProcedure(parameters => {
-            EnsureArityMin(parameters, 2);
-            var first = parameters.First;
-            var rest = parameters.Rest();
-            foreach (var symbol in rest.Iterate())
-                if (!first.UEquals(symbol))
-                    return Boolean.FALSE;
-
-            return Boolean.TRUE;
-        });
-
         private static readonly Procedure Print = new CSharpProcedure(parameters => {
             var ev = parameters.First;
             // TODO: output should be configurable somewhere
@@ -128,7 +117,7 @@ namespace UScheme {
 
             env.Bind("symbol->string", new CSharpProcedure(p => new UString((p.First as Identifier).str)));
             env.Bind("string->symbol", new CSharpProcedure(p => Identifier.From((p.First as UString).str)));
-            env.Bind("symbol=?", SymbolEq);
+            env.Bind("symbol=?", ListUEqual<Identifier>());
 
             env.Bind("equal?", Equal);
             env.Bind("eqv?", Eqv);

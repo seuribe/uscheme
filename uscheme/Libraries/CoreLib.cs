@@ -50,5 +50,20 @@ namespace UScheme {
                 return Boolean.Get(parameters.First is T && evalFunction((T)parameters.First));
             });
         }
+
+        public static Procedure ListUEqual<T>(Func<T, T, bool> equalFunc = null) where T: Exp {
+            if (equalFunc == null)
+                equalFunc = (a, b) => a.UEquals(b);
+
+            return new CSharpProcedure(parameters => {
+                EnsureArityMin(parameters, 2);
+                var first = (T)parameters.First;
+                foreach (T next in parameters.Rest().Iterate())
+                    if (!equalFunc(first, next))
+                        return Boolean.FALSE;
+
+                return Boolean.TRUE;
+            });
+        }
     }
 }
