@@ -28,6 +28,7 @@ namespace UScheme {
             UMath.AddLibrary(env);
             StringLib.AddLibrary(env);
             IOLib.AddLibrary(env);
+            CharLib.AddLibrary(env);
             env.CurrentInput = new TextReaderPort(Console.In);
             env.CurrentOutput = new TextWriterPort(Console.Out);
             return env;
