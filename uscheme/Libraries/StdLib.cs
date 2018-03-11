@@ -152,6 +152,9 @@ namespace UScheme {
             env.Bind("null?", new CSharpProcedure(p => Boolean.Get(p.First == Cell.Null)));
             env.Bind("symbol?", IsA<Identifier>());
 
+            env.Bind("symbol->string", new CSharpProcedure(p => new UString((p.First as Identifier).str)));
+            env.Bind("string->symbol", new CSharpProcedure(p => Identifier.From((p.First as UString).str)));
+
             env.Bind("equal?", Equal);
             env.Bind("eqv?", Eqv);
             env.Bind("eq?", Eq);

@@ -26,7 +26,7 @@ namespace UScheme {
             return new Identifier(token);
         }
 
-        readonly string str;
+        public readonly string str;
 
         Identifier(string str) {
             this.str = str;
