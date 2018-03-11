@@ -1,7 +1,8 @@
 ﻿using System.Text;
 
 namespace UScheme {
-    public class StringLib {
+
+    public class StringLib : CoreLib {
 
         private static readonly Procedure StringAppend = new CSharpProcedure(parameters => {
             var sb = new StringBuilder();
@@ -12,13 +13,13 @@ namespace UScheme {
         });
 
         private static readonly Procedure StringLength = new CSharpProcedure(parameters => {
-            StdLib.EnsureIs<UString>(parameters.First);
+            EnsureIs<UString>(parameters.First);
             return new IntegerNumber((parameters.First as UString).str.Length);
         });
 
         private static readonly Procedure MakeString = new CSharpProcedure(parameters => {
-            StdLib.EnsureArityWithin(parameters, 1, 2);
-            StdLib.EnsureIs<IntegerNumber>(parameters.First);
+            EnsureArityWithin(parameters, 1, 2);
+            EnsureIs<IntegerNumber>(parameters.First);
             int len = (parameters.First as IntegerNumber).IntValue;
             char ch = '\u0000';
             if (parameters.Length() == 2)

@@ -51,6 +51,7 @@
     <Compile Include="IO\SpecialObject.cs" />
     <Compile Include="IO\TextReaderPort.cs" />
     <Compile Include="IO\TextWriterPort.cs" />
+    <Compile Include="Libraries\CoreLib.cs" />
     <Compile Include="Libraries\IOLib.cs" />
     <Compile Include="Libraries\StringLib.cs" />
     <Compile Include="Libraries\UMath.cs" />

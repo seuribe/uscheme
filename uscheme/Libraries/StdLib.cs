@@ -3,44 +3,7 @@ using System.Collections.Generic;
 
 namespace UScheme {
 
-    public class StdLib {
-
-        public static void EnsureArity(Cell list, int size) {
-            var length = list.Length();
-            if (length != size)
-                throw new EvalException("procedure accepts only " + size + " arguments, " + length + " provided");
-        }
-
-        public static void EnsureArityMin(Cell list, int size) {
-            var length = list.Length();
-            if (length < size)
-                throw new EvalException("procedure needs at least " + size + " arguments, " + length + " provided");
-        }
-
-        public static void EnsureArityWithin(Cell list, int min, int max = int.MaxValue) {
-            var length = list.Length();
-            if (length < min || length > max)
-                throw new EvalException("invalid number of arguments for procedure: " + length);
-        }
-
-        public static void EnsureAll(Cell list, Func<Exp, bool> predicate, string error) {
-            foreach (var exp in list.Iterate())
-                if (!predicate(exp))
-                    throw new EvalException(error);
-        }
-
-        public static void EnsureIs<T>(Exp exp) {
-            if (!(exp is T))
-                throw new EvalException("Expected " + typeof(T).ToString() + ", got " + typeof(Exp).ToString());
-        }
-
-        public static Procedure IsA<T>(Func<T, bool> evalFunction = null) where T : Exp {
-            return new CSharpProcedure(parameters => {
-                EnsureArity(parameters, 1);
-                evalFunction = evalFunction ?? (e => true);
-                return Boolean.Get(parameters.First is T && evalFunction((T)parameters.First));
-            });
-        }
+    public class StdLib : CoreLib {
 
         private static readonly Procedure Vector = new CSharpProcedure(parameters => {
             return new Vector(parameters);
