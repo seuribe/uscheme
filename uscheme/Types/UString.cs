@@ -20,7 +20,7 @@ namespace UScheme {
         }
 
         public Exp Clone() {
-            return this;
+            return new UString(str);
         }
 
         public bool UEquals(Exp other) {

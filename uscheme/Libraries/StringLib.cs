@@ -81,6 +81,7 @@ namespace UScheme {
             env.Bind("string=?", ListUEqual<UString>());
             env.Bind("string->list", StringList);
             env.Bind("list->string", ListString);
+            env.Bind("string-copy", Conversion<UString, Exp>(str => str.Clone()));
         }
     }
 }
