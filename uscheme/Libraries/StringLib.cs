@@ -33,11 +33,15 @@ namespace UScheme {
         });
 
         static readonly Procedure StringFromChars = new CSharpProcedure(parameters => {
+            return StringFromCharList(parameters);
+        });
+
+        static UString StringFromCharList(Cell chars) {
             var sb = new StringBuilder();
-            foreach (Character ch in parameters.Iterate())
+            foreach (Character ch in chars.Iterate())
                 sb.Append(ch.character);
             return new UString(sb.ToString());
-        });
+        }
 
         private static readonly Procedure StringRef = new CSharpProcedure(parameters => {
             var str = parameters.First as UString;
@@ -63,6 +67,10 @@ namespace UScheme {
             return list;
         });
 
+        private static readonly Procedure ListString = new CSharpProcedure(parameters => {
+            return StringFromCharList(parameters.First as Cell);
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("string-append", StringAppend);
             env.Bind("string-length", StringLength);
@@ -72,6 +80,7 @@ namespace UScheme {
             env.Bind("string-ref", StringRef);
             env.Bind("string=?", ListUEqual<UString>());
             env.Bind("string->list", StringList);
+            env.Bind("list->string", ListString);
         }
     }
 }
