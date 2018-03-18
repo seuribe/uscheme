@@ -16,9 +16,14 @@
             return new IntegerNumber((parameters.First as Vector).Length);
         });
 
+        private static readonly Procedure VectorFromElements = new CSharpProcedure(parameters => {
+            return Vector.FromCell(parameters as Cell);
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("make-vector", MakeVector);
             env.Bind("vector-length", VectorLength);
+            env.Bind("vector", VectorFromElements);
         }
     }
 }

@@ -5,10 +5,6 @@ namespace UScheme {
 
     public class StdLib : CoreLib {
 
-        private static readonly Procedure Vector = new CSharpProcedure(parameters => {
-            return new Vector(parameters);
-        });
-
         private static readonly Procedure Equal = new CSharpProcedure(parameters => {
             EnsureArity(parameters, 2);
             return Boolean.Get(parameters.First.UEquals(parameters.Second));
@@ -133,7 +129,6 @@ namespace UScheme {
             env.Bind("cdr", Cdr);
 
             env.Bind("cons", Cons);
-            env.Bind("vector", Vector);
 
             Parser.Load(UScheme.LibraryDir + "stdlib.usc", env);
         }
