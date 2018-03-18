@@ -43,12 +43,20 @@ namespace UScheme {
             return Vector.FromCell(list);
         });
 
+        private static readonly Procedure VectorFill = new CSharpProcedure(parameters => {
+            var vector = (parameters.First as Vector);
+            var value = parameters.Second;
+            vector.Fill(value);
+            return SpecialObject.OK;
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("make-vector", MakeVector);
             env.Bind("vector-length", VectorLength);
             env.Bind("vector", VectorFromElements);
             env.Bind("vector-ref", VectorRef);
             env.Bind("vector-set!", VectorSet);
+            env.Bind("vector-fill!", VectorFill);
             env.Bind("vector->list", VectorToList);
             env.Bind("list->vector", ListToVector);
         }

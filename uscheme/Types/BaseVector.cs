@@ -19,6 +19,10 @@ namespace UScheme {
         public abstract Exp Clone();
         public abstract bool UEquals(Exp other);
 
+        public void Fill(T value) {
+            for (int i = 0 ; i < data.Length ; i++)
+                data[i] = value;
+        }
 
         public IEnumerator<T> GetEnumerator() {
             return ((IEnumerable<T>)data).GetEnumerator();
