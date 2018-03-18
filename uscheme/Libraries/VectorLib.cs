@@ -26,11 +26,19 @@
             return vector[index];
         });
 
+        private static readonly Procedure VectorSet = new CSharpProcedure(parameters => {
+            var vector = (parameters.First as Vector);
+            var index = (parameters.Second as IntegerNumber).IntValue;
+            var value = parameters.Third;
+            return vector[index] = value;
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("make-vector", MakeVector);
             env.Bind("vector-length", VectorLength);
             env.Bind("vector", VectorFromElements);
             env.Bind("vector-ref", VectorRef);
+            env.Bind("vector-set!", VectorSet);
         }
     }
 }
