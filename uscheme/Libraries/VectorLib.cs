@@ -1,4 +1,6 @@
-﻿namespace UScheme {
+﻿using System.Collections.Generic;
+
+namespace UScheme {
     public class VectorLib : CoreLib {
         private static readonly Procedure MakeVector = new CSharpProcedure(parameters => {
             EnsureArityWithin(parameters, 1, 2);
@@ -33,12 +35,22 @@
             return vector[index] = value;
         });
 
+        private static readonly Procedure VectorToList = Conversion<Vector, Cell>( vector => {
+            return Cell.BuildList(vector.GetEnumerator());
+        });
+
+        private static readonly Procedure ListToVector = Conversion<Cell, Vector>(list => {
+            return Vector.FromCell(list);
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("make-vector", MakeVector);
             env.Bind("vector-length", VectorLength);
             env.Bind("vector", VectorFromElements);
             env.Bind("vector-ref", VectorRef);
             env.Bind("vector-set!", VectorSet);
+            env.Bind("vector->list", VectorToList);
+            env.Bind("list->vector", ListToVector);
         }
     }
 }
