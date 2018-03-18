@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace UScheme {
-    public class Vector : BaseVector<Exp>, IEnumerable<Exp>, IEnumerable {
+    public class Vector : BaseVector<Exp> {
 
         public Vector(params Exp[] elements) : base(elements) { }
 
@@ -35,14 +35,6 @@ namespace UScheme {
 
         public override string ToString() {
             return "#(" + string.Join(" ", data.Select( e => e.ToString() )) + ")";
-        }
-
-        public IEnumerator<Exp> GetEnumerator() {
-            return data.GetEnumerator() as IEnumerator<Exp>;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
         }
     }
 }
