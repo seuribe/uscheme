@@ -20,10 +20,17 @@
             return Vector.FromCell(parameters as Cell);
         });
 
+        private static readonly Procedure VectorRef = new CSharpProcedure(parameters => {
+            var vector = (parameters.First as Vector);
+            var index = (parameters.Second as IntegerNumber).IntValue;
+            return vector[index];
+        });
+
         public static void AddLibrary(Env env) {
             env.Bind("make-vector", MakeVector);
             env.Bind("vector-length", VectorLength);
             env.Bind("vector", VectorFromElements);
+            env.Bind("vector-ref", VectorRef);
         }
     }
 }
