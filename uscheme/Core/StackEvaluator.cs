@@ -125,9 +125,9 @@ namespace UScheme {
                 PushAllAndReplace(current.AsList, current.env);
             else if (current.First is CSharpProcedure)
                 SetResultAndPop((current.First as CSharpProcedure).Apply(current.Rest));
-            else if (current.First is SchemeProcedure) {
+            else if (current.First is SchemeProcedure)
                 EvalSchemeProcedureCall();
-            } else
+            else
                 Error("first element of list is not a procedure: " + current.First);
         }
 
@@ -183,24 +183,27 @@ namespace UScheme {
 
         void EvalLambda() {
             var body = current.AsList.Skip(2);
-            var args = current.Second as Cell;
             List<string> argNames = null;
             string variadicName = null;
-            if (args != null)
+            if (current.Second is Cell args)
                 GetProcedureArguments(args.ToStringList(), out argNames, out variadicName);
             else
                 variadicName = current.Second.ToString();
             SetResultAndPop(CreateProcedure(body, current.env, argNames, variadicName));
         }
 
+        bool HasVariadicArgs(List<string> arguments) {
+            var count = arguments.Count;
+            return (count >= 3 && arguments[count - 2] == ".");
+        }
+
         void GetProcedureArguments(List<string> allArguments, out List<string> argNames, out string variadicName) {
-            var count = allArguments.Count;
-            if (count >= 3 && allArguments[count - 2] == ".") {
-                variadicName = allArguments[count - 1];
-                argNames = allArguments.GetRange(0, count - 2);
+            if (HasVariadicArgs(allArguments)) {
+                variadicName = allArguments[allArguments.Count - 1];
+                argNames = allArguments.GetRange(0, allArguments.Count - 2);
             } else {
-                argNames = allArguments;
                 variadicName = null;
+                argNames = allArguments;
             }
         }
 
