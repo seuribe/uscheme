@@ -33,15 +33,12 @@ namespace UScheme {
             current = stack.Peek();
         }
 
-        void PushAll(IEnumerable<Exp> expressions, Env env, Cell destination = null) {
-            var reversed = new List<Exp>(expressions);
-            reversed.Reverse();
-            foreach (var seqExp in reversed)
+        void PushAllInOrder(IEnumerable<Exp> expressions, Env env, Cell destination = null) {
+            foreach (var seqExp in Reversed(expressions))
                 Push(seqExp, env, destination);
-            current = stack.Peek();
         }
 
-        void PushProcedureParameters(Cell cell, Env env) {
+        void PushAllAndReplace(Cell cell, Env env) {
             current.ready = true;
             while (cell != Cell.Null) {
                 if (!IsSelfEvaluating(cell.car))
@@ -50,9 +47,20 @@ namespace UScheme {
             }
         }
 
+        void PushNthAndReplace(int index) {
+            current.ready = true;
+            Push(current.AsList[index], current.env, current.AsList.Skip(index));
+        }
+
+        static IEnumerable<T> Reversed<T>(IEnumerable<T> elements) {
+            var list = new List<T>(elements);
+            for (int index = list.Count - 1 ; index >= 0 ; index--)
+                yield return list[index];
+        }
+
         public Exp Eval(Exp exp, Env env) {
             if (exp is Sequence)
-                PushAll((exp as Sequence).forms, env);
+                PushAllInOrder((exp as Sequence).forms, env);
             else
                 Push(exp, env);
 
@@ -68,7 +76,7 @@ namespace UScheme {
         }
 
         bool EvaluatedSyntacticForm() {
-            var first = (current.exp as Cell).First;
+            var first = current.First;
 
             if (first == Identifier.QUOTE)
                 EvalQuote();
@@ -114,7 +122,7 @@ namespace UScheme {
 
         void EvalProcedureCall() {
             if (!current.ready)
-                PushProcedureParameters(current.AsList, current.env);
+                PushAllAndReplace(current.AsList, current.env);
             else if (current.First is CSharpProcedure)
                 SetResultAndPop((current.First as CSharpProcedure).Apply(current.Rest));
             else if (current.First is SchemeProcedure) {
@@ -141,14 +149,12 @@ namespace UScheme {
             else if (current.ready)
                 SetResultAndPop(current.env.Bind(current.Second.ToString(), current.Third));
             else
-                PushParameter(2);
+                PushNthAndReplace(2);
         }
 
         void DefineProcedure() { // (define (f x y z . rest) ... )
             var declaration = current.Second as Cell;
-            List<string> argNames;
-            string variadicName = null;
-            GetProcedureArguments(declaration.Rest().ToStringList(), out argNames, out variadicName);
+            GetProcedureArguments(declaration.Rest().ToStringList(), out List<string> argNames, out string variadicName);
             var body = current.AsList.Skip(2);
             var proc = CreateProcedure(body, current.env, argNames, variadicName);
             var name = declaration.First.ToString();
@@ -156,28 +162,23 @@ namespace UScheme {
             SetResultAndPop(proc);
         }
 
-        void PushParameter(int index) {
-            current.ready = true;
-            Push(current.AsList[index], current.env, current.AsList.Skip(index));
-        }
-
         void EvalIf() {
             if (!current.ready)
-                PushParameter(1);
+                PushNthAndReplace(1);
             else
                 ReplaceCurrent(Boolean.IsTrue(current.Second) ? current.Third : current.Fourth);
         }
 
         void EvalSequence() {
             stack.Pop();
-            PushAll(current.Rest.Iterate(), current.env, current.destination);
+            PushAllInOrder(current.Rest.Iterate(), current.env, current.destination);
         }
 
         void EvalSet() {
             if (current.ready)
                 SetResultAndPop(current.env.Set(current.Second.ToString(), current.Third));
             else
-                PushParameter(2);
+                PushNthAndReplace(2);
         }
 
         void EvalLambda() {
@@ -212,7 +213,7 @@ namespace UScheme {
             var body = current.AsList.Skip(2);
             var letEnv = new Env(current.env);
             stack.Pop();
-            PushAll(body.Iterate(), letEnv, current.destination);
+            PushAllInOrder(body.Iterate(), letEnv, current.destination);
             foreach (Cell definition in definitions.Iterate())
                 Push(Cell.BuildList(Identifier.DEFINE, Identifier.From(definition.First.ToString()), definition.Second),
                     letEnv);
@@ -258,7 +259,7 @@ namespace UScheme {
 
         void EvalApply() {
             if (!current.ready) {
-                PushProcedureParameters(current.Rest, current.env);
+                PushAllAndReplace(current.Rest, current.env);
                 return;
             }
 
