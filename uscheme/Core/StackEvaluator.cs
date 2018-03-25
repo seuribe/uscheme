@@ -90,6 +90,8 @@ namespace UScheme {
                 EvalOr();
             else if (first == Identifier.COND)
                 EvalCond();
+            else if (first == Identifier.APPLY)
+                EvalApply();
             else
                 return false;
 
@@ -252,6 +254,20 @@ namespace UScheme {
             } else {
                 RemoveCurrentParameters(1);
             }
+        }
+
+        void EvalApply() {
+            if (!current.ready) {
+                PushProcedureParameters(current.Rest, current.env);
+                return;
+            }
+
+            var op = current.Second;
+            var parameters = current.AsList.Skip(2);
+            var rest = parameters.Last() as Cell;
+            parameters.LastCell().car = rest.First;
+            parameters.LastCell().cdr = rest.Rest();
+            ReplaceCurrent(new Cell(op, parameters));
         }
 
         void EvalOr() {

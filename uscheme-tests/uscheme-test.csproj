@@ -52,6 +52,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\Scheme\TestApply.cs" />
     <Compile Include="Tests\Scheme\TestCons.cs" />
     <Compile Include="Tests\Scheme\TestIO.cs" />
     <Compile Include="Tests\Scheme\TestLists.cs" />

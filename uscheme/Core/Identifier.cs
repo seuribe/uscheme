@@ -13,9 +13,10 @@ namespace UScheme {
         public static readonly Identifier AND = new Identifier("and");
         public static readonly Identifier OR = new Identifier("or");
         public static readonly Identifier ELSE = new Identifier("else");
+        public static readonly Identifier APPLY = new Identifier("apply");
 
         public static readonly Identifier[] SyntacticKeywords = new Identifier[] {
-            IF, COND, DEFINE, SET, LAMBDA, QUOTE, BEGIN, LET, AND, OR
+            IF, COND, DEFINE, SET, LAMBDA, QUOTE, BEGIN, LET, AND, OR, APPLY
         };
 
         public static Identifier From(string token) {

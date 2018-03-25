@@ -66,18 +66,6 @@ namespace UScheme {
             return cell;
         });
 
-        private static readonly Procedure Apply = new CSharpProcedure(parameters => {
-            EnsureArityMin(parameters, 2);
-            EnsureIs<Procedure>(parameters.First);
-            EnsureIs<Cell>(parameters.LastCell());
-
-            var procedure = parameters.First as Procedure;
-            if (parameters.Length() > 2)
-                throw new UException("Not implemented: apply cannot accept more than the procedure and a list");
-
-            return UScheme.Eval(Cell.BuildList(procedure, parameters.Rest()), procedure.Env);
-        });
-
         // Only to be used in internal (CSharp) procedures
         public static Exp FoldlBase(CSharpProcedure op, Cell parameters) {
             EnsureArityMin(parameters, 2);
@@ -123,7 +111,6 @@ namespace UScheme {
 
             env.Bind("vector-length", new CSharpProcedure( list => new IntegerNumber(((list as Cell).First as Vector).Length) ));
             env.Bind("byte-vector-length", new CSharpProcedure(list => new IntegerNumber(((list as Cell).First as ByteVector).Length) ));
-            env.Bind("apply", Apply);
             env.Bind("append", Append);
             env.Bind("car", Car);
             env.Bind("cdr", Cdr);
