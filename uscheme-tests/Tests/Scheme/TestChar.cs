@@ -10,5 +10,12 @@ namespace UScheme.Tests {
             WhenEvaluating("(char->integer " + ch + ")");
             ThenIntegerResultIs(value);
         }
+
+        public void IntegerToChar() {
+            for (int i = 65 ; i < 120 ; i++) {
+                WhenEvaluating("(char->integer (integer->char " + i + "))");
+                ThenIntegerResultIs(i);
+            }
+        }
     }
 }
